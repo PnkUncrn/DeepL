@@ -18,11 +18,13 @@ require 'image'
 require 'optim'
 
 --Basic Parameters
-batchSize= 1
+--N= number of participants
+batchSize= 10
 learningRate=0.01
 weightDecay=1e-7
-N=2 --N= number of participants
+N=3 
 theta_u_perc=0.1
+
 -- fix seed
 torch.manualSeed(1)
 
@@ -51,25 +53,46 @@ mlp:add(nn.LogSoftMax())
 print(mlp)
 
 --Parameter Server model
-PServer = nn.Sequential()
-PServer:add(nn.Reshape(1024))
-PServer:add(nn.Linear(inputLayer, hiddenLayer1))
-PServer:add(nn.ReLU())
-PServer:add(nn.Linear(hiddenLayer1, hiddenLayer2))
-PServer:add(nn.ReLU())
-PServer:add(nn.Linear(hiddenLayer2, outputSize))
-PServer:add(nn.LogSoftMax())
-print(PServer)
+mlp2 = nn.Sequential()
+mlp2:add(nn.Reshape(1024))
+mlp2:add(nn.Linear(inputLayer, hiddenLayer1))
+mlp2:add(nn.ReLU())
+mlp2:add(nn.Linear(hiddenLayer1, hiddenLayer2))
+mlp2:add(nn.ReLU())
+mlp2:add(nn.Linear(hiddenLayer2, outputSize))
+mlp2:add(nn.LogSoftMax())
+print(mlp2)
 
-PSparams_init,PSgradParameters_init = PServer:getParameters()
+--Parameter Server model
+mlp3 = nn.Sequential()
+mlp3:add(nn.Reshape(1024))
+mlp3:add(nn.Linear(inputLayer, hiddenLayer1))
+mlp3:add(nn.ReLU())
+mlp3:add(nn.Linear(hiddenLayer1, hiddenLayer2))
+mlp3:add(nn.ReLU())
+mlp3:add(nn.Linear(hiddenLayer2, outputSize))
+mlp3:add(nn.LogSoftMax())
+print(mlp2)
 
-params_init, gradParams_init=mlp:getParameters()
+Server= nn.Sequential()
+Server:add(nn.Reshape(1024))
+Server:add(nn.Linear(inputLayer, hiddenLayer1))
+Server:add(nn.ReLU())
+Server:add(nn.Linear(hiddenLayer1, hiddenLayer2))
+Server:add(nn.ReLU())
+Server:add(nn.Linear(hiddenLayer2, outputSize))
+Server:add(nn.LogSoftMax())
+print(Server)
+
+Sparams, SgradParams=Server:getParameters()
+
+
 --loss Criterion 
 criterion=nn.ClassNLLCriterion()
 
 
 --Dataset- MNIST
-nbTrainingPatches = 60000/N
+nbTrainingPatches = 6000/N
 nbTestingPatches = 10000
 
 
@@ -80,11 +103,18 @@ testData:normalizeGlobal(mean, std)
 -- Confusion Matrix
 confusion = optim.ConfusionMatrix(classes)
 
---training 
+--calculating startIndex
+function startIndex(x)
+ ind = 1 +((x-1)*nbTrainingPatches)
+ return ind
+end
+
+
+--training function
 function train(dataset, model)
 --initialize the epoch
   epoch = epoch or 1
-  
+  params, gradParams=model:getParameters()
   --one epoch
   print("training on train set")
   print("<trainer> online epoch # " .. epoch .. ' [batchSize = ' .. batchSize .. ']')
@@ -109,8 +139,8 @@ function train(dataset, model)
       k = k + 1
     end
 
-      -- MEthod to evaluate f(X) and df/dX
-      -- this function given the weight (x) will minimize the loss
+      -- Method to evaluate f(X) and df/dX
+      -- this function given the weights (x) will minimize the loss
   local feval = function(x)
     collectgarbage()
 
@@ -141,7 +171,7 @@ function train(dataset, model)
           
          --]]
          
-         -- update confusion
+    -- update confusion
     for i = 1,batchSize do
       confusion:add(outputs[i], targets[i])
     end
@@ -154,11 +184,11 @@ function train(dataset, model)
             momentum = 0,
             learningRateDecay = 5e-7
          }
-    optim.sgd(feval, params, sgdState)
+  optim.sgd(feval, params, sgdState)
     -- disp progress
     --Progress bar shows what percentage of full dataset are we done training on
     --xlua.progress(t, dataset:size())
-      
+  
   -- end of epoch
   end
   
@@ -177,7 +207,7 @@ function test(dataset, model)
    print('<trainer> on testing Set:')
     for t = 1,dataset:size(),batchSize do
       -- disp progress
-      xlua.progress(t, dataset:size())
+      --xlua.progress(t, dataset:size())
 
       -- create mini batch
       local inputs = torch.Tensor(batchSize,1,geometry[1],geometry[2])
@@ -195,7 +225,7 @@ function test(dataset, model)
       end
 
       -- test samples
-      local preds = model:forward(inputs)
+      preds = model:forward(inputs)
 
       -- confusion:
       for i = 1,batchSize do
@@ -205,6 +235,7 @@ function test(dataset, model)
 
 
    -- print confusion matrix
+  preds:zero()
   print(confusion)
   print("Confusion total valid")
   print(confusion.totalValid * 100)
@@ -217,123 +248,199 @@ end
 
 
 
+
+
+--Testiing on Server before adding anything
+print("Testing on Server before addition of parameters")
+test(testData, Server)
+
 --Driver snippet to create batches, train  NN, test individual NN and update PSparams
 print("Current NN 1 under training ")
 
+
+
 -- Training set: Creation and Normalization
---start index is 1
-trainData = mnist.loadTrainSet(nbTrainingPatches, geometry, 1)
+----start index is 
+participant =1
+trainData = mnist.loadTrainSet(nbTrainingPatches, geometry, startIndex(participant))
 trainData:normalizeGlobal(mean, std)
 
---initializing params
-params,gradParams = mlp:getParameters()
+--Train NN 1 over multiple epochs
+while epoch ~= 10 do
+  --initializing params
+  params_init, gradParams_init=mlp:getParameters()
 
-
---Train NN over multiple epochs
-while epoch ~= 4 do
    -- train/test
    train(trainData, mlp)
+   
+   params,gradParams = mlp:getParameters()
+   
+   --calculating delta w= w (new) -w(old)
+  delta_params=params:clone()
+  delta_params:add(-params_init)
+
+  --Finding top theta_u values and zeroing everything else in delta_params
+
+  --finding top theta_u values
+  theta_u= math.floor(theta_u_perc*params:size(1))
+  print("theta_u val " .. theta_u)
+  y,i=torch.topk(delta_params:clone():abs(), theta_u, 1, true)
+
+  print("Size of  i")
+  print(i:size(1))
+  --initializing flag tensor so only index values are 1
+
+  flagtensor=torch.Tensor(params:size(1)):fill(0)
+  i:apply(function(x) flagtensor[x]=1 end)
+
+
+  delta_params:cmul(flagtensor)
+  Sparams:add(delta_params)
+
 end
 
+--reset epoch 
+epoch=1
 
---calculating delta w= w (new) -w(old)
-delta_params=params:clone()
-delta_params:add(-params_init)
+print("\n\n NN 1: Testing ")
+test(testData, mlp)
+print("<Server> Testing on Server After addition of delta parameter")
+test(testData, Server)
 
---Finding top theta_u values and zeroing everything else in delta_params
-
---finding top theta_u values
-theta_u= math.floor(theta_u_perc*params:size(1))
-print("theta_u val " .. theta_u)
-y,i=torch.topk(delta_params:clone():abs(), theta_u, 1, true)
-
-print("y and i")
-print(i:size(1))
---initializing flag tensor so only index values are 1
-flagtensor=torch.Tensor(params:size(1)):fill(0)
-i:apply(function(x) flagtensor[x]=1 end)
+print("ParamsL Last 20")
+print(params[{{140086,140105}}])
 
 
-delta_params:cmul(flagtensor)
+--Repeat the same driver for NN 2
+print("Current NN 2 under training ")
+
+-- Training set: Creation and Normalization
+--start index is 
+participant = participant + 1
+
+trainData = mnist.loadTrainSet(nbTrainingPatches, geometry, startIndex(participant))
+trainData:normalizeGlobal(mean, std)
+
+--define params
+params:zero()
+gradParams:zero()
+
+--Train NN 2  over multiple epochs
+while epoch ~= 10 do
+   -- train/test
+   
+   params_mlp2,gradPrarms_mlp2 = mlp2:getParameters()
+
+   train(trainData, mlp2)
+   
+   params, gradParams= mlp2:getParameters()
+   --After participant N is trained over epochs we add parameters to server parameter
+
+  --calculating delta w= w (new) -w(old)
+  delta_params_2=params:clone()
+  delta_params_2:add(-params_mlp2)
+
+  --Finding top theta_u values and zeroing everything else in delta_params
+
+  --finding top theta_u values
+  theta_u= math.floor(theta_u_perc*params:size(1))
+  print("theta_u val " .. theta_u)
+  y,i=torch.topk(delta_params_2:clone():abs(), theta_u, 1, true)
+
+  print("Size of i")
+  print(i:size(1))
+  --initializing flag tensor so only index values are 1
+  flagtensor=torch.Tensor(params:size(1)):fill(0)
+  i:apply(function(x) flagtensor[x]=1 end)
 
 
+  delta_params_2:cmul(flagtensor)
+  Sparams:add(delta_params_2)
+
+end
 
 --reset epoch 
 epoch=1
 
 --test the model, get accuracy
-print("Neural Network 1")
+print("\n \n Neural Network 2")
 print("ParamsL Last 20")
 print(params[{{140086,140105}}])
-test(testData, mlp)
+print("Testing NN2")
+test(testData, mlp2)
 
 
+print("Testing on Server After addition of delta parameter of NN 2")
+test(testData, Server)
 
+---Training NN3
+print("Current NN 3 under training ")
 
---Repeat the same driver for NN 2
-print("Current NN 2 under training ")
 -- Training set: Creation and Normalization
-
 --start index is 
-trainData = mnist.loadTrainSet(nbTrainingPatches, geometry, 30001)
+participant = participant + 1
+
+trainData = mnist.loadTrainSet(nbTrainingPatches, geometry, startIndex(participant))
 trainData:normalizeGlobal(mean, std)
 
 --define params
 params:zero()
-params,gradParams = PServer:getParameters()
+gradParams:zero()
 
---Train NN over multiple epochs
-while epoch ~= 4 do
+--Train NN 2  over multiple epochs
+while epoch ~= 10 do
    -- train/test
-   train(trainData, PServer)
+   
+   params_mlp3,gradPrarms_mlp3 = mlp3:getParameters()
+
+   train(trainData, mlp3)
+   
+   params, gradParams= mlp3:getParameters()
+   --After participant N is trained over epochs we add parameters to server parameter
+
+  --calculating delta w= w (new) -w(old)
+  delta_params_3=params:clone()
+  delta_params_3:add(-params_mlp3)
+
+  --Finding top theta_u values and zeroing everything else in delta_params
+
+  --finding top theta_u values
+  theta_u= math.floor(theta_u_perc*params:size(1))
+  print("theta_u val " .. theta_u)
+  y,i=torch.topk(delta_params_3:clone():abs(), theta_u, 1, true)
+
+  print("Size of i")
+  print(i:size(1))
+  --initializing flag tensor so only index values are 1
+  flagtensor=torch.Tensor(params:size(1)):fill(0)
+  i:apply(function(x) flagtensor[x]=1 end)
+
+
+  delta_params_3:cmul(flagtensor)
+  Sparams:add(delta_params_3)
+
 end
 
---After participant N is trained over epochs we add parameters to server parameter
-
---calculating delta w= w (new) -w(old)
-delta_params_2=params:clone()
-delta_params_2:add(-PSparams_init)
-
---Finding top theta_u values and zeroing everything else in delta_params
-
---finding top theta_u values
-theta_u= math.floor(theta_u_perc*params:size(1))
-print("theta_u val " .. theta_u)
-y,i=torch.topk(delta_params_2:clone():abs(), theta_u, 1, true)
-
-print("y and i")
-print(i:size(1))
---initializing flag tensor so only index values are 1
-flagtensor=torch.Tensor(params:size(1)):fill(0)
-i:apply(function(x) flagtensor[x]=1 end)
-
-
-delta_params_2:cmul(flagtensor)
-
-
-
---reset epoch ladela
-epoch=1
-
+--reset epoch 
+epoch =1 
 --test the model, get accuracy
-print("Neural Network ")
+print("\n \n Neural Network 2")
 print("ParamsL Last 20")
 print(params[{{140086,140105}}])
-test(testData, PServer)
+print("Testing NN3")
+test(testData, mlp3)
 
 
-
---[[After guaging the accuracy of NN2
-we add the delta parameters of NN1 to NN2 and guage accuracy
---]]
-
-params:add(delta_params)
-test(testData, PServer)
-
+print("Testing on Server After addition of delta parameter of NN 2")
+test(testData, Server)
 
 --Initializing everything to zero
 params_init:zero()
 params:zero()
 gradParams:zero()
-PSparams_init:zero()
-PSgradParameters_init:zero()
+params_mlp2:zero()
+gradPrarms_mlp2:zero()
+Sparams:zero()
+SgradParams:zero()
+
+   

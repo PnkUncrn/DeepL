@@ -8,6 +8,12 @@
 3-Train 2nd neural network on data guage accucracy
 4-Add the parameters from PSsererve (from NN1) to second, guage accuracy
 
+-----
+1. Reference user trains on local dataset and tests accuracy 
+2. Zeroes its model
+3. Reference user downloads all parameters from server
+4. Trains on its local dataset
+Tests accuracy
 --]]
 --NN neural Network
 
@@ -22,7 +28,7 @@ require 'optim'
 batchSize= 10
 learningRate=0.01
 weightDecay=1e-7
-N=3 
+N=4
 theta_u_perc=0.1
 
 -- fix seed
@@ -83,6 +89,17 @@ Server:add(nn.ReLU())
 Server:add(nn.Linear(hiddenLayer2, outputSize))
 Server:add(nn.LogSoftMax())
 print(Server)
+
+RefU= nn.Sequential()
+RefU:add(nn.Reshape(1024))
+RefU:add(nn.Linear(inputLayer, hiddenLayer1))
+RefU:add(nn.ReLU())
+RefU:add(nn.Linear(hiddenLayer1, hiddenLayer2))
+RefU:add(nn.ReLU())
+RefU:add(nn.Linear(hiddenLayer2, outputSize))
+RefU:add(nn.LogSoftMax())
+print(RefU)
+
 
 Sparams, SgradParams=Server:getParameters()
 
@@ -251,9 +268,11 @@ end
 
 
 --Testiing on Server before adding anything
-print("Testing on Server before addition of parameters")
+print("<Server>Testing before addition of parameters")
 test(testData, Server)
 
+print("<RefU>Testing before addition of parameters")
+test(testData, RefU)
 --Driver snippet to create batches, train  NN, test individual NN and update PSparams
 print("Current NN 1 under training ")
 
@@ -434,12 +453,50 @@ test(testData, mlp3)
 print("Testing on Server After addition of delta parameter of NN 2")
 test(testData, Server)
 
+----RefU---
+--1. Reference user trains on local dataset and tests accuracy 
+print("<RefU>")
+participant = participant + 1
+
+trainData = mnist.loadTrainSet(60, geometry, startIndex(participant))
+trainData:normalizeGlobal(mean, std)
+
+for epoch =1,10 
+do train(trainData, RefU)
+end
+epoch =1
+print("<RefU> Testing on RefU before download of Server params. nbtraininPatches = 600")
+
+test(testData, RefU)
+--2. Zeroes its model
+  params_RefU,gradPrarms_RefU = RefU:getParameters()
+  params_RefU:zero()
+  gradParams:zero()
+
+--3. Reference user downloads all parameters from server
+params_RefU:copy(Sparams)
+--4. Trains on its local dataset
+for epoch =1,10 do
+train(trainData, RefU)
+end
+--5. Tests accuracy
+print("<RefU> Testing on RefU After download")
+
+test(testData, RefU)
+
+
+
 --Initializing everything to zero
+epoch=1
 params_init:zero()
 params:zero()
 gradParams:zero()
 params_mlp2:zero()
 gradPrarms_mlp2:zero()
+params_mlp3:zero()
+gradPrarms_mlp3:zero()
+params_RefU:zero()
+gradPrarms_RefU:zero()
 Sparams:zero()
 SgradParams:zero()
 

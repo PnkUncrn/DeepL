@@ -1,19 +1,20 @@
-
-
 --[[ outline:
-1-train 1 NN on part of MNIST data 
-2-test and Guage accuracy
-3-Calculate delta parmas
--Store top k data in PSServer
-3-Train 2nd neural network on data guage accucracy
-4-Add the parameters from PSsererve (from NN1) to second, guage accuracy
+
+Current Config:
+1- NN: mlp, mlp2, mlp3
+2- Server
+3- RefU 1 and RefU 2
+
 
 -----
-1. Reference user trains on local dataset and tests accuracy 
-2. Zeroes its model
-3. Reference user downloads all parameters from server
-4. Trains on its local dataset
-Tests accuracy
+1. RefU and RefU2  test without training
+2. RefU 1 trains and test on tiny dataset
+3. RefU2  trains and test on tiny dataset same as RefU
+4. RefU1 and RefU2 zero params
+5. RefU1 downloads params from NN1
+6. RefU1 Then trains on its tiny dataset and tests accuracy
+7. RefU 2 downloads params from NN1 and NN1
+8. REfu2 trains on its tiny dataset and tests accuracy
 --]]
 --NN neural Network
 
@@ -22,6 +23,7 @@ require 'torch'
 require 'dataset-mnist'
 require 'image'
 require 'optim'
+require 'NeuralNets'
 
 --Basic Parameters
 --N= number of participants
@@ -30,8 +32,6 @@ learningRate=0.01
 weightDecay=1e-7
 N=4
 theta_u_perc=0.1
-
--- fix seed
 torch.manualSeed(1)
 
 --model design
@@ -42,90 +42,29 @@ geometry = {32,32}
 trainLogger = optim.Logger(paths.concat("logs", 'train.log'))
 testLogger = optim.Logger(paths.concat("logs", 'test.log'))
 
---OG NN
-inputLayer = 1024
-hiddenLayer1 = 128
-hiddenLayer2 = 64
-outputSize = 10
-
-mlp = nn.Sequential()
-mlp:add(nn.Reshape(1024))
-mlp:add(nn.Linear(inputLayer, hiddenLayer1))
-mlp:add(nn.ReLU())
-mlp:add(nn.Linear(hiddenLayer1, hiddenLayer2))
-mlp:add(nn.ReLU())
-mlp:add(nn.Linear(hiddenLayer2, outputSize))
-mlp:add(nn.LogSoftMax())
-print(mlp)
-
---Parameter Server model
-mlp2 = nn.Sequential()
-mlp2:add(nn.Reshape(1024))
-mlp2:add(nn.Linear(inputLayer, hiddenLayer1))
-mlp2:add(nn.ReLU())
-mlp2:add(nn.Linear(hiddenLayer1, hiddenLayer2))
-mlp2:add(nn.ReLU())
-mlp2:add(nn.Linear(hiddenLayer2, outputSize))
-mlp2:add(nn.LogSoftMax())
-print(mlp2)
-
---Parameter Server model
-mlp3 = nn.Sequential()
-mlp3:add(nn.Reshape(1024))
-mlp3:add(nn.Linear(inputLayer, hiddenLayer1))
-mlp3:add(nn.ReLU())
-mlp3:add(nn.Linear(hiddenLayer1, hiddenLayer2))
-mlp3:add(nn.ReLU())
-mlp3:add(nn.Linear(hiddenLayer2, outputSize))
-mlp3:add(nn.LogSoftMax())
-print(mlp2)
-
-Server= nn.Sequential()
-Server:add(nn.Reshape(1024))
-Server:add(nn.Linear(inputLayer, hiddenLayer1))
-Server:add(nn.ReLU())
-Server:add(nn.Linear(hiddenLayer1, hiddenLayer2))
-Server:add(nn.ReLU())
-Server:add(nn.Linear(hiddenLayer2, outputSize))
-Server:add(nn.LogSoftMax())
-print(Server)
-
-RefU= nn.Sequential()
-RefU:add(nn.Reshape(1024))
-RefU:add(nn.Linear(inputLayer, hiddenLayer1))
-RefU:add(nn.ReLU())
-RefU:add(nn.Linear(hiddenLayer1, hiddenLayer2))
-RefU:add(nn.ReLU())
-RefU:add(nn.Linear(hiddenLayer2, outputSize))
-RefU:add(nn.LogSoftMax())
-print(RefU)
-
-
 Sparams, SgradParams=Server:getParameters()
-
 
 --loss Criterion 
 criterion=nn.ClassNLLCriterion()
-
 
 --Dataset- MNIST
 nbTrainingPatches = 6000/N
 nbTestingPatches = 10000
 
-
--- create test set and normalize
-testData = mnist.loadTestSet(nbTestingPatches, geometry)
-testData:normalizeGlobal(mean, std)
-
--- Confusion Matrix
-confusion = optim.ConfusionMatrix(classes)
-
---calculating startIndex
 function startIndex(x)
  ind = 1 +((x-1)*nbTrainingPatches)
  return ind
 end
 
+-- create test sets and normalize
+testData = mnist.loadTestSet(nbTestingPatches, geometry)
+testData:normalizeGlobal(mean, std)
+
+RefUtrainData = mnist.loadTrainSet(60, geometry, 4500)
+RefUtrainData:normalizeGlobal(mean, std)
+
+-- Confusion Matrix
+confusion = optim.ConfusionMatrix(classes)
 
 --training function
 function train(dataset, model)
@@ -133,7 +72,7 @@ function train(dataset, model)
   epoch = epoch or 1
   params, gradParams=model:getParameters()
   --one epoch
-  print("training on train set")
+  
   print("<trainer> online epoch # " .. epoch .. ' [batchSize = ' .. batchSize .. ']')
 
   print("Dataset Size:"..dataset:size())  
@@ -267,16 +206,46 @@ end
 
 
 
---Testiing on Server before adding anything
+
+
+--Testiing before adding anything
 print("<Server>Testing before addition of parameters")
 test(testData, Server)
 
-print("<RefU>Testing before addition of parameters")
+--RefU tests without training
+
+print("<RefU> Testing before addition of parameters")
 test(testData, RefU)
+
+print("<RefU2> Testing before addition of parameters")
+test(testData, RefU2)
+--1. Reference user 1 and 2 trains on local dataset and tests accuracy 
+print("<RefU><RefU2>")
+
+
+
+for epoch =1,10 
+do train(RefUtrainData, RefU)
+  epoch=1
+  train(RefUtrainData, RefU2)
+end
+epoch =1
+print("<RefU> Testing on RefU before download of Server params. nbtraininPatches = 60")
+test(testData, RefU)
+print("<RefU> Testing on RefU before download of Server params. nbtraininPatches = 60")
+test(testData, RefU2)
+
+--Zeroing RefU and RefU2 params
+params_RefU,gradPrarms_RefU = RefU:getParameters()
+params_RefU:zero()
+gradPrarms_RefU:zero()
+  
+params_RefU2,gradPrarms_RefU2= RefU2:getParameters()
+params_RefU2:zero()
+gradPrarms_RefU2:zero()
+
 --Driver snippet to create batches, train  NN, test individual NN and update PSparams
 print("Current NN 1 under training ")
-
-
 
 -- Training set: Creation and Normalization
 ----start index is 
@@ -330,13 +299,26 @@ print("ParamsL Last 20")
 print(params[{{140086,140105}}])
 
 
+
+ 
+-- <RefU> downloads all parameters from server
+params_RefU:copy(Sparams)
+--Trains on its local dataset
+print("<RefU>Training after downloading params from NN1")
+for epoch =1,10 do
+train(RefUtrainData, RefU)
+end
+epoch=1
+--Tests accuracy
+print("<RefU> Testing on RefU After NN1 download")
+test(testData, RefU)
+
+
 --Repeat the same driver for NN 2
 print("Current NN 2 under training ")
 
 -- Training set: Creation and Normalization
---start index is 
 participant = participant + 1
-
 trainData = mnist.loadTrainSet(nbTrainingPatches, geometry, startIndex(participant))
 trainData:normalizeGlobal(mean, std)
 
@@ -396,9 +378,7 @@ test(testData, Server)
 print("Current NN 3 under training ")
 
 -- Training set: Creation and Normalization
---start index is 
 participant = participant + 1
-
 trainData = mnist.loadTrainSet(nbTrainingPatches, geometry, startIndex(participant))
 trainData:normalizeGlobal(mean, std)
 
@@ -406,7 +386,7 @@ trainData:normalizeGlobal(mean, std)
 params:zero()
 gradParams:zero()
 
---Train NN 2  over multiple epochs
+--Train NN 3  over multiple epochs
 while epoch ~= 10 do
    -- train/test
    
@@ -443,47 +423,27 @@ end
 --reset epoch 
 epoch =1 
 --test the model, get accuracy
-print("\n \n Neural Network 2")
+print("\n \n Neural Network 3")
 print("ParamsL Last 20")
 print(params[{{140086,140105}}])
-print("Testing NN3")
+print("<NN3>Testing NN3")
 test(testData, mlp3)
 
 
-print("Testing on Server After addition of delta parameter of NN 2")
+print("<Server>Testing on Server After addition of delta parameter of NN 3")
 test(testData, Server)
 
-----RefU---
---1. Reference user trains on local dataset and tests accuracy 
-print("<RefU>")
-participant = participant + 1
+----RefU2---
+print("<RefU2>")
+--Reference user downloads all parameters from server
+params_RefU2:copy(Sparams)
 
-trainData = mnist.loadTrainSet(60, geometry, startIndex(participant))
-trainData:normalizeGlobal(mean, std)
-
-for epoch =1,10 
-do train(trainData, RefU)
-end
-epoch =1
-print("<RefU> Testing on RefU before download of Server params. nbtraininPatches = 600")
-
-test(testData, RefU)
---2. Zeroes its model
-  params_RefU,gradPrarms_RefU = RefU:getParameters()
-  params_RefU:zero()
-  gradParams:zero()
-
---3. Reference user downloads all parameters from server
-params_RefU:copy(Sparams)
---4. Trains on its local dataset
 for epoch =1,10 do
-train(trainData, RefU)
+train(RefUtrainData, RefU2)
 end
 --5. Tests accuracy
-print("<RefU> Testing on RefU After download")
-
-test(testData, RefU)
-
+print("<RefU2> Testing on RefU2 After download params from Sparams(NN1 and NN2)")
+test(testData, RefU2)
 
 
 --Initializing everything to zero
@@ -497,6 +457,8 @@ params_mlp3:zero()
 gradPrarms_mlp3:zero()
 params_RefU:zero()
 gradPrarms_RefU:zero()
+params_RefU2:zero()
+gradPrarms_RefU2:zero()
 Sparams:zero()
 SgradParams:zero()
 

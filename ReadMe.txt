@@ -12,4 +12,9 @@ This is a working copy**
 	Source : https://github.com/torch/demos/blob/master/train-a-digit-classifier/dataset-mnist.lua
 	Did not write this code.
 
-
+4-cod.lua	
+	Testing file. Updated Regularly with new testing scenarios.
+	
+5-NeuralNets.lua
+	Contains Neural Networks configuration for all the networks used in the program.
+	

@@ -34,12 +34,6 @@ function startIndex(x)
  ind = 1 +((x-1)*nbTrainP)
  return ind
 end
-
-function startIndexReferenceUser(x)
-  return x
-  end
---Method that serves as a driver to Train NN
-
 function helper.train(dataset, model)
 --initialize the epoch
   params, gradParams=model:getParameters()
@@ -188,13 +182,17 @@ function helper.DriverTrain(model)
   trainData = mnist.loadTrainSet(nbTrainingPatches, geometry, startIndex(participant))
   trainData:normalizeGlobal(mean, std)
   
---Train NN 5  over multiple epochs
+--Train NN over multiple epochs
   for iter=1,epochL do
    -- train/test
   print("<Drivertrain> online epoch # " .. iter .. ' [batchSize = ' .. batchSize .. ']')
+  
+  params_old,gradPrarms_old = model:getParameters()
 
-   params_old,gradPrarms_old = model:getParameters()
-
+  if iter > 1 then
+    params_old:copy(Sparams)
+  end
+  
    helper.train(trainData, model)
    
    params_new, gradParams_new= model:getParameters()
@@ -229,22 +227,25 @@ end
 end
 
 function helper.ReferenceUserDriver(model)
-   if not ReferenceUserNum then
-    ReferenceUserNum = 1
-  else ReferenceUserNum= ReferenceUserNum +1
+   if not IterNumRefUser then
+    IterNumRefUser = 1
+  else IterNumRefUser= IterNumRefUser +1
   end
 
   
   RefereceUserParams, RefereceUserGParams=model:getParameters()
   RefereceUserParams:copy(Sparams)
   
-  --Trains on its local dataset
-  print("<RefU" ..ReferenceUserNum.."> Training after downloading params")
+  --[[
+  Trains on its local dataset
+  
+  print("<RefU" ..IterNumRefUser.."> Training after downloading params")
   for iterator =1,10 do
     helper.train(ReferenceUserTrainData, model)
   end
+  --]]
   --Tests accuracy
   print("------------------------------------------------------")
-  print("<RefU> Testing on RefU After NN1 download")
+  print("<RefUser: " ..IterNumRefUser.." Testing")
   helper.test(testData, model, 'RefUserMode')
   end

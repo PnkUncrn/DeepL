@@ -1,6 +1,9 @@
---[[RoughUSe 3
+--[[RandomUploadByParticipant 
+
+Main file that conducts several rounds over all partcipants in which particpants are randomly chosen to interact with the server.
+
 1- has multiple rounds
-2- each round iterates over all the participants and randomly chooses which of the participants will interact with the server.
+2- each round iterates over all the participants and randomly chooses which of the participants will interact with the server. The chosen particpants will train, upload and download to and from the server over multiples epoch
 3-At the end of the round, we will print the result of the confusion matrix of the Reference User and how many participants interacted with ther Server.
 
 --]]
@@ -21,7 +24,7 @@ batchSize= 10
 learningRate=0.01
 weightDecay=1e-7
 NumParticipant=20
-NumRefUser =5
+NumRefUser =10
 theta_u_perc=0.1
 epoch=20
 
@@ -76,19 +79,19 @@ for i = 1,NumParticipant  do
 end
 
 for round=1, NumRefUser do
-  ParticipantInteraction=0
+  ParticipantInteractionPerRound=0
   for k=1, NumParticipant do
     randNum=torch.uniform()
     if randNum>0.5 then
-    ParticipantInteraction=ParticipantInteraction+1
+    ParticipantInteractionPerRound=ParticipantInteractionPerRound+1
     print("=====Participant: "..k .." Selected. RandNum: "..randNum)
-    helper.DriverTrain(NeuralNet[k])
+    helper.DriverTrain(NeuralNet[k], k)
   else print("=====Participant: "..k .." Rejected. RandNum: "..randNum)
   end
   
   end
   print("=======Completed Round: " ..round)
-  print("Participant Interaction: "..ParticipantInteraction)
+  print("Participant Interaction: "..ParticipantInteractionPerRound)
   helper.ReferenceUserDriver(ReferenceUser[round])
 end
   

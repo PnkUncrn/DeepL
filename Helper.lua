@@ -170,16 +170,17 @@ function helper.test(dataset, model, mode)
 
 end
 
-function helper.DriverTrain(model)
+--iterParticipant: the exact index corresponding to the NeuralNet based on which the same train data is carved out for NN everytime.
+function helper.DriverTrain(model, iterParticipant)
   
   local epochL = epoch
   
-  if not participant then
-    participant = 1
-  else participant= participant +1
+  if not TotalParticipantInteraction then
+    TotalParticipantInteraction = 1
+  else TotalParticipantInteraction= TotalParticipantInteraction +1
   end
   
-  trainData = mnist.loadTrainSet(nbTrainingPatches, geometry, startIndex(participant))
+  trainData = mnist.loadTrainSet(nbTrainingPatches, geometry, startIndex(iterParticipant))
   trainData:normalizeGlobal(mean, std)
   
 --Train NN over multiple epochs
@@ -218,11 +219,11 @@ function helper.DriverTrain(model)
 
 end
 
-  print("<Model>Testing "..participant)
+  print("<Model>Testing "..iterParticipant)
   helper.test(testData, model)
 
 
-  print("<Server>Testing post addition of delta parameter of participant "..participant)
+  print("<Server>Testing post addition of delta parameter of Total participant "..TotalParticipantInteraction)
   helper.test(testData, Server, 'ServerMode')
 end
 

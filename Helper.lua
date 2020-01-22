@@ -237,8 +237,7 @@ function helper.ReferenceUserDriver(model)
   RefereceUserParams, RefereceUserGParams=model:getParameters()
   RefereceUserParams:copy(Sparams)
   
-  --[[
-  Trains on its local dataset
+
   
   print("<RefU" ..IterNumRefUser.."> Training after downloading params")
   for iterator =1,10 do

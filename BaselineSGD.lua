@@ -22,7 +22,7 @@ batchSize= 10
 learningRate=0.01
 weightDecay=1e-7
 NumParticipant=1
-epoch=2
+epoch=20
 
 torch.manualSeed(46)
 
@@ -56,8 +56,7 @@ trainData:normalizeGlobal(mean, std)
 
 LoneUser=CreateNN()
 
+for iter=1, epoch do
 helper.train(trainData, LoneUser)
-
 helper.test(testData, LoneUser)
-
---
+end

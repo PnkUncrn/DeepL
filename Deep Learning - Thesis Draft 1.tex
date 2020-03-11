@@ -1,0 +1,205 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{array}
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+\begin{document}
+
+\title{{Secure Privacy Preserving Deep Learning against GAN attacks}\\
+\author{\IEEEauthorblockN{Aseem Prashar}
+\IEEEauthorblockA{\textit{EECS department} \\
+\textit{Wichita State University}\\
+Wichita, USA \\
+prasharaseem@gmail.com}
+\and
+\IEEEauthorblockN{Sergio Salinas}
+\IEEEauthorblockA{\textit{EECS department} \\
+\textit{Wichita State University}\\
+Wichita, USA \\
+sergio.salinasmonroy@wichita.edu}
+}
+}
+\maketitle
+
+\begin{abstract}
+Deep learning is a class of machine learning algorithms that use a cascade of multiple layers of nonlinear processing units for feature extraction and transformation. Each successive layer uses the output from the previous layer as input. Artificial neural Network based deep learning is becoming increasingly popular in classification fields. Deep learning benefits from larger input data sets and can be revolutionary to organizations that have access to sizable raw data. However, privacy and confidentiality concerns limit the application of this tool. This prevents certain organization such as medical institutions to fully benefit from sharing their data. In the recent years, some researchers have proposed decentralized collaborative learning architectures that capacitate deep learning in a collaboative preserve privacy enviroment for multiple participants. 
+Generative adversarial networks (GANs) consists of two neural networks, pitted against one another. They are adept at mimicking any distribution of data and are used widely in image, video and voice generation. 
+There has been a recent interest in utilizing the mimicking properties of GANs to fashion attacks on privacy preserving deep learning systems. In this attack, GANs are leveraged to generate prototypical samples of the targeted training set that was meant to be private. Since the attacks are designed to exploit intrinsic weaknesses in privacy preserving deep learning models, they are effective even when differential privacy and obfuscation techniques are employed.
+In this paper, we propose a deep learning system that enables a main benefactor to render himself immune to the threats posed by a GAN based attack. In out proposed system we selectively eliminate one participants vulnerability to such attacks.  
+
+\end{abstract}
+
+\begin{IEEEkeywords}
+Neural Network, Deep learning, GANs
+\end{IEEEkeywords}
+
+\section{Introduction}
+\_To Do\_ : Description of 1- Deep Learning , Neural Network, GAN,
+
+\section{Related Work}
+
+\section{Threat Model}
+In \cite{GAN} the authors device a novel attack that results in privacy leakage in collaborative deep learning system proposed in \cite{Shokri}.  The attack results in a malicious user inferring sensitive information from a victim's dataset. Since the attack exploits the architectural weaknesses in the collaborative learning system proposed in \cite{Shokri}, it is immune to majority of obfuscation techniques. 
+
+In the proposed attack the goal of the  adversary is to extract information from a victim about a class of data he does not own. The adversary deceives victim into releasing more information about the specific class by presenting himself as an honest participant in the collaborative learning  process. In \cite{GAN} the authors claim that the this deceptive adversarial influence is arguably a more effective threat than the once posed by techniques involving Model Inversion attacks in \cite{MIA}.  
+The adversary does launches the attack by pretending to be an honest participant and building a local GAN unbeknownst to the other participants.
+
+The threat model is dependent on an active insider. However, since the threat is not dependent on the adversary compromising the central Parameter Server, it remain viable. In effect, the adversary does not have to control the parameter server or the service provider to execute his attack.
+The attack is more effective when adversarial influence is exercised \cite{GAN}. This would imply that the adversary is an active participant that is adapting his gradients in real time during the current learning process.
+\subsection{Attack Posed}
+All participants including the adversary agree on general specifications such as the type of neural network and labels on which training would take place. 
+Let another participant in the collaborative deep learning model be the victim V that declares the labels [a,b]. The adversary declares labels [b,c] implying that the adversary has no data on class a.
+By deploying the attack, the adversary stands to gain useful information about class a.
+
+The adversary then uses the private GAN to generate models that look like class a, which the adversary deceivingly mislabels as c. This prompts the victim V to release more information about the class a in order to distinguish between classes a and c. Therefore the victim releases more data on class a now than he initially intended to.
+
+This can be further summarized as follows:
+\begin {enumerate}
+\item Assuming victim V declares labels [a,b] and adversary A declares labels [b,c]
+\item We then run the collaborative learning protocol for several epoch and stop when we reach a specified accuracy.
+\item During this process, the V downloads a percentage of parameters from parameter Server and updates his local model.
+\item V's local model is trained on classes a and b
+\item V uploads a section of his model to Parameter Server
+\item The adversary trains is slotted to engage with the Parameter Server
+\item A downloads the percentage of parameters from the PS and updates his model
+\item A then trains his local GAN to mimic class a.
+\item A generates class a samples from the GAN and mislabels them intentionally as class c.
+\item A uploads a percentage of his parameters to the PS
+
+\end {enumerate}
+During the process of convergence, A will be able to covertly exert influence on the learning process via the mislabeling of class a. 
+
+In our paper, we present a collaborative learning scenario such that reference User can not be tricked into releasing more information about a class. We design the interaction of the Reference User with Parameter Server such that V is not RefU
+
+\section{System Model}
+In this section, we describe a deep learning system with a pool of multiple participants. Each of the participant in this system has a local private dataset available for training. We introduce a reference participant such that the local private dataset of the reference participant is significantly smaller when compared with other participants. All participants in this system agree in advance on a common network architecture and common learning objective. The system also includes a secure parameter server (PS), which maintains the latest values of parameters. 
+
+The proposed system is designed to consider the reference participant with a much smaller data set as the most significant benefactor of this privacy preserving deep learning architecture. We thereby structure the system to ensure that the privacy of the reference user is not affected by the inventive GAN based attack proposed in \cite{GAN}.
+Table 1 summarises the notations used in this paper
+
+
+\begin{table}[!h]
+\centering
+\caption{Table1: Summary of notations used in the paper}
+\label{table:1}
+\begin{tabular}{ | m{0.12\columnwidth} | m{0.8\columnwidth}| } 
+\hline
+\textbf{Notation} & \textbf{Description} \\
+ \hline\hline
+
+N & Number of participants excpet the Reference User in the system\\
+\hline
+Reference User & The  main benefactor of the architecture \\
+\hline
+M & Mini batch size used for stochastic gradient descent\\
+\hline
+$\theta_d$, $\theta_u$ & Fraction of parameters selected for download and upload from total available parameters \\
+\hline
+$W_k$ & Weight matrix for layer K in the neural network\\
+\hline
+$w$ & Flattened vector of all parameters in the neural network. \\
+\hline
+$\Delta w$ & Vector of changes in all local parameters due to SGD\\
+\hline
+$w^{(global)}$ & Flattened parameter vector for server\\
+\hline
+$E$ & Error Function defining the difference btween the computed value and expected value of the objective function \\
+\hline
+$\alpha$ & Learning rate of the stochastic gradient descent algorithm\\
+\hline
+$S$ & Set of$\theta_u$ largest indices selected from $w$ \\
+\hline
+\end{tabular}
+\end{table}
+\section{Experimental Setup}
+We wrote the source code based on the pseudocode provided in paper \cite{Shokri}. We were able to replicate their original setup using Torch and nn packages in LUAJIT scripting language. 
+The tests on the proposed solution were run and hosted on Amazon Web Service's Elastic Compute Cloud (AWS EC2), M4 instance.
+
+\subsection{Datasets}
+We conducted tests on the MNIST dataset \cite{MNIST}. The MNIST dataset is standard dataset used in image recognition. It is comprised of images of hand-written grayscale digits ranging from 0 to 9. The dimension of each image is 32 X 32 pixels. There are 60,000 such images in their training dataset and 10,000 images in their test dataset.
+
+For this experiment, we normalize the images so that they are centered.
+
+Each participant's local neural network is trained on 1 \% of the training dataset images. 
+The Reference User as the main benefactor, starts out with a training set of 60 images.
+
+\subsection{Framework}
+We conduct our experiment within the Torch 7 and Torch 7 nn framework. Torch is a popular framework utilized for deep learning by major software companies. The code for the experiment is written in LuaJIT which is a scripting language based on Lua. 
+We deploy our architectural framework with multiple neural networks on the AWS EC-2 machine to leverage greater processing speed.
+
+\subsection{System Architecture}
+We used MLP implementation of neural network using nn.Sequential container via Torch nn package. They are fully connected and f  
+The neural network has input data of size 1024 (32 x 32) and feed fowards
+
+
+
+\section{Experiment Results}
+
+\section{Conclusion}
+
+
+\section{Authors and Affiliations}
+
+
+\section{Identify the Headings}
+
+
+\section{Figures and Tables}
+
+
+\bibliographystyle{IEEEtran}
+%\bibliography{IEEEabrv,global-references}
+% Generated by IEEEtran.bst, version: 1.14 (2015/08/26)
+\begin{thebibliography}{10}
+\providecommand{\url}[1]{#1}
+\csname url@samestyle\endcsname
+\providecommand{\newblock}{\relax}
+\providecommand{\bibinfo}[2]{#2}
+\providecommand{\BIBentrySTDinterwordspacing}{\spaceskip=0pt\relax}
+\providecommand{\BIBentryALTinterwordstretchfactor}{4}
+\providecommand{\BIBentryALTinterwordspacing}{\spaceskip=\fontdimen2\font plus
+\BIBentryALTinterwordstretchfactor\fontdimen3\font minus
+  \fontdimen4\font\relax}
+\providecommand{\BIBforeignlanguage}[2]{{%
+\expandafter\ifx\csname l@#1\endcsname\relax
+\typeout{** WARNING: IEEEtran.bst: No hyphenation pattern has been}%
+\typeout{** loaded for the language `#1'. Using the pattern for}%
+\typeout{** the default language instead.}%
+\else
+\language=\csname l@#1\endcsname
+\fi
+#2}}
+\providecommand{\BIBdecl}{\relax}
+\BIBdecl
+
+\bibitem{Shokri}
+Reza Shokri and Vitaly Shmatikov. 2015. Privacy-Preserving Deep Learning.
+In Proceedings of the 22Nd ACM SIGSAC Conference on Computer and Communications
+Security (CCS ’15). ACM, 1310–1321. https://doi.org/10.1145/2810103.
+2813687
+\bibitem{GAN}
+Hitaj, Briland, Giuseppe Ateniese, and Fernando Perez-Cruz. "Deep models under the GAN: information leakage from collaborative deep learning." Proceedings of the 2017 ACM SIGSAC Conference on Computer and Communications Security. 2017.
+\bibitem{MIA}
+Matt Fredrikson, Somesh Jha, and Thomas Ristenpart. 2015. Model inversion
+attacks that exploit confidence information and basic countermeasures. In Proceedings
+of the 22nd ACM SIGSAC Conference on Computer and Communications
+Security. ACM, 1322–1333.
+\bibitem{MNIST}
+Yann LeCun, Corinna Cortes, and Christopher J.C. Burges. 1998. The MNIST
+database of handwritten digits. (1998). http://yann.lecun.com/exdb/mnist/
+\end{thebibliography}
+
+
+\vspace{-0.4in}
+
+
+
+
+\end{document}

@@ -28,3 +28,6 @@ This is a working copy**
 	1- Has multiple rounds
 	2- Each round iterates over all the participants and randomly chooses which of the participants will interact with the server. The 		chosen particpants will train, upload and download to and from the server over multiples epoch
 	3- At the end of the round, we will print the result of the confusion matrix of the Reference User and how many participants 			interacted with ther Server.
+8- Deep Learning Thesis Draft.tex
+	1-Running draft of the final report
+	

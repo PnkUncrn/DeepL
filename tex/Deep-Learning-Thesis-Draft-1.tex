@@ -101,6 +101,23 @@ latest values of parameters.
 %We consider a user who trains a deep neural network using his local data. However, as the user's local data is limited, it needs to
 %collaborate with other users who have additional data to improve its own deep neural network. To this end, the user collects parameters
 %from the other users ... [EXPLAIN HOW THE SYSTEM WORKS]
+%--------------------------------------------------------------------------------------------
+\section{System Architecture}
+%--------------------------------------------------------------------------------------------
+For this experiment, we implement a similar neural network structure for the reference user as well as other participants. It is a multilayer perceptron (MLP) in a classic feed forward arrangement. We utilize the \textit{nn.Sequential} container via Torch nn package to attach all the layers in a fully connected and feed forward manner.
+Each neural network is designed to have 1024 inputs corresponding to each pixel in the provided 32x 32 pixel image of a handwritten number{MNIST}. The output layer is a tensor of size 10 where each output corresponds to the probability that the given input is a specific number between 0 and 9. The model also has 2 hidden layers where an activation function is applied to the output of each hidden layer.
+Initially, the input is reshaped into a 1 dimensional tensor of size 1024 and funneled to the first hidden layer. The hidden layers are constructed via \textit{nn.Linear()} via which linear transformation can be applied. It then produces a tensor of size 128 as its output. The second hidden layer accepts a tensor of size 128 as input to yield a tensor of size 64 as output. We use a non-linear activation function called Rectified Linear Unit (ReLU) which is applied after each hidden layer. The last layer of the model is a log soft max layer coded by the \textit{nn.LogSoftMax()} module.  This activation function is usually applied to the end of all classification models where it squashes the inputs into probabilities that sum to one.
+The Architecture described above are represented in Figure 16 as printed out by Torch7
+   
+The parameter server is responsible for maintaining the current values of all parameters. Since it should be accessible to all participants , the server can be implemented as any form of updatable cloud storage. However, for the purpose of this experiment we chose to implement it as another neural network. 
+
+%--------------------------------------------------------------------------------------------
+\subsection{Hyperparameter Setup}
+
+%--------------------------------------------------------------------------------------------
+Hyperparameters are parameters that control the collaborative learning process. Unlike the actual neural-network parameters, they are usually set before the training commences and remain unchanged during the process.
+They are crucial since they directly influence the behavior of training algorithm and have a large impact on the performance and accuracy o the model.
+The learning rate is set at $0.1$ and weight decay is set to $1e-7$. The batch size is 10 samples and the number of participants is 20. We vary the $\theta_u$ and epochs in different scenarios. 
 
 %---------------------------------------------------------------------------------
 \subsection{Threat Model}

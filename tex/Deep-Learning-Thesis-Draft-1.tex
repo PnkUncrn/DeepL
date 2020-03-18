@@ -119,6 +119,13 @@ Hyperparameters are parameters that control the collaborative learning process. 
 They are crucial since they directly influence the behavior of training algorithm and have a large impact on the performance and accuracy o the model.
 The learning rate is set at $0.1$ and weight decay is set to $1e-7$. The batch size is 10 samples and the number of participants is 20. We vary the $\theta_u$ and epochs in different scenarios. 
 
+\begin{figure}[!h]
+\includegraphics[width=8cm, keepaspectratio]{MLPArchitecture}
+\caption{MLP architecture used for MNIST related experiments, as printed ou by Torch}
+\label{fig:MLPArch}
+
+\end{figure}
+
 %---------------------------------------------------------------------------------
 \subsection{Threat Model}
 %---------------------------------------------------------------------------------
@@ -230,7 +237,7 @@ We implement all algorithms using Torch with the neural network packages in the 
 %The tests on the proposed solution were run and hosted 
 on an M4 instance on the Amazon Web Service's Elastic Compute Cloud (AWS EC2).
 
-We used the MLP implementation of neural network using the function \texttt{nn.Sequential} container via the Torch nn package. They are
+We used the MLP implementation of neural network using the function \textit{nn.Sequential} container via the Torch nn package. They are
 fully connected and the neural network has input data of size 1024 (32 x 32) and feed fowards
 
 %-------------------------------------------------------------------------------

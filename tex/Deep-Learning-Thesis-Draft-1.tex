@@ -76,6 +76,28 @@ effective threat than the once posed by techniques involving Model Inversion att
 %---------------------------------------------------------------------------------
 \section{Background on Distributed Stochastic Gradient Descent}
 %---------------------------------------------------------------------------------
+Gradient Descent (GD) is an optimization algorithm often used to update parameters in neural networks by converging to a local minimum in the given function. The  algorithm calculates a negative gradient of the nonlinear function being optimized updates parameters iteratively. This is repeated until a local minima for that function is achieved.
+
+The cost function is the average difference between the value  predicted by the network and the actual value during the training phase.
+In the context of neural networks, we use Gradient Descent algorithm to optimize the cost function. Cost function is an indicator of how accurate the network is where a network with lower resulting cost is behaving as intended.
+Standard gradient descent algorithm computes gradient over the whole dataset. This implies we would process all the samples in the training set to do a single update for a parameter in a particular iteration. For larger datasets, this is incredibly time consuming.
+
+\subsection{Stochastic Gradient Descent}
+
+Stochastic Gradient Descent(SGD) provides a faster alternative by selecting a random sample for calculating the gradient at each iteration. Since we are using one sample at a time to calculate gradient, the path to local minima is noisier than traditional GD. However, the stochastic GD significantly reduces the training time of the network
+
+The most popular gradient descent algorithm, however, is mini-batch Gradient Descent. This algorithm uses more than 1 sample for calculating gradient descent at each iteration and then the model is updated based on smaller groups of samples. If the minibatch is of size $M$, then $1 < M < k$, where $k$ is the total size of the training dataset. 
+Mini-batch SGD converges in fewer iterations than GD while being less noisier than SGD.
+
+Lets consider $w$ to be a flattened vector of all weights and biases in a given neural network. Let $E$ be an error function which is defined as the difference between the actual output of the objective function and the predicted output of the network. Our aim is to compute the slope of the cost function and the direction we should move to update our parameters.
+A parameter $w_j$ can be updated using the following rule of SGD:
+%\begin{equation*}
+ $$w_j = w_j -\alpha \frac{\partial E_i}{\partial w_j} $$
+%\end{equation*}
+
+where $\alpha$ is the learning rate and $E_i$ is computed over minibatch $i$.
+ 
+
 
 
 %---------------------------------------------------------------------------------
@@ -203,7 +225,7 @@ N & Number of participants excpet the Reference User in the system\\
 \hline
 Reference User & The  main benefactor of the architecture \\
 \hline
-M & Mini batch size used for stochastic gradient descent\\
+$M$ & Mini batch size used for stochastic gradient descent\\
 \hline
 $\theta_d$, $\theta_u$ & Fraction of parameters selected for download and upload from total available parameters \\
 \hline

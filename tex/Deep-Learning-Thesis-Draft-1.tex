@@ -78,7 +78,9 @@ effective threat than the once posed by techniques involving Model Inversion att
 %---------------------------------------------------------------------------------
 This is where you can talk about what are DNNs and training....
 
-The cost function is given by the average difference between the value predicted by the network and the actual value during the
+Let the $M^{max}$ be the total size of the training dataset.  
+
+The cost function is given by the average difference between the value predicted by the network and the target during the
 training phase.
 %In the context of neural networks, we use Gradient Descent algorithm to optimize the cost function. 
 
@@ -88,31 +90,42 @@ training set to do a single update for a parameter in a particular iteration. Fo
 
 
 %---------------------------------------------------------------------------------
-\section{Background on Distributed Stochastic Gradient Descent}
-%---------------------------------------------------------------------------------
+\section{Background on Stochastic Gradient Descent}
+%--------------------------------------------------------------------------------- 
 Gradient Descent (GD) is an iterative algorithm that is often used to calculate the parameters of neural
 networks, i.e., their weights and biases. At each iteration, the  algorithm updates the parameters based on the gradient of the 
 an error function evaluated with the current parameters. The iterations continue until a minimum is reached. Since the objective
 function is non-linear, the algorithm can only guarantee that it converges to a local minimum.
 
 Explain how samples are used in GD....
- 
-\subsection{Stochastic Gradient Descent}
+Although GD is effective at finding the parameters of DNNs, it employs all the samples in the data set before updating the parameters,
+which is computationally intensive and time consuming. To overcome this challenge, Stochastic Gradient Descent(SGD) has been
+proposed. Unlike GD where all samples in the data set are used in a single iteration, SGD only selects a random subset
+of samples for calculating the gradient and updating the parameters at each iteration. Since SGD only uses a fraction of the training
+data set during each iteration, its computing time is significantly smaller compared to GD. Moreover, SGD is able to avoid local minima
+because it search different parts of the solution space by randomly selecting samples at each iteration. 
 
-Although GD is effective at finding the parameters of DNNs, since it employs all the samples the data set it is time
-consuming. To overcome this challenge, Stochastic Gradient Descent(SGD) hass been proposed. SGD selects a random sample for calculating
-the gradient at each iteration. Since we are using one sample at a time to calculate the gradient, the path to local the minimum is
-noisier (WHAT DO YOU MEAN BY NOISIER?) than GD. However, the stochastic GD significantly reduces the training time of the network
-DO WE ACHIVE THE SAME RESULTS? IF NOT WHAT IS THE TRADE-OFF?
+%However, using a the path to local the minimum is
+%noisier (WHAT DO YOU MEAN BY NOISIER?) than GD.
+% However, the stochastic GD significantly reduces the training time of the network
+%DO WE ACHIVE THE SAME RESULTS? IF NOT WHAT IS THE TRADE-OFF?
+
+The size of the subset of samples, called mini-batch, used at each iteration has to be chosen carefully. A small batch can reduce the
+computing time at each iteration, but may increase the number of iterations needed to converge. 
+%The most popular gradient descent
+%algorithm, however, is mini-batch Gradient Descent. This algorithm uses more than 1 sample for calculating gradient descent at each
+%iteration and then the model is updated based on smaller groups of samples. 
+
+%Mini-batch
+%SGD converges in fewer iterations than GD whi
 
 
-The most popular gradient descent algorithm, however, is mini-batch Gradient Descent. This algorithm uses more than 1 sample for
-calculating gradient descent at each iteration and then the model is updated based on smaller groups of samples. If the minibatch is of
-size $M$, then $1 < M < k$, where $k$ is the total size of the training dataset.  Mini-batch SGD converges in fewer iterations than GD
-while being less noisier (AGAIN, WHAT IS THE NOISE HERE?) than SGD.
+Formally, the SGD can is defined as follows. EXPLAIN HOW THE SAMPLES ARE CHOSEN. EXPLAIN THE ITERATIONS. 
+SGD first initializes...
 
-
-Formally, the SGD can is defined as follows. Let $w$ denote the flattened vector of all weights and biases of a deep neural
+At each iteration, SGD...
+Let $w$ denote the flattened
+vector of all weights and biases of a deep neural
 network. Let $E$ be an error function which is defined as the difference between the actual output of the objective function and the
 predicted output of the network. 
 %Our aim is to compute the slope of the cost function and the direction we should move to update our
@@ -146,12 +159,21 @@ latest values of parameters.
 %--------------------------------------------------------------------------------------------
 \section{System Architecture}
 %--------------------------------------------------------------------------------------------
-For this experiment, we implement a similar neural network structure for the reference user as well as other participants. It is a multilayer perceptron (MLP) in a classic feed forward arrangement. We utilize the \textit{nn.Sequential} container via Torch nn package to attach all the layers in a fully connected and feed forward manner.
-Each neural network is designed to have 1024 inputs corresponding to each pixel in the provided 32x 32 pixel image of a handwritten number \cite{deng2012mnist}. The output layer is a tensor of size 10 where each output corresponds to the probability that the given input is a specific number between 0 and 9. The model also has 2 hidden layers where an activation function is applied to the output of each hidden layer.
+
+SEPARATE THE CONCEPTUAL ARCH FROM THE CODE
+
+For this experiment, we implement a similar neural network structure for the reference user as well as other participants. It is a
+multilayer perceptron (MLP) in a classic feed forward arrangement. We utilize the \textit{nn.Sequential} container via Torch nn package
+to attach all the layers in a fully connected and feed forward manner. Each neural network is designed to have 1024 inputs
+corresponding to each pixel in the provided 32x 32 pixel image of a handwritten number \cite{deng2012mnist}. The output layer is a
+tensor of size 10 where each output corresponds to the probability that the given input is a specific number between 0 and 9. The model
+also has 2 hidden layers where an activation function is applied to the output of each hidden layer.
 Initially, the input is reshaped into a 1 dimensional tensor of size 1024 and funneled to the first hidden layer. The hidden layers are constructed via \textit{nn.Linear()} via which linear transformation can be applied. It then produces a tensor of size 128 as its output. The second hidden layer accepts a tensor of size 128 as input to yield a tensor of size 64 as output. We use a non-linear activation function called Rectified Linear Unit (ReLU) which is applied after each hidden layer. The last layer of the model is a log soft max layer coded by the \textit{nn.LogSoftMax()} module.  This activation function is usually applied to the end of all classification models where it squashes the inputs into probabilities that sum to one.
 The Architecture described above are represented in Figure 16 as printed out by Torch7
    
-The parameter server is responsible for maintaining the current values of all parameters. Since it should be accessible to all participants , the server can be implemented as any form of updatable cloud storage. However, for the purpose of this experiment we chose to implement it as another neural network. 
+The parameter server is responsible for maintaining the current values of all parameters. Since it should be accessible to all
+participants , the server can be implemented as any form of updatable cloud storage. However, for the purpose of this experiment we
+chose to implement it as another neural network. 
 
 %--------------------------------------------------------------------------------------------
 \subsection{Hyperparameter Setup}

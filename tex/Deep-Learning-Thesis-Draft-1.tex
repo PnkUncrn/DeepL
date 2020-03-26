@@ -90,8 +90,17 @@ Where $f$ is the activation function.  $W_k$ is the weight matrix of at layer $k
 There are several non-linear activation functions that can be used such as sigmoid function which outputs values between 0 and 1, normalizing the output of each neuron. Hyperbolic tangent activation function is zero centered and makes it easier to model inputs that have strongly negative, neutral or positive values. Rectified Linear Unit (ReLU) is an increasing popular activation function that aids in the quick convergence of the network. In a network that is tasked to classify inputs to one of the $j$ fixed number of outputs, the output layer typically deploys SoftMax activation function, given by 
 $f(z_j) = e^{zj}\cdot (\sum_ke^{zk})^-1, \forall j$.
 This function normalizes the output for each class between 0 and 1 and divides it by their sum, resulting in a probability score that the given input belongs to class $j$. 
+Figure \ref{fig:SimplNN} shows the structure of a typical classification deep neural network with $m$ inputs mapped to $j$ ouputs. The neural network has $N$ hidden layers and each layer has $I$ neurons.
+\begin{figure}[!h]
+\includegraphics[width=8cm, keepaspectratio]{SimpleNN}
+\caption{Simple neural network depicting $m$ inputs, $j$ outputs  $N$  hidden layers and with $I$ neuron in layer.}
+\label{fig:SimplNN}
 
-%For professor: Should i insert activation function formular for each of the mention functions?
+\end{figure}
+
+
+
+%For professor: Should i insert activation function formula for each of the mentioned functions?
 
 Before a neural network can be deployed, it needs to be trained to model non-linear high dimensional functions. The training of a neural network involves selecting the exact set of parameters, weights, biases and inactivation function that meet its specified objective. There are several algorithms that can tackle this non-linear optimization problem. A training dataset is a dataset of sample inputs which has  known outputs or labels. In supervised learning,  we feed the inputs from a training dataset to the neural network during its training phase and compare computed output with the corresponding labels.
 
@@ -181,7 +190,7 @@ corresponding to each pixel in the provided 32x 32 pixel image of a handwritten 
 tensor of size 10 where each output corresponds to the probability that the given input is a specific number between 0 and 9. The model
 also has 2 hidden layers where an activation function is applied to the output of each hidden layer.
 Initially, the input is reshaped into a 1 dimensional tensor of size 1024 and funneled to the first hidden layer. The hidden layers are constructed via \textit{nn.Linear()} via which linear transformation can be applied. It then produces a tensor of size 128 as its output. The second hidden layer accepts a tensor of size 128 as input to yield a tensor of size 64 as output. We use a non-linear activation function called Rectified Linear Unit (ReLU) which is applied after each hidden layer. The last layer of the model is a log soft max layer coded by the \textit{nn.LogSoftMax()} module.  This activation function is usually applied to the end of all classification models where it squashes the inputs into probabilities that sum to one.
-The Architecture described above are represented in Figure 16 as printed out by Torch7
+The Architecture described above are represented in Figure\ref{fig:MLPArch} as printed out by Torch7
    
 The parameter server is responsible for maintaining the current values of all parameters. Since it should be accessible to all
 participants , the server can be implemented as any form of updatable cloud storage. However, for the purpose of this experiment we

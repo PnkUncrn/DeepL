@@ -115,36 +115,37 @@ Gradients in Deep network are computed after both the feed forward and back prop
 %--------------------------------------------------------------------------------- 
 Gradient Descent (GD) is an iterative algorithm that is often used to calculate the parameters of neural
 networks, i.e., their weights and biases. At each iteration, the  algorithm updates the parameters based on the gradient of the 
-an error function evaluated with the current parameters. The iterations continue until a minimum is reached. Since the objective
+an error function evaluated with the current parameters. The iterations continue until a minimum of  is reached. Since the objective
 function is non-linear, the algorithm can only guarantee that it converges to a local minimum.
 
-Explain how samples are used in GD....
-Although GD is effective at finding the parameters of DNNs, it employs all the samples in the data set before updating the parameters,
-which is computationally intensive and time consuming. To overcome this challenge, Stochastic Gradient Descent(SGD) has been
+The GD algorithm works to minimize the error function by taking 'steps' towards the desired minimum. A learning rate, $\alpha$ is chosen which dictates the size of each step at every iteration.
+Selecting an optimal learning rate is crucial since a smaller learning rate results in many steps to reach the minima. This causes longer and computationally expensive convergence time.
+On the other hand, if the chosen learning rate is too large the algorithm can fail to converge and overshoot the desired minimum. 
+Optimal learning rates are generally chosen through trial and error . Some of the most commonly used learning rates are 0.001, 0.003 and 0.01
+We then pass all of our data through the network and calculate the error function. Typically, the error function is the average of the sums of the difference between the predicted value and the given label. 
+In the next part of GD algorithm we back-propagate this error. This is done by computing the partial derivative of the error function with respect to each parameter in the current configuration of the network. This value is referred to as the gradient. We obtain the new value of parameters by subtracting the product of learning rate and gradient of each parameter from each original parameter. 
+Consider E to be the error function over the entire dataset, then the new value of parameter $w_i$ is given by:
+
+%\begin{equation*}
+ $$w_j = w_j -\alpha \frac{\partial E}{\partial w_j} $$
+%\end{equation*}
+
+This process is iteratively repeated until the cost function converges and we minimize the error.
+
+Although GD is effective at finding the parameters of DNNs, all  training samples in the dataset need to be processed before a single updates is made ot the parameters. That is,  to take a single step towards minimizing the error function, the algorithm processes all the input samples. This is computationally intensive and time consuming. To overcome this challenge, Stochastic Gradient Descent(SGD) has been
 proposed. Unlike GD where all samples in the data set are used in a single iteration, SGD only selects a random subset
-of samples for calculating the gradient and updating the parameters at each iteration. Since SGD only uses a fraction of the training
-data set during each iteration, its computing time is significantly smaller compared to GD. Moreover, SGD is able to avoid local minima
-because it search different parts of the solution space by randomly selecting samples at each iteration. 
+of samples for calculating the gradient and updating the parameters at each iteration. SGD then uses this fraction of dataset do a forward pass, calculate error and back propagate the to find the gradients of each parameter. This process is identical to the one outlined for GS. 
+However, Since SGD only uses a fraction of the training
+data set during each iteration, its computing time is significantly smaller compared to GD. If the fraction of dataset is a single sample, then the algorithm is said to maximum stochasticity. If the fraction is significantly smaller than the size of the total dataset available and greater than one, then SGD is also referred to as Mini-batch Gradient Descent.
 
-%However, using a the path to local the minimum is
-%noisier (WHAT DO YOU MEAN BY NOISIER?) than GD.
-% However, the stochastic GD significantly reduces the training time of the network
-%DO WE ACHIVE THE SAME RESULTS? IF NOT WHAT IS THE TRADE-OFF?
+Since SGD explores different parts of the solution space by randomly selecting samples at each iteration, it has a higher probability of escaping local minima. However, the randomized selection of data samples can also cause updates made to the parameters to be less accurate. This results in an overall meandering path to the local minima. 
 
+To choose the right algorithm for optimization, one can choose between speed (provided by SGD) and accuracy of each step (provided by GD). For larger datasets SGD and Mini-Batch GD is preferred since the taking multiple slightly inaccurate updates is preferable over a single slower update in one epoch.
 The size of the subset of samples, called mini-batch, used at each iteration has to be chosen carefully. A small batch can reduce the
 computing time at each iteration, but may increase the number of iterations needed to converge. 
-%The most popular gradient descent
-%algorithm, however, is mini-batch Gradient Descent. This algorithm uses more than 1 sample for calculating gradient descent at each
-%iteration and then the model is updated based on smaller groups of samples. 
-
-%Mini-batch
-%SGD converges in fewer iterations than GD whi
 
 
-Formally, the SGD can is defined as follows. EXPLAIN HOW THE SAMPLES ARE CHOSEN. EXPLAIN THE ITERATIONS. 
-SGD first initializes...
-
-At each iteration, SGD...
+Formally, the SGD can is defined as follows. 
 Let $w$ denote the flattened
 vector of all weights and biases of a deep neural
 network. Let $E$ be an error function which is defined as the difference between the actual output of the objective function and the

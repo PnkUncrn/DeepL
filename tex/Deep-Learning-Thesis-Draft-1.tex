@@ -122,7 +122,10 @@ The GD algorithm works to minimize the error function by taking 'steps' towards 
 Selecting an optimal learning rate is crucial since a smaller learning rate results in many steps to reach the minima. This causes longer and computationally expensive convergence time.
 On the other hand, if the chosen learning rate is too large the algorithm can fail to converge and overshoot the desired minimum. 
 Optimal learning rates are generally chosen through trial and error . Some of the most commonly used learning rates are 0.001, 0.003 and 0.01
-We then pass all of our data through the network and calculate the error function. Typically, the error function is the average of the sums of the difference between the predicted value and the given label. 
+We then pass all of our data through the network and calculate the error function. Typically, the error function is the average of the sums of the difference between the predicted value and the given label. Fornally we can define the mean squared error function, E as follows:
+$$ E= \frac{1}{n} \sum_{n=1}^{n}(y_i -\hat{y_i}),$$
+where $n$ is the the size of the dataset, $y_i$ is the output calculated by the neural network and $\hat{y_i}$ is the actual label for the sample $i$.
+
 In the next part of GD algorithm we back-propagate this error. This is done by computing the partial derivative of the error function with respect to each parameter in the current configuration of the network. This value is referred to as the gradient. We obtain the new value of parameters by subtracting the product of learning rate and gradient of each parameter from each original parameter. 
 Consider E to be the error function over the entire dataset, then the new value of parameter $w_i$ is given by:
 

@@ -172,8 +172,14 @@ In this section, we describe our considered collaborative deep learning model, a
 %---------------------------------------------------------------------------------
 \subsection{System Model} \label{sec:systemModel}
 %---------------------------------------------------------------------------------
-In this section, we describe a deep learning system with a set of $N$ users ranging from  $u_o$ to $u_N$. Each user has a collection of private dataset $d_o$ to $d_N$ respectively. We assume a reference  participant, $u_o$ whose dataset $d_o$ is significantly smaller than datasets $d_1$ to $d_N$ belonging to users $u_o$ to $u_N$. Let $w_i$ be the flattened vector of parameters for the $i$th user.
-The deep learning system aims to share parameters of each user $u_o$ to $u_N$  trained privately on datasets $d_o$ to $d_N$ in a privacy preserving manner.
+
+In this section, we describe a deep learning system with a set of users $\mathcal{N}= \{u_0, \dots,u_N\}$, where $N$ is the total
+number of
+users. Each user has a collection of
+private dataset $d_o$ to $d_N$ respectively. We assume a reference  participant, $u_o$ whose dataset $d_o$ is significantly smaller
+than datasets $d_1$ to $d_N$ belonging to users $u_o$ to $u_N$. Let $w_i$ be the flattened vector of parameters for the $i$th user. The
+deep learning system aims to share parameters of each user $u_o$ to $u_N$  trained privately on datasets $d_o$ to $d_N$ in a privacy
+preserving manner.
 
 To do this, all participants in this system agree in advance on a
 common network architecture and common learning objective. The system also includes a secure parameter server (PS), which maintains the
@@ -197,8 +203,13 @@ In this scenario we assume all participants, $u_i$ to $u_N$, interact with the s
 That is, at any given time, only one participant can upload or download parameters from the server. This prevents over writing of parameters or race conditions from occurring within the server.
 
 %--------------------------------------------------------------------------------------------
-\section{System Architecture}
+\section{Neural Network Architecture}
 %--------------------------------------------------------------------------------------------
+
+In this paper, we use a convolutional neural network with... type of layers, type of activation functions, fully connected or not.  The
+neural networks takes ... as input and outputs ...
+
+ADD IMAGE 
 
 SEPARATE THE CONCEPTUAL ARCH FROM THE CODE
 
@@ -215,26 +226,18 @@ The parameter server is responsible for maintaining the current values of all pa
 participants , the server can be implemented as any form of updatable cloud storage. However, for the purpose of this experiment we
 chose to implement it as another neural network. 
 
-%--------------------------------------------------------------------------------------------
-\subsection{Hyperparameter Setup}
 
-%--------------------------------------------------------------------------------------------
-Hyperparameters are parameters that control the collaborative learning process. Unlike the actual neural-network parameters, they are usually set before the training commences and remain unchanged during the process.
-They are crucial since they directly influence the behavior of training algorithm and have a large impact on the performance and accuracy o the model.
-The learning rate is set at $0.1$ and weight decay is set to $1e-7$. The batch size is 10 samples and the number of participants is 20. We vary the $\theta_u$ and epochs in different scenarios. 
-
-\begin{figure}[!h]
-\includegraphics[width=8cm, keepaspectratio]{MLPArchitecture}
-\caption{MLP architecture used for MNIST related experiments, as printed ou by Torch}
-\label{fig:MLPArch}
-
-\end{figure}
 
 %---------------------------------------------------------------------------------
 \subsection{Threat Model}
 %---------------------------------------------------------------------------------
 
-We consider a malicious collaborator who instead of sharing the parameters of its deep neural
+We consider a malicious threat model for the parameter server and the collaborators. Specifically, the collaborators will
+attempt to learn private information about the reference user's dataset based on the information that the reference user uploads. 
+In addition, one or multiple  collaborators will attempt to actively influence the reference user to reveal its private information bny
+ uploading malicious parameters. 
+
+who instead of sharing the parameters of its deep neural
 network as described above, it collects the parameters from the target user to replicate its data, and ultimately violating the user's
 privacy.  
 Since the threat is not{} dependent on the adversary compromising the
@@ -260,11 +263,11 @@ the adversary is an active participant that is adapting his gradients in real ti
 In particular the attack operates as follows. Suppose all participants including the adversary agree on general specifications such as
 the type of neural network and labels on which training would take place as described in Section \ref{sec:systemModel}. Let another
 participant in the collaborative deep learning
-model be the victim $V$ that declares the labels $[a,b]$. The adversary declares labels $[b,c]$ implying that the adversary has no data
-on class $a$. By deploying the attack, the adversary stands to gain useful information about class a.
+model be the victim $u_V\in\mathcal{N}$ that declares the labels $[a,b]$. The adversary declares labels $[b,c]$ implying that the
+adversary has no data on class $a$. By deploying the attack, the adversary stands to gain useful information about class a.
 
 The adversary then uses the private GAN to generate models that look like class $a$, which the adversary deceivingly mislabels as $c$.
-This prompts the victim  $V$ to release more information about the class $a$ in order to distinguish between classes 
+This prompts the victim  $u_V$ to release more information about the class $a$ in order to distinguish between classes 
 $a$ and $c$. Therefore the victim releases more data on class a now than he initially intended to.
 
 This can be further summarized as follows:
@@ -290,8 +293,9 @@ with Parameter Server such that $V$ is not RefU
 \section{A Privacy-preserving Collaborative Learning Algorithm}
 
 The proposed system is designed to consider the reference participant with a much smaller data set as the most significant benefactor
-of this privacy preserving deep learning architecture. We thereby structure the system to ensure that the privacy of the reference user
-is not affected by the inventive GAN based attack proposed in \cite{hitaj2017deep}. Table 1 summarises the notations used in this paper
+of this privacy preserving deep learning architecture. We thereby structure the system to ensure that the privacy of the reference
+user is not affected by the inventive GAN based attack proposed in \cite{hitaj2017deep}. Table 1 summarises the notations used in this
+paper
 
 
 \begin{table}[!h]
@@ -357,6 +361,24 @@ For this experiment, we normalize the images so that they are centered.
 We set the size of the local dataset of each participant to 1 \% of the training dataset images. 
 The Reference User starts with a training set of 60 images.
 
+
+
+%--------------------------------------------------------------------------------------------
+\subsection{Hyperparameter Setup}
+
+%--------------------------------------------------------------------------------------------
+Hyperparameters are parameters that control the collaborative learning process. Unlike the actual neural-network parameters, they are usually set before the training commences and remain unchanged during the process.
+They are crucial since they directly influence the behavior of training algorithm and have a large impact on the performance and accuracy o the model.
+The learning rate is set at $0.1$ and weight decay is set to $1e-7$. The batch size is 10 samples and the number of participants is 20. We vary the $\theta_u$ and epochs in different scenarios. 
+
+\begin{figure}[!h]
+\includegraphics[width=8cm, keepaspectratio]{MLPArchitecture}
+\caption{MLP architecture used for MNIST related experiments, as printed ou by Torch}
+\label{fig:MLPArch}
+
+\end{figure}
+
+
 %--------------------------------------------------------------------------------------------
 %\subsection{Framework}
 %---------------------------------------------------------------------------------------------
@@ -367,6 +389,12 @@ The Reference User starts with a training set of 60 images.
 
 
 \section{Experiment Results}
+ADD RESULT FIGURES AND ONCE SENTENCE EXPLANATION OF EACH FIGURE
+
+Baseline results: accuracy, training time, training loss, testing loss, plot accuracy under varying number of participants, results
+under varying hyperparameters (number of layers, alpha, etc). Matplotlib. Matlab
+REsults under your approach: accuracy, training time, training loss, testing loss, plot accuracy under varying number of participants.
+
 
 \section{Conclusion}
 

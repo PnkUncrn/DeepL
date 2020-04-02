@@ -157,8 +157,9 @@ predicted output of the network.
 %parameters. 
 Then the $j$th parameter of $w$ is give by:
 %\begin{equation*}
- $$w_j = w_j -\alpha \frac{\partial E_i}{\partial w_j}, $$
-%\end{equation*}
+\begin{align}\label{eq:SGD}
+w_j = w_j -\alpha \frac{\partial E_i}{\partial w_j}, 
+\end{align}
 where $\alpha$ is the learning rate,  $E_i$ is the value of the error function computed over minibatch $i$, and  
 $\frac{\partial E_i}{\partial w_j}$ denotes the partial derivative of $E_i$ and $w_j$. 
  
@@ -171,15 +172,29 @@ In this section, we describe our considered collaborative deep learning model, a
 %---------------------------------------------------------------------------------
 \subsection{System Model} \label{sec:systemModel}
 %---------------------------------------------------------------------------------
-In this section, we describe a deep learning system with a pool of multiple participants. Each of the participant in this system has a
-local private dataset available for training. We assume a reference participant such that the local private dataset of the reference
-participant is significantly smaller when compared with other participants. All participants in this system agree in advance on a
-common network architecture and common learning objective. The system also includes a secure parameter server (PS), which maintains the
-latest values of parameters. 
+In this section, we describe a deep learning system with a set of $N$ users ranging from  $u_o$ to $u_N$. Each user has a collection of private dataset $d_o$ to $d_N$ respectively. We assume a reference  participant, $u_o$ whose dataset $d_o$ is significantly smaller than datasets $d_1$ to $d_N$ belonging to users $u_o$ to $u_N$. Let $w_i$ be the flattened vector of parameters for the $i$th user.
+The deep learning system aims to share parameters of each user $u_o$ to $u_N$  trained privately on datasets $d_o$ to $d_N$ in a privacy preserving manner.
 
-%We consider a user who trains a deep neural network using his local data. However, as the user's local data is limited, it needs to
-%collaborate with other users who have additional data to improve its own deep neural network. To this end, the user collects parameters
-%from the other users ... [EXPLAIN HOW THE SYSTEM WORKS]
+To do this, all participants in this system agree in advance on a
+common network architecture and common learning objective. The system also includes a secure parameter server (PS), which maintains the
+latest values of parameters uploaded given by $w^{(global)}$. Each user, $u_i$ in the system selects a $\theta_d^{i}$, which is the fraction of  $w^{(global)}$ parameters that the user will download from the PS. 
+The user $u_i$ also choses a value $\theta_u^{i}$ which is the fraction of $w_i$ that user chooses to upload to the PS.
+
+Each participant, $u_i$ randomly initializes its parameters $w_i$ and selects a learning rate, $\alpha$.
+The participant then downloads $|\theta_d^{i} \times w_i|$ parameters from PS and overwrites its corresponding local parameters.
+$u_i$ then runs the stochastic gradient descent algorithm for one epoch on its local dataset and trains its model. The local parameter vector, $w_i$ is updated according to \eqref{eq:SGD}. The SGD yields a new set of parameters, $w_i^{(new)}$.
+In the next step, $u_i$ computes the parameter gradient $\Delta w_i$ which is vector of changes in all local parameters due to the SGD. This is computed by
+$$\Delta w_i =  w_i^{(new)} -  w_i$$ 
+The gradient  $\Delta w_i$ is indicative of how much each parameter has to change to more accurately perform regression on the local dataset $d_i$.
+Consider $S$ to be a set of indices with the top  $|\theta_u^{i} \times \Delta w_i|$ values in $\Delta w_i$ 
+The participant then uploads  $\Delta w_S$ values to the PS.
+These uploaded values represent the parameters in the local model that have undergone the largest changes due to the SGD. 
+
+When a participants makes a valid attempt to upload $\Delta w_S$ parameters to the PS, parameter vector of PS,  $w^{(global)}$, is updated as follows:
+$$w^{(global)} =  w^{(global)} +  \Delta w_S$$
+
+In this scenario we assume all participants, $u_i$ to $u_N$, interact with the server atomically.
+That is, at any given time, only one participant can upload or download parameters from the server. This prevents over writing of parameters or race conditions from occurring within the server.
 
 %--------------------------------------------------------------------------------------------
 \section{System Architecture}

@@ -209,7 +209,13 @@ That is, at any given time, only one participant can upload or download paramete
 %--------------------------------------------------------------------------------------------
 
 In this paper we use a multilayer perceptron (MLP) in a classic feed forward arrangement. Each layer in the network is fully connected to the next layer. The networks takes images as its input to its first layer. It then funnels this input through multiple hidden layers. An activation function is then applied to the output of each hidden layer. For this network we choose the Rectified Linear Unit or ReLU as the activation function. Since this network serves as a classification network, the log soft max activation function is applied to the last layer. This results in outputs that are squashed into probabilities that sum to one. 
+Figure \ref{fig:ClassNN} shows the structure of a typical feed forward MLP deep neural network. The network is fed a raw image of  $m \times m$ pixels. Each pixel is an individual input which is funneled through $N$ hidden layers and ReLU activation function with $I$ neurons in each layer. The neural network produces $j$ outpputs with each putput mapping to a single class. In a classification network such as this, each output $a_1$ through $a_j$ reflects the probability of the image belonging to that class. All ouputs pass throught the softmax layer and therefore sum to 1. 
 
+\begin{figure}[!h]
+\includegraphics[width=8cm, keepaspectratio]{ClassificationNN}
+\caption{Neural network depicting an image with $m \times m$ pixels fed as input, $j$ outputs  $N$  hidden layers and with $I$ neurons in layer.}
+\label{fig:ClassNN}
+\end{figure}
 The parameter server is responsible for maintaining the current values of all parameters. Since it should be accessible to all
 participants , the server can be implemented as any form of updatable cloud storage. However, for the purpose of this experiment we
 chose to implement it as another neural network. 

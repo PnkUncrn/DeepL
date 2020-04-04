@@ -102,7 +102,7 @@ Figure \ref{fig:SimplNN} shows the structure of a typical classification deep ne
 
 %For professor: Should i insert activation function formula for each of the mentioned functions?
 
-Before a neural network can be deployed, it needs to be trained to model non-linear high dimensional functions. The training of a neural network involves selecting the exact set of parameters, weights, biases and inactivation function that meet its specified objective. There are several algorithms that can tackle this non-linear optimization problem. A training dataset is a dataset of sample inputs which has  known outputs or labels. In supervised learning,  we feed the inputs from a training dataset to the neural network during its training phase and compare computed output with the corresponding labels.
+Before a neural network can be deployed, it needs to be trained to model non-linear high dimensional functions. The training of a neural network involves selecting the exact set of parameters, weights, biases and activation function that meet its specified objective. There are several algorithms that can tackle this non-linear optimization problem. A training dataset is a dataset of sample inputs which has  known outputs or labels. In supervised learning,  we feed the inputs from a training dataset to the neural network during its training phase and compare computed output with the corresponding labels.
 
 Some of the most popular algorithms deployed in the training phase are variants of gradient descent (GD)  algorithm. In simple terms, the GD algorithm calculates the derivative of the function being optimized with respect to each of the current parameters. It then updates the parameters and repeats the process iteratively to achieve more accuracy. 
 Gradients in Deep network are computed after both the feed forward and back propagation steps. In forward propagation, the inputs from a training set are passed to the network and its output is recorded. We then compare the computed output and provided labels to calculate the error or loss function. The error function is given by the difference between the label of the training set and the computed output by the neural network. The backpropagation algorithm then finds the partial derivative of the error function with respect to each neuron. This highlights how each neuron has contributed to the total error. We then use each neuron's computed error contribution and its corresponding activation value to calculate gradient. The parameters in the network are then adjusted to reduce the computed gradient.
@@ -173,12 +173,14 @@ In this section, we describe our considered collaborative deep learning model, a
 \subsection{System Model} \label{sec:systemModel}
 %---------------------------------------------------------------------------------
 
-In this section, we describe a deep learning system with a set of users $\mathcal{N}= \{u_0, \dots,u_N\}$, where $N$ is the total
+In this section, we describe a deep learning system with a set of users $\mathcal{U}= \{u_0, \dots,u_N\}$, where $N$ is the total
 number of
 users. Each user has a collection of
-private dataset $d_o$ to $d_N$ respectively. We assume a reference  participant, $u_o$ whose dataset $d_o$ is significantly smaller
-than datasets $d_1$ to $d_N$ belonging to users $u_o$ to $u_N$. Let $w_i$ be the flattened vector of parameters for the $i$th user. The
-deep learning system aims to share parameters of each user $u_o$ to $u_N$  trained privately on datasets $d_o$ to $d_N$ in a privacy
+private dataset  $\mathcal{D}= \{d_0, \dots,d_N\}$. 
+%We assume a reference  participant, $u_0$ whose dataset $d_0$ is significantly smaller
+%than datasets $d_1$ to $d_N$ belonging to users $u_o$ to $u_N$. 
+Let $w_i$ be the flattened vector of parameters for the $i$th user. The
+deep learning system aims to share parameters of each user $u_0$ to $u_N$  trained privately on datasets $d_0$ to $d_N$ in a privacy
 preserving manner.
 
 To do this, all participants in this system agree in advance on a
@@ -199,32 +201,19 @@ These uploaded values represent the parameters in the local model that have unde
 When a participants makes a valid attempt to upload $\Delta w_S$ parameters to the PS, parameter vector of PS,  $w^{(global)}$, is updated as follows:
 $$w^{(global)} =  w^{(global)} +  \Delta w_S$$
 
-In this scenario we assume all participants, $u_i$ to $u_N$, interact with the server atomically.
+In this scenario we assume all participants, $u_0$ to $u_N$, interact with the server atomically.
 That is, at any given time, only one participant can upload or download parameters from the server. This prevents over writing of parameters or race conditions from occurring within the server.
 
 %--------------------------------------------------------------------------------------------
 \section{Neural Network Architecture}
 %--------------------------------------------------------------------------------------------
 
-In this paper, we use a convolutional neural network with... type of layers, type of activation functions, fully connected or not.  The
-neural networks takes ... as input and outputs ...
+In this paper we use a multilayer perceptron (MLP) in a classic feed forward arrangement. Each layer in the network is fully connected to the next layer. The networks takes images as its input to its first layer. It then funnels this input through multiple hidden layers. An activation function is then applied to the output of each hidden layer. For this network we choose the Rectified Linear Unit or ReLU as the activation function. Since this network serves as a classification network, the log soft max activation function is applied to the last layer. This results in outputs that are squashed into probabilities that sum to one. 
 
-ADD IMAGE 
-
-SEPARATE THE CONCEPTUAL ARCH FROM THE CODE
-
-For this experiment, we implement a similar neural network structure for the reference user as well as other participants. It is a
-multilayer perceptron (MLP) in a classic feed forward arrangement. We utilize the \textit{nn.Sequential} container via Torch nn package
-to attach all the layers in a fully connected and feed forward manner. Each neural network is designed to have 1024 inputs
-corresponding to each pixel in the provided 32x 32 pixel image of a handwritten number \cite{deng2012mnist}. The output layer is a
-tensor of size 10 where each output corresponds to the probability that the given input is a specific number between 0 and 9. The model
-also has 2 hidden layers where an activation function is applied to the output of each hidden layer.
-Initially, the input is reshaped into a 1 dimensional tensor of size 1024 and funneled to the first hidden layer. The hidden layers are constructed via \textit{nn.Linear()} via which linear transformation can be applied. It then produces a tensor of size 128 as its output. The second hidden layer accepts a tensor of size 128 as input to yield a tensor of size 64 as output. We use a non-linear activation function called Rectified Linear Unit (ReLU) which is applied after each hidden layer. The last layer of the model is a log soft max layer coded by the \textit{nn.LogSoftMax()} module.  This activation function is usually applied to the end of all classification models where it squashes the inputs into probabilities that sum to one.
-The Architecture described above are represented in Figure\ref{fig:MLPArch} as printed out by Torch7
-   
 The parameter server is responsible for maintaining the current values of all parameters. Since it should be accessible to all
 participants , the server can be implemented as any form of updatable cloud storage. However, for the purpose of this experiment we
 chose to implement it as another neural network. 
+
 
 
 
@@ -263,8 +252,8 @@ the adversary is an active participant that is adapting his gradients in real ti
 In particular the attack operates as follows. Suppose all participants including the adversary agree on general specifications such as
 the type of neural network and labels on which training would take place as described in Section \ref{sec:systemModel}. Let another
 participant in the collaborative deep learning
-model be the victim $u_V\in\mathcal{N}$ that declares the labels $[a,b]$. The adversary declares labels $[b,c]$ implying that the
-adversary has no data on class $a$. By deploying the attack, the adversary stands to gain useful information about class a.
+model be the victim $u_V\in\mathcal{U}$ that declares the labels $[a,b]$. The adversary $u_A\in\mathcal{U}$ declares labels $[b,c]$ implying that the
+adversary has no data on class $a$. By deploying the attack, the adversary stands to gain useful information about class $a$.
 
 The adversary then uses the private GAN to generate models that look like class $a$, which the adversary deceivingly mislabels as $c$.
 This prompts the victim  $u_V$ to release more information about the class $a$ in order to distinguish between classes 
@@ -272,23 +261,23 @@ $a$ and $c$. Therefore the victim releases more data on class a now than he init
 
 This can be further summarized as follows:
 \begin {enumerate}
-\item Assuming victim $V$ declares labels $[a,b]$ and adversary $A$ declares labels $[b,c]$
+\item Assuming victim $u_V$ declares labels $[a,b]$ and adversary $u_A$ declares labels $[b,c]$
 \item We then run the collaborative learning protocol for several epoch and stop when we reach a specified accuracy.
-\item During this process, the $V$ downloads a percentage of parameters from parameter Server and updates his local model.
-\item $V$'s local model is trained on classes $a$ and $b$
-\item $V$ uploads a section of his model to Parameter Server
+\item During this process, the $u_V$ downloads a percentage of parameters from parameter Server and updates his local model.
+\item $u_V$'s local model is trained on classes $a$ and $b$
+\item $u_V$ uploads a section of his model to Parameter Server
 \item The adversary trains is slotted to engage with the Parameter Server
-\item $A$ downloads the percentage of parameters from the PS and updates his model
-\item $A$ then trains his local GAN to mimic class $a$.
-\item $A$ generates class a samples from the GAN and mislabels them intentionally as class c.
-\item $A$ uploads a percentage of his parameters to the PS
+\item $u_A$ downloads the percentage of parameters from the PS and updates his model
+\item $u_A$ then trains his local GAN to mimic class $a$.
+\item $u_A$ generates class a samples from the GAN and mislabels them intentionally as class c.
+\item $u_A$ uploads a percentage of his parameters to the PS
 \end {enumerate}
-During the process of convergence, $A$ will be able to covertly exert influence on the learning process via the mislabeling of class
+During the process of convergence, $u_A$ will be able to covertly exert influence on the learning process via the mislabeling of class
 $a$.
 
 In this paper, we present a collaborative learning scenario that prevents the reference user from releasing more
 information about a class, and ultimately it protects the reference user's privacy. We design the interaction of the reference user
-with Parameter Server such that $V$ is not RefU
+with Parameter Server such that $u_V$ is not RefU
 
 \section{A Privacy-preserving Collaborative Learning Algorithm}
 

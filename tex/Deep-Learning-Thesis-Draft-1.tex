@@ -226,20 +226,16 @@ chose to implement it as another neural network.
 %---------------------------------------------------------------------------------
 \subsection{Threat Model}
 %---------------------------------------------------------------------------------
+The core prinicple motivating distributed learning is the idea that users do not wish to share their private training data. This data can be sensitive and an unverified user might attempt to maliciously violate the sharer's privacy on the pretext of model training.
 
-We consider a malicious threat model for the parameter server and the collaborators. Specifically, the collaborators will
-attempt to learn private information about the reference user's dataset based on the information that the reference user uploads. 
-In addition, one or multiple  collaborators will attempt to actively influence the reference user to reveal its private information bny
- uploading malicious parameters. 
+We consider a malicious threat model for the parameter server and the collaborators. Specifically, the collaborators will attempt to learn private information about the reference user's dataset based on the parameters that the reference user uploads. 
+In addition, one or multiple  collaborators will attempt to actively trick the reference user to reveal its private information by uploading malicious parameters. 
 
-who instead of sharing the parameters of its deep neural
-network as described above, it collects the parameters from the target user to replicate its data, and ultimately violating the user's
-privacy.  
-Since the threat is not{} dependent on the adversary compromising the
-central Parameter Server, it remains viable. In effect, the adversary does not have to control the parameter server or the service
-provider to execute his attack. The attack is more effective when adversarial influence is exercised \cite{hitaj2017deep}. This would
-imply that
-the adversary is an active participant that is adapting his gradients in real time during the current learning process.
+Instead of sharing the parameters of its deep neural, the malicious party will collect the parameters from its victim user. The malicious party will then replicate the victim's data, ultimately violating the the victim's privacy.
+  
+Since the threat is not dependent on the adversary compromising the
+central Parameter Server, it remains viable. In effect, the adversary does not have to control the PS or the service
+provider to execute his attack. The attack is more effective when adversarial influence is exercised \cite{hitaj2017deep}. This would imply that the adversary is an active participant that is adapting his gradients in real time during the current learning process.
 
 %describe an attack that results in privacy leakage in
 %collaborative deep learning system proposed in
@@ -287,10 +283,12 @@ with Parameter Server such that $u_V$ is not RefU
 
 \section{A Privacy-preserving Collaborative Learning Algorithm}
 
-The proposed system is designed to consider the reference participant with a much smaller data set as the most significant benefactor
-of this privacy preserving deep learning architecture. We thereby structure the system to ensure that the privacy of the reference
-user is not affected by the inventive GAN based attack proposed in \cite{hitaj2017deep}. Table 1 summarises the notations used in this
-paper
+In this paper, we propose a system that considers a reference participant with a much smaller data set as the most significant benefactor of this architecture. We consider $u_0\in\mathcal{U}$ to be our reference user with reference dataset $d_0\in\mathcal{D}$ such that $d_0$ is much smaller than all other $d \in\mathcal{D}$
+
+
+We structure the system to ensure that the privacy of the reference
+user, $u_0$ is not affected by the inventive GAN based attack proposed in \cite{hitaj2017deep}. Table \ref{table:1} summarises the notations used in this
+paper.
 
 
 \begin{table}[!h]
@@ -302,7 +300,7 @@ paper
 \textbf{Notation} & \textbf{Description} \\
  \hline\hline
 
-N & Number of participants excpet the Reference User in the system\\
+$N$ & Number of participants excpet the system\\
 \hline
 Reference User & The  main benefactor of the architecture \\
 \hline
@@ -334,11 +332,20 @@ $S$ & Set of $\theta_u$ largest indices selected from $w$ \\
 We evaluate the learning performance of the reference user under our proposed privacy-preserving collaborative learning algorithm. We
 measure ... and compare it to a the learning performance of a traditional deep neural network without collaborative learning. 
 %We wrote the source code based on the pseudocode provided in paper \cite{Shokri}. 
-We implement all algorithms using Torch with the neural network packages in the scripting language LUAJIT, and run them 
+We implement all algorithms using Torch with the neural network packages in the scripting language LUAJIT, and run them on an M4 instance on the Amazon Web Service's Elastic Compute Cloud (AWS EC2).
+
+For this experiment, we implement a similar neural network structure for the reference user as well as other participants.Although one can chose any neural network architecture, we use a multilayer perceptron (MLP) in a classic feed forward arrangement. 
+Each neural network is designed to have 1024 inputs
+corresponding to each pixel in the provided 32x 32 pixel image of a handwritten number \cite{deng2012mnist}. The output layer is a
+tensor of size 10 where each output corresponds to the probability that the given input is a specific number between 0 and 9. The model
+also has 2 hidden layers where an activation function is applied to the output of each hidden layer.
+Initially, the input is reshaped into a 1 dimensional tensor of size 1024 and funneled to the first hidden layer. The hidden layers are constructed via \textit{nn.Linear()} via which linear transformation can be applied. It then produces a tensor of size 128 as its output. The second hidden layer accepts a tensor of size 128 as input to yield a tensor of size 64 as output. We use a non-linear activation function called Rectified Linear Unit (ReLU) which is applied after each hidden layer. The last layer of the model is a log soft max layer coded by the \textit{nn.LogSoftMax()} module.  This activation function is usually applied to the end of all classification models where it squashes the inputs into probabilities that sum to one.
+The Architecture described above are represented in Figure\ref{fig:MLPArch} as printed out by Torch7
+
 %We were able to replicate their original setup using
 %Torch and nn packages in LUAJIT scripting language.  
 %The tests on the proposed solution were run and hosted 
-on an M4 instance on the Amazon Web Service's Elastic Compute Cloud (AWS EC2).
+
 
 We used the MLP implementation of neural network using the function \textit{nn.Sequential} container via the Torch nn package. They are
 fully connected and the neural network has input data of size 1024 (32 x 32) and feed fowards

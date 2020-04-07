@@ -334,7 +334,7 @@ measure ... and compare it to a the learning performance of a traditional deep n
 %We wrote the source code based on the pseudocode provided in paper \cite{Shokri}. 
 We implement all algorithms using Torch with the neural network packages in the scripting language LUAJIT, and run them on an M4 instance on the Amazon Web Service's Elastic Compute Cloud (AWS EC2).
 
-For this experiment, we implement a similar neural network structure for the reference user as well as other participants.Although one can chose any neural network architecture, we use a multilayer perceptron (MLP) in a classic feed forward arrangement. 
+For this experiment, we implement a similar neural network structure for the reference user as well as other participants. Although one can chose any neural network architecture, we use a multilayer perceptron (MLP) in a classic feed forward arrangement. 
 Each neural network is designed to have 1024 inputs
 corresponding to each pixel in the provided 32x 32 pixel image of a handwritten number \cite{deng2012mnist}. The output layer is a
 tensor of size 10 where each output corresponds to the probability that the given input is a specific number between 0 and 9. The model

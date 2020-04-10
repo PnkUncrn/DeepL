@@ -283,33 +283,21 @@ with Parameter Server such that $u_V$ is not RefU
 
 \section{A Privacy-preserving Collaborative Learning Algorithm}
 
-In this paper, we propose a system that considers a reference participant with a much smaller data set as the most significant benefactor of this architecture. We consider $u_0\in\mathcal{U}$ to be our reference user with reference dataset $d_0\in\mathcal{D}$ such that $d_0$ is much smaller than all other $d \in\mathcal{D}$
+\begin{figure}[!h]
+\includegraphics[width=8cm, keepaspectratio]{HighLevelArch}
+\caption{High level architecture of our proposed neural network.}
+\label{fig:HighLevel}
+\end{figure}
+
+This architecture works by ensuring privacy to the reference user by limiting its exposure to other collaborators. We structure this algorithm such that a primary participant, the reference user, $r_0$ benefits the most and is afforded the highest level of protection against GAN-based attacks. We envision this architecture materializing in a manner that involves the reference user compensating other collaborators for the parameters and abstract data to train its model. Since the architecture inherently obscures the absolute data, we are also able to preserves privacy for paid collaborators involved.
+
+
+Specifically, we propose a system that considers a reference participant with a much smaller data set as the most significant benefactor of this architecture. We consider $u_0\in\mathcal{U}$ to be our reference user with reference dataset $d_0\in\mathcal{D}$ such that $d_0$ is much smaller than all other $d \in\mathcal{D}$
 
 
 We structure the system to ensure that the privacy of the reference
 user, $u_0$ is not affected by the inventive GAN based attack proposed in \cite{hitaj2017deep}. Table \ref{table:1} summarises the notations used in this
 paper.
-
-In this section we describe an inventive approach to ensuring privacy and preventing GAN based attack proposed in /ref{}. Our proposal works by ensuring Privacy to the Reference User by limiting its exposure to other collaborators. Out method facilitates parameter sharing for other collaborators as well. However, we structure this algorithm in which a primary participant, the reference User benefits the most and is afforded the highest level of protection against GAN-based attacks. We envision this architecture possibly materializing in a manner that involves the Reference user compensating other collaborators for the parameters and abstract data to train its model. Since the architecture inherently obscures the absolute data, we are also able to preserves privacy for paid collaborators involved.
- 
-We define the following terms, $\theta_u$
-$R$
-Our Algorithm works as follows:
-\begin {enumerate}
-\item A pool of participants is with a sizeable dataset is created
-\item Out of the pool we randomly select a subsection of participants to participate in this period. We call it a round denoted by $r$.
-\item In each round, $r_i$, the selected participant, $u_i$ gets an atomic lock on the Parameter Server.
-\item During its interaction with PS, the participant will perform the following steps:
-\begin {enumerate}
-  \item Train independantly on its local dataset for one epoch, to obtain the gradients in its parameters, $\Delta w$ 
-  \item  At the end of the epoch, the participant will select the $\theta_u$ highest gradients, $\Delta w$.  $u_i$ uploads these values to the PS.
-  \end {enumerate}
-\item For each subsequent epoch, the participant will first download $\theta_d$ percentage of parameters from the server. The participant will then Repeat the steps a and b
-\item We repeat these steps for every participant selected in the round. At the end of the round, the Reference User downloads $\Theta_d$ percentage of parameters from the Server.
-\item The reference User then trains its model locally on its small dataset. 
-
-\end {enumerate}
-As you can see the, the Reference User does not share its parameters with other users. It benefits from random particpants from the architecture but does not expose itself to any attacks. Since the participants selected from the pool each round are randomized, we ..
 
 \begin{table}[!h]
 \centering
@@ -322,7 +310,7 @@ As you can see the, the Reference User does not share its parameters with other 
 
 $N$ & Number of participants excpet the system\\
 \hline
-Reference User & The  main benefactor of the architecture \\
+$u_0$ & Reference User and the  main benefactor of the architecture \\
 \hline
 $M$ & Mini batch size used for stochastic gradient descent\\
 \hline
@@ -344,6 +332,29 @@ $S$ & Set of $\theta_u$ largest indices selected from $w$ \\
 \hline
 \end{tabular}
 \end{table}
+
+
+ 
+We define the following terms, $\theta_u$
+$R$
+The Algorithm works as follows:
+\begin {enumerate}
+\item A pool of participants is created where each participant has a sizeable dataset
+\item Out of the pool of participants, a random subsection of participants is selected to interact with the PS in this period. We call this period a round which is denoted by $r$.
+\item In each round, $r_i$, the selected participant, $u_i$ is able to interact with the PS such that no other participant can interact with the PS at the same time.
+\item During its interaction with PS, the participant will perform the following steps:
+\begin {enumerate}
+  \item train independantly on its local dataset for one epoch, to calculate parameter gradient, $\Delta w$ 
+  \item  at the end of the epoch, $u_i$ will select the $\theta_u$ highest gradients, $\Delta w$. The $u_i$ uploads these values to the PS.
+  \end {enumerate}
+\item For each subsequent epoch, the participant will first download $\theta_d$ percentage of parameters from the server. The participant will then repeat the steps a and b.
+\item We repeat these steps for every participant selected in the round. At the end of the round, the reference user downloads $\theta_d$ percentage of parameters from the PS.
+\item The reference user then trains its model locally on its small dataset. 
+
+\end {enumerate}
+As you can see the, the reference user does not share its parameters with other users. It benefits from random particpants from the architecture but does not expose itself to any attacks. Since the participants selected from the pool each round are randomized, we ..
+
+
 
 %-------------------------------------------------------------------------------
 \section{Experimental Setup}
@@ -412,6 +423,7 @@ The learning rate is set at $0.1$ and weight decay is set to $1e-7$. The batch s
 
 \section{Experiment Results}
 ADD RESULT FIGURES AND ONCE SENTENCE EXPLANATION OF EACH FIGURE
+
 
 Baseline results: accuracy, training time, training loss, testing loss, plot accuracy under varying number of participants, results
 under varying hyperparameters (number of layers, alpha, etc). Matplotlib. Matlab

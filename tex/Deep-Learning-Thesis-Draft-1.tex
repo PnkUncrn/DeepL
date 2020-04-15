@@ -537,7 +537,7 @@ The learning rate is set at $0.1$ and weight decay is set to $1e-7$. The batch s
 Baseline results: accuracy, training time, training loss, testing loss, plot accuracy under varying number of participants, results
 
 \begin{figure}[!h]
-\includegraphics[width=8cm, keepaspectratio]{SingleUserGraph}
+\includegraphics[width=8cm, keepaspectratio]{SingleUserBaselines}
 \caption{Single User with varying sample size.}
 \label{fig:SingleUser}
 \end{figure}
@@ -549,9 +549,35 @@ REsults under your approach: accuracy, training time, training loss, testing los
 
 
 \begin{figure}[!h]
-\includegraphics[width=8cm, keepaspectratio]{RandVsAll}
+\includegraphics[width=8cm, keepaspectratio]{RandomVsAll}
 \caption{Comparison between randomized interaction and complete interaction with server. }
 \label{fig:RandVsAll}
+\end{figure}
+
+\begin{figure}[!h]
+\includegraphics[width=8cm, keepaspectratio]{VaryingPoolofParticipants}
+\caption{Accuracy of Distributed SGD for varying participants available for interaction with the PS.}
+\label{fig:VaryingPoolofParticipants}
+\end{figure}
+
+\begin{figure}[!h]
+\includegraphics[width=8cm, keepaspectratio]{VaryingProbabilityInteraction}
+\caption{Accuracy of Distributed SGD for varying proability of interaction with the PS. }
+\label{fig:VaryingProbabilityInteraction}
+\end{figure}
+
+
+\begin{figure}[!h]
+\includegraphics[width=8cm, keepaspectratio]{VaryingThetaU}
+\caption{Accuracy of Distributed SGD for different upload gradient selection rate, unevenly. }
+\label{fig:VaryingThetaU}
+\end{figure}
+
+
+\begin{figure}[!h]
+\includegraphics[width=8cm, keepaspectratio]{VaryingThetaUEvenly}
+\caption{Accuracy of Distributed SGD for different upload gradient selection rate, Evenly. }
+\label{fig:VaryingThetaUEvenly}
 \end{figure}
 
 \section{Conclusion}

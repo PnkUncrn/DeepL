@@ -61,128 +61,42 @@ Neural Network, Deep learning, GANs
 %---------------------------------------------------------------------------------
 \_To Do\_ : Description of 1- Deep Learning , Neural Network, GAN,
 
+%-----insert my article
+
 %---------------------------------------------------------------------------------
 \section{Related Work}
 %---------------------------------------------------------------------------------
 
-MAchine learning Vs Deep Learning:
+In the past years neural networks have found application in a wide array of fields.
+Deep neural networks have had a significant impact in diverse areas such as video processing \cite{taigman2014deepface}, gaming \cite{chang2016google, lai2015giraffe} and even diagnosis and classification of diseases \cite{cruz2013deep,fakoor2013using}.
 
+Deep learning has outperformed dogmatic techniques in facial detection and image classification\cite{krizhevsky2012imagenet,simard2003best}. Research in speech recognition \cite{hinton2012deep, graves2013speech } indicates that deep learning is on track to even outperform humans.
 
-45] Yann LeCun, Yoshua Bengio, and Geoffrey Hinton. 2015. Deep learning. Nature
-521, 7553 (2015), 436–444.
+However areas such as the medical and financial fields that stand to benefit from deep networks also rely heavily on availability of large datasets for training \cite{chicurel2000databasing}. This has however raised some privacy issues.
 
-[29] Ian Goodfellow, Yoshua Bengio, and Aaron Courville. 2016. Deep learning. MIT
-Press.
+To combat data privacy concerns some research have explored secure multiparty computations (SMC) as a solution.
 
-Deep LEarning
+In \cite{vaidya2003leveraging}, the researchers survey secure multi-party computation and provide a method to an efficient protocol where a three party system can be used to construct an efficient peer-to-peer secure multi-party protocol.
 
+In \cite{7040943}, the authors survey multi party computation as well as other techniques. They also evaluate SMC's effectiveness and cost in context of secure data processing.
 
-[5] Y. Bengio. Learning deep architectures for AI. Foundations
-and trends in machine learning, 2(1):1–127, 2009.
+SMC's application in secure computation of private data is explored in \cite{sheikh2010distributed}. The authors propose a novel protocol that divides and distributes private data blocks among participants. This facilitates a scenario in which semi honest parties are incapable of discovering private data of other parties. This technique is however contingent on the malicious parties being semi-honest parties.
 
-[6] J. Bos, K. Lauter, and M. Naehrig. Private predictive analysis
-on encrypted medical data. J. Biomed. Informatics,
-50:234–243, 2014.
+In \cite{miyajima2016new}, the authors propose to solve security risks associated with cloud computing using SMC. They propose a back propagation learning method for secure data computation and learning on cloud based system. The authors acknowledge that this technique can be computationally expensive for the clients participating in the system.
 
+To overcome constraints in a mobile user setting, some researchers have proposed a protocol to aggregate user data by leveraging SMC \cite{bonawitz2017practical}. They focus their work on creating a robust protocol that maintains its efficacy even if there are client dropouts. 
 
+Some research has also been done in the field of differential privacy to guarantee data privacy protection.
+In \cite{abadi2016deep}, the authors analyze the privacy cost, complexity and training efficiency of neural networks with differential privacy. They propose a novel algorithmic technique for training neural network with a modest privacy costs with a viable software complexity. Their work however does not account for distributive collaborative deep learning. Since differential privacy is hinged on adding nose to the data, the added noise will scale with size of the participants. Ultimately, the amount of noise added will render the shared data to have no practical use.
 
-Application of Deep learning: outperfroms machines:
+In \cite {song2013stochastic}, the authors investigate effects of differential privacy on mini batch SGD. They document their observation that increased batch size improves can help ameliorate the impact of differential privacy on the variability of SGD. The authors, however, also observe an upper limit to the batch that can be utilized to control the variability produced by the privacy preserving noise.
+   
+The authors in \cite{chase2017private} propose a protocol that merges SMC as well differential privacy for learning neural networks in a collaborative way. Since differential privacy is does not scale and SMC does not guarantee the privacy of the end result, the authors attempt the bridge the two to architect a stronger protocol.
+However, their solution also rests on the assumption of semi honest parties and does not account of malicious participants at all. The authors also observe that accuracies generated by their protocol drop with increasing parameters in the network. This prevents the propose protocol from being scalable.
 
+In \cite{shokri2015privacy} the authors propose a system that enables collaborative training for neural networks in a privacy preserving manner. In the paper the authors design and test a protocol in which the participants share a small subset of parameters from their trained neural networks. These parameters are then aggregated on independent server. This enables the participants to preserve the privacy of their dataset while drawing benefits from other participants trained model.
 
-[6] Yoshua Bengio. 2009. Learning Deep Architectures for AI. Found. Trends Mach.
-Learn. 2, 1 (Jan. 2009), 1–127. https://doi.org/10.1561/2200000006
-
-
-[29] Ian Goodfellow, Yoshua Bengio, and Aaron Courville. 2016. Deep learning. MIT
-Press.
-
-[75] Jürgen Schmidhuber. 2015. Deep learning in neural networks: An overview.
-Neural networks 61 (2015), 85–117.
-
-
-Application of Deep learning: outperfroms Humans:
-
-
-[26] K. He, X. Zhang, S. Ren, and J. Sun. Delving deep into
-rectifiers: Surpassing human-level performance on ImageNet
-classification. arXiv:1502.01852, 2015.
-
-Why is Privacy important : 
-
-[44]
-D. Shultz. When your voice betrays you. Science, 347(6221),
-2015.
-
-[4] Giuseppe Ateniese, Luigi V Mancini, Angelo Spognardi, Antonio Villani,
-Domenico Vitali, and Giovanni Felici. 2015. Hacking smart machines with
-smarter ones: How to extract meaningful data from machine learning classifiers.
-International Journal of Security and Networks 10, 3 (2015), 137–150.
-https://arxiv.org/abs/1306.4447
-
-[27] Matt Fredrikson, Somesh Jha, and Thomas Ristenpart. 2015. Model inversion
-attacks that exploit confidence information and basic countermeasures. In Proceedings
-of the 22nd ACM SIGSAC Conference on Computer and Communications
-Security. ACM, 1322–1333.
-
-[28] Matthew Fredrikson, Eric Lantz, Somesh Jha, Simon Lin, David Page, and Thomas
-Ristenpart. 2014. Privacy in pharmacogenetics: An end-to-end case study of
-personalized warfarin dosing. In 23rd USENIX Security Symposium (USENIX
-Security 14). 17–32.
-
-
-
-SMC:
-
-
-Y. Lindell and B. Pinkas. Privacy preserving data mining. In
-CRYPTO, 2000.
-
-[17] W. Du, Y. Han, and S. Chen. Privacy-preserving multivariate
-statistical analysis: Linear regression and classification. In
-SDM, volume 4, pages 222–233, 2004.
-
-[50] J. Vaidya and C. Clifton. Privacy preserving association rule
-mining in vertically partitioned data. In KDD, 2002.
-
-[61] Payman Mohassel and Yupeng Zhang. 2017. SecureML: A System for Scalable
-Privacy-Preserving Machine Learning. In IEEE Symposium on Security and Privacy.
-
-
-Differential Privacy: introductions:
-
-
-Cynthia Dwork. 2006. Differential privacy. In Automata, Languages and Programming,
-33rd International Colloquium, ICALP 2006, Venice, Italy, July 10-14, 2006,
-Proceedings, Part II. Springer Berlin Heidelberg, 1–12.
-
-Differential Privacy: Application
-21] C. Dwork, G. Rothblum, and S. Vadhan. Boosting and
-differential privacy. In FOCS, 2010.
-
-[10] K. Chaudhuri, A. Sarwate, and K. Sinha. A near-optimal
-algorithm for differentially-private principal components.
-JMLR, 14(1):2905–2943, 2013.
-
-[8] K. Chaudhuri and C. Monteleoni. Privacy-preserving logistic
-regression. In NIPS, 2009.
-
-
-Prvacy Preserving
-\cite{abadi2016deep}
-
-
-
-Gan introduction and other application:
-
-
-GAN -- application in Privacy
-
-
-ince the attack \cite{hitaj2017deep} exploits the architectural weaknesses in the collaborative learning system proposed in \cite{abadi2016deep}, 
-it is
-immune to majority of obfuscation techniques.
-In \cite{hitaj2017deep} the authors claim that the this deceptive adversarial influence is arguably a more
-effective threat than the once posed by techniques involving Model Inversion attacks in \cite{deng2012mnist}.
+In \cite{hitaj2017deep}, the authors outline a possible attack that exploits the architectural weaknesses in the collaborative learning system proposed in \cite{abadi2016deep}. The attack proposed in \cite{hitaj2017deep} leverages Generative adversarial networks as a malicious participant and is therefore immune to majority of obfuscation techniques. The authors claim that the  deceptive adversarial influence aspect of their attack is arguably a more potent threat than the ones posed by techniques involving Model Inversion attacks in \cite{deng2012mnist}.
 
 %---------------------------------------------------------------------------------
 \section{Background on Deep Neural Networks}

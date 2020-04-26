@@ -305,11 +305,11 @@ with Parameter Server such that $u_V$ is not RefU
 
 \section{A Privacy-preserving Collaborative Learning Algorithm}
 
-\begin{figure}[!h]
-\includegraphics[width=8cm, keepaspectratio]{HighLevelArch}
+\begin{figure*}[!h]
+\includegraphics[width=\textwidth, keepaspectratio]{HighLevelArch}
 \caption{High level architecture of our proposed neural network.}
 \label{fig:HighLevel}
-\end{figure}
+\end{figure*}
 
 This architecture works by ensuring privacy to the reference user by limiting its exposure to other collaborators. We structure this algorithm such that a primary participant, the reference user, $r_0$ benefits the most and is afforded the highest level of protection against GAN-based attacks. We envision this architecture materializing in a manner that involves the reference user compensating other collaborators for the parameters and abstract data to train its model. Since the architecture inherently obscures the absolute data, we are also able to preserves privacy for paid collaborators involved.
 
@@ -427,6 +427,7 @@ They are crucial since they directly influence the behavior of training algorith
 The learning rate is set at $0.1$ and weight decay is set to $1e-7$. The batch size is 10 samples and the number of participants is 20. We vary the $\theta_u$ and epochs in different scenarios. 
 
 \begin{figure}[!h]
+\centering
 \includegraphics[scale = 0.2, keepaspectratio]{NNArchitecture}
 \caption{MLP architecture displaying the tensor size at various stages in the neural network. }
 \label{fig:MLPArch}

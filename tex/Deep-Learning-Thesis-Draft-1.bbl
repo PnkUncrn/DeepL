@@ -21,6 +21,34 @@
 \providecommand{\BIBdecl}{\relax}
 \BIBdecl
 
+\bibitem{taigman2014deepface}
+Y.~Taigman, M.~Yang, M.~Ranzato, and L.~Wolf, ``Deepface: Closing the gap to
+  human-level performance in face verification,'' in \emph{Proceedings of the
+  IEEE conference on computer vision and pattern recognition}, 2014, pp.
+  1701--1708.
+
+\bibitem{chang2016google}
+H.~S. Chang, M.~C. Fu, J.~Hu, and S.~I. Marcus, ``Google deep mind's alphago,''
+  \emph{OR/MS Today}, vol.~43, no.~5, pp. 24--29, 2016.
+
+\bibitem{lai2015giraffe}
+M.~Lai, ``Giraffe: Using deep reinforcement learning to play chess,''
+  \emph{arXiv preprint arXiv:1509.01549}, 2015.
+
+\bibitem{cruz2013deep}
+A.~A. Cruz-Roa, J.~E.~A. Ovalle, A.~Madabhushi, and F.~A.~G. Osorio, ``A deep
+  learning architecture for image representation, visual interpretability and
+  automated basal-cell carcinoma cancer detection,'' in \emph{International
+  Conference on Medical Image Computing and Computer-Assisted
+  Intervention}.\hskip 1em plus 0.5em minus 0.4em\relax Springer, 2013, pp.
+  403--410.
+
+\bibitem{fakoor2013using}
+R.~Fakoor, F.~Ladhak, A.~Nazi, and M.~Huber, ``Using deep learning to enhance
+  cancer diagnosis and classification,'' in \emph{Proceedings of the
+  international conference on machine learning}, vol.~28.\hskip 1em plus 0.5em
+  minus 0.4em\relax ACM New York, USA, 2013.
+
 \bibitem{krizhevsky2012imagenet}
 A.~Krizhevsky, I.~Sutskever, and G.~E. Hinton, ``Imagenet classification with
   deep convolutional neural networks,'' in \emph{Advances in neural information

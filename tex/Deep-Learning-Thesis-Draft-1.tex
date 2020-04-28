@@ -28,8 +28,7 @@ sergio.salinasmonroy@wichita.edu}
 }
 \maketitle
 
-\begin{abstract}
-
+\begin{abstract} 
 Deep learning is a class of machine learning algorithms that use a cascade of multiple layers of nonlinear processing units for feature
 extraction and transformation. Each successive layer uses the output from the previous layer as input. Artificial neural network based
 deep learning is becoming increasingly popular in classification fields. Deep learning benefits from larger input data sets and can be
@@ -59,9 +58,25 @@ Neural Network, Deep learning, GANs
 %---------------------------------------------------------------------------------
 \section{Introduction}
 %---------------------------------------------------------------------------------
-\_To Do\_ : Description of 1- Deep Learning , Neural Network, GAN,
 
-%-----insert my article
+In the past few decades deep learning has generated a lot of interest in the research and academic community. Its neural network based architecture has caused breakthroughs in many unexpected fields ranging from autonomous driving, natural language processing to genetic research.
+
+It is no surprise that deep learning has seen a significant investment by technology giants such as Google, IBM and Facebook. This revolutionary technology is especially fruitful for large corporation due to their access to consumer datasets. This can simultaneously yield effective models with wide applications as well as raise pertinent privacy concerns.
+
+The training datasets used to train deep learning models have been crowdsourced from millions of users. It is only inevitable that a subset of the sample space contains sensitive information that was accidentally captured without user consent. 
+Other privacy concerns regarding data ownership have also been raised since the trained model is generally a proprietary  intellectual property (IP). Other red flags are centered around govermental privacy laws such as HIPAA \cite{act1996health,blechner2002health}. While medical community stands to benefit from deep learning, the privacy concerns around medical history of patients makes collecting of data samples a challenging task. 
+
+Moreover, over generalization of models trained on single source of training dataset can have significant effect on the model's usability. For instance a neural network designed to identify pneumonia in chest radiographs achieved high classification accuracies on the local hospital records. It, however, failed external performance tests \cite{zech2018variable}. This indicates that models trained on single source datasets can produce connfounding results.
+Accessibility of training datasets in hospital that do not have sufficient resources or samples currently is also a concern. 
+ 
+The above outlined issues beg for a deep learning solution that is robust, multi- source, accessible as well as privacy preserving. Some headway has been made in this direction by leveraging distributed learning through selective parameter sharing in a privacy persevering system \cite{shokri2015privacy}. Unfortunately, this novel approach is susceptible to attacks that also ironically employ neural networks in a malicious capacity. This general adversarial network (GAN) based attack is effective even when standard obfuscation techniques are applied \cite{hitaj2017deep}.
+
+In this paper we propose, implement and analyze a distributed deep learning system that enables participants to benefit from a distributed network of trained models. Our key contribution is that our architecture protects users against sophisticated GAN based attacks. We accomplish this by a two pronged approach. First, we randomly select users that can participate in the exchange of parameters at a given instance. This limits the repeated and predictable exposure of innocent participants to any malicious vectors. Secondly, we enable a user with insufficient but extremely sensitive sample set to benefit from the architecture, while completely safeguarding itself from GAN based attacks. The proposed architecture is independent of the underlying neural network structure and is therefore, highly adaptable.
+
+To verify our approach we implement our distributed deep learning architecture in the scripting language LUAJIT. We run our experimental simulation on an  M4 instance on the Amazon Web Service's Elastic Compute Cloud (AWS EC2). 
+The conduct our evaluation on the MNIST dataset which is the standard for image classification.
+We were able to obtain maximum accuracy of up to 95.18\%  with 30 participants with randomized 50\% selection rate of participants. In comparison, the accuracy when all participants were selected, was 95.17\% with other comparable variables. The privacy violating centralized architecture with comparable variables yields an accuracy of 98.17\%. 
+We achieve these results without deploying any additional computationally intensive obfuscation or cryptographic techniques. We also implement our flexible architecture in a way that can adjusted to manage the tradeoff between privacy and accuracy. 
 
 %---------------------------------------------------------------------------------
 \section{Related Work}
@@ -427,6 +442,7 @@ They are crucial since they directly influence the behavior of training algorith
 The learning rate is set at $0.1$ and weight decay is set to $1e-7$. The batch size is 10 samples and the number of participants is 20. We vary the $\theta_u$ and epochs in different scenarios. 
 
 \begin{figure}[!h]
+
 \centering
 \includegraphics[scale = 0.2, keepaspectratio]{NNArchitecture}
 \caption{MLP architecture displaying the tensor size at various stages in the neural network. }

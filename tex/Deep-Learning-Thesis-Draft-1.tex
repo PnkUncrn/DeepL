@@ -602,27 +602,12 @@ The learning rate is set at $0.1$ and weight decay is set to $1e-7$. The batch s
 
 %-------------------------------------------------------------------------------
 
-Accuracy and dataset size of a single user are plotted in Figure \ref{fig:SingleUser}.
-Model Accuracy is compared with extent of interaction with PS in Figure \ref{fig:RandVsAll}. The two plotlines indicate whether or not the protocol allows all users to upload and download from the server every epoch. In the case of Randomized interaction, the probability of interaction with PS for each participant per epoch was set to $0.5$.
-Figure \ref{fig:VaryingPoolofParticipants} illustrates the variation in model accuracy with varying participant interaction with PS.
-Accuracy of the model is plotted in Figure \ref{fig:VaryingProbabilityInteraction} where different lines represent the probability of interaction with PS. Figure \ref{fig:VaryingThetaU} shows the accuracy of the resulting model with varying upload gradient selection rate.
-
-
+\centering
 \begin{figure}[!h]
 \includegraphics[width=8cm, keepaspectratio]{SingleUserBaselines}
 \caption{Single User with varying sample size.}
 \label{fig:SingleUser}
 \end{figure}
-
-As seen in Figure \ref{fig:SingleUser}, a single user trained on a larger dataset has a higher accuracy. The user with the highest accuracy has had access to the complete MNIST training dataset of 60,000 samples. 
-
-%under varying hyperparameters (number of layers, alpha, etc). Matplotlib. Matlab
-
-
-%REsults under your approach: accuracy, training time, training loss, testing loss, plot accuracy under varying number of participants.
-
-In the case of nature of interaction with PS, Figure \ref{fig:RandVsAll} shows that randomized interaction yields accuracy that is in close proximity to the one yielded by complete interaction with PS.
-
 
 \begin{figure}[!h]
 \includegraphics[width=8cm, keepaspectratio]{RandomVsAll}
@@ -630,24 +615,17 @@ In the case of nature of interaction with PS, Figure \ref{fig:RandVsAll} shows t
 \label{fig:RandVsAll}
 \end{figure}
 
-
-In Figure \ref{fig:VaryingPoolofParticipants} we observe that a higher number of participants available for randomized interaction with the PS will yield greater accuracy.
-
 \begin{figure}[!h]
 \includegraphics[width=8cm, keepaspectratio]{VaryingPoolofParticipants}
 \caption{Accuracy of Distributed SGD for varying participants available for interaction with the PS.}
 \label{fig:VaryingPoolofParticipants}
 \end{figure}
 
-With Figure \ref{fig:VaryingProbabilityInteraction} we can infer that greater probability of interaction with the server results in higher model accuracy. Over several epoch the lines representing randomized interaction reflect a smooth convergence.
-
 \begin{figure}[!h]
 \includegraphics[width=8cm, keepaspectratio]{VaryingProbabilityInteraction}
-\caption{Accuracy of Distributed SGD for varying proability of interaction with the PS. }
+\caption{Accuracy of Distributed SGD for varying probability of interaction with the PS. }
 \label{fig:VaryingProbabilityInteraction}
 \end{figure}
-
-In the case of Figure \ref{fig:VaryingThetaU} we observe that the percentage of uploaded parameters, $\theta_u$, is directly proportional to the resulting accuracy of the model. However, the accuracy difference between the sharing all parameters and only $ 10\% $ percent of parameters is minute.
 
 
 \begin{figure}[!h]
@@ -655,6 +633,19 @@ In the case of Figure \ref{fig:VaryingThetaU} we observe that the percentage of 
 \caption{Accuracy of Distributed SGD for different upload gradient selection rate, unevenly. }
 \label{fig:VaryingThetaU}
 \end{figure}
+
+Figure \ref{fig:SingleUser} shows the accuracy for a varying number of epoch for a single user trained on different dataset sizes. The plot shows that a single user trained on a larger dataset has a higher accuracy. The user with the highest accuracy has had access to the complete MNIST training dataset of 60,000 samples. 
+
+Figure \ref{fig:RandVsAll} shows the accuracy for varying epochs for our proposed algorithm when participant interact randomly with the server. The other plotline indicates the accuracy over varying epochs when all participants interact with the server. The plotlines show that randomized interaction over several epochs yields accuracy that is in close proximity to the one yielded by complete interaction with PS. For randomized interaction, the probability of interaction with PS for each participant per epoch was set to $0.5$.
+
+Figure \ref{fig:VaryingPoolofParticipants} shows the accuracy of varying participant availability for varying epochs. The plots show that a higher number of participants available for randomized interaction with the PS will yield greater accuracy. The plotline with highest accuracy represented 50 participants that were available for randomized interaction with PS.
+
+Figure \ref{fig:VaryingProbabilityInteraction} shows the accuracy for varying epochs plotted for varying probabilities of participant interaction with PS. We see that greater probability of interaction with the server results in a higher model accuracy. However, the accuracy yielded by model where all participants interact is in close proximity to accuracy yielded by models with lesser probabilities of interaction with PS. Over several epoch the lines representing randomized interaction reflect a smooth convergence.
+
+Figure \ref{fig:VaryingThetaU} we plot the accuracy of our proposed algorithm with varying upload gradient selection rate over varying epochs. The plot shows that the percentage of uploaded parameters, $\theta_u$, is directly proportional to the resulting accuracy of the model. However, the accuracy difference between the sharing all parameters and only $ 10\% $ percent of parameters is insignificant.
+
+
+
 
 
 \section{Conclusion}

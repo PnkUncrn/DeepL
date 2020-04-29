@@ -234,109 +234,231 @@ posed by techniques involving Model Inversion attacks in} \cite{deng2012mnist}.\
 this attack? If not, delete]. }
 
 %---------------------------------------------------------------------------------
-\section{Background on Deep Neural Networks}
+\section{Deep Neural Networks}
 %---------------------------------------------------------------------------------
+Deep neural networks are a type of machine learning that has recently shown high accuracy in data classification tasks. Traditional
+machine learning requires manual feature selection, which can be time consuming and inaccurate. In contrast, deep learning
+learns the most relevant features in the data on its own. In other words, the deep neural networks can be trained with raw data without
+the burden of preprocessing it. Since deep neural networks have more hidden layers compared to traditional neural networks, their
+accuracy is proportional to the amount of data used for training, i.e., the larger the training data set the more accurate that the
+deep neural networks become. These advantages make deep neural networks a very effective technique to perform data classification
+tasks. In this section, we describe the architecture of deep neural networks and their training methods. 
 
-Deep Learning  is a subset of machine learning that excels at extracting complex information from high dimensional data. Unlike
-traditional machine learning deep learning workflow does not involve manual feature extraction. It is essentially an end-to-end process
-where the network can be trained on raw data without the burden of preprocessing it. Deep Learning also scales with the data size,
-producing more accurate results with larger datasets. These advantages make Deep learning a very effective technique to perform
-classification tasks.
+%The layers of deep neural networks can be of three types: input, hidden or output. 
 
-Deep learning architectures are comprised of several neural networks organized in layers. Neural networks consist of 3 types of layers.
-Input layers are first layers that receive input, ouput layer is the last layer in the network. All layer between input and output
-layer are hidden layers. Traditionally, Deep networks contain 2 or more hidden layers. These multiple layers enable Deep networks to
-compute nonlinear functions of abstract data features. One of the basic Deep learning neural network architecture is the multilayer
-perception (MLP). It is a feed-forward based network implying it has no feedback loops and instead directly maps inputs onto a set of
-outputs. 
+%------------------------------------------------------------------------------
+\subsection{Architecture}
+%------------------------------------------------------------------------------
+%the network, process it, and provides an input to the first hidden later. Hidden layers continue the data flow until they reach
+%the output layer, which provides the results of the classification task to the user. 
+%Deep neural networks contain two or more hidden layers. The large number of hidden layers enable deep neural networks to
+%learn nonlinear relationships between the input and the output, making them powerful tools for many tasks beyond classification. 
 
-MLP architecture is composed of multiple layers where each layer consists of many inter-connected nodes. The layers are fully connected
-to the previous as well as the next layer in the architecture. The output of a single node within the layer is a function of the
-weighted average of the inputs connected to the node from the previous layers. In a typical network, each neuron also receives an
-additional input from a special neuron called the bias.  Together, the weights and biases of neural network are called its parameters.
-The weighted average of inputs plus the bias is referred to as the total input for the neuron. The final output of the neuron is
-computed by applying a activation function to the computed total input. This activation function is crucial in introducing
-non-linearity in neural networks. The non-linearity allows the modelling of complex data that linear regression models lack the
-dimensionality to do. Formally, the output of neuron at layer $k$ is defined as follows:
-$$a_k=f(W_k a_{k-1})$$
-Where $f$ is the activation function.  $W_k$ is the weight matrix of at layer $k$ which controls how input signal from previous layer, $a_{k-1}$ affects the output of the current neuron. 
-There are several non-linear activation functions that can be used such as sigmoid function which outputs values between 0 and 1, normalizing the output of each neuron. Hyperbolic tangent activation function is zero centered and makes it easier to model inputs that have strongly negative, neutral or positive values. Rectified Linear Unit (ReLU) is an increasing popular activation function that aids in the quick convergence of the network. In a network that is tasked to classify inputs to one of the $j$ fixed number of outputs, the output layer typically deploys SoftMax activation function, given by 
-$f(z_j) = e^{zj}\cdot (\sum_ke^{zk})^-1, \forall j$.
-This function normalizes the output for each class between 0 and 1 and divides it by their sum, resulting in a probability score that the given input belongs to class $j$. 
-Figure Figure \ref{fig:SimplNN} shows the structure of a typical classification deep neural network with $m$ inputs mapped to $j$ ouputs. The neural network has $N$ hidden layers and each layer has $I$ neurons.
-\begin{figure}[!h]
+\begin{figure}[t]
 \includegraphics[width=8cm, keepaspectratio]{SimpleNN}
-\caption{Simple neural network depicting $m$ inputs, $j$ outputs  $N$  hidden layers and with $I$ neuron in layer.}
+\caption{A neural network with $m$ inputs, $j$ outputs,  $N$  hidden layers, and $I$ neurons per layer.}
 \label{fig:SimplNN}
-
 \end{figure}
+In this work, we consider multilayer perception (MLP), which is one of the most common deep neural network architectures. An
+MLP is formed by multiple layers where each layer consists of many nodes. Each node takes 
+as input a weighted average of the previous layer's node outputs, and the output of an special node called the bias.  
+The nodes use a non-linear activation function to the compute their output. Together, the weights used in the weighted average and
+the biases from the special neurons are called the parameters of the deep neural network. 
 
-%For professor: Should i insert activation function formula for each of the mentioned functions?
+% from nodes in the
+% previous layer.The layers are sequentially connected to
+% each other by 
+% previous one and the next layer in the architecture. The output of a node
+% within a layer is a function of the weighted averages of the outputs from nodes in the previous layer. Each node also receives an
+% additional input from a special neuron called the bias.  
+% %The weighted average of inputs plus the bias is referred to as the total input for the
+% %neuron. 
 
-Before a neural network can be deployed, it needs to be trained to model non-linear high dimensional functions. The training of a
-neural network involves selecting the exact set of parameters, weights, biases and activation function that meet its specified
-objective. There are several algorithms that can tackle this non-linear optimization problem. A training dataset is a dataset of sample
-inputs which has  known outputs or labels. In supervised learning,  we feed the inputs from a training dataset to the neural network
-during its training phase and compare computed output with the corresponding labels.
+%This activation
+%function is crucial in introducing non-linearity in neural networks. The non-linearity allows the modeling of complex relationships
+%between the input and the outpout data. 
 
-Some of the most popular algorithms deployed in the training phase are variants of gradient descent (GD)  algorithm. In simple terms, the GD algorithm calculates the derivative of the function being optimized with respect to each of the current parameters. It then updates the parameters and repeats the process iteratively to achieve more accuracy. 
-Gradients in Deep network are computed after both the feed forward and back propagation steps. In forward propagation, the inputs from a training set are passed to the network and its output is recorded. We then compare the computed output and provided labels to calculate the error or loss function. The error function is given by the difference between the label of the training set and the computed output by the neural network. The backpropagation algorithm then finds the partial derivative of the error function with respect to each neuron. This highlights how each neuron has contributed to the total error. We then use each neuron's computed error contribution and its corresponding activation value to calculate gradient. The parameters in the network are then adjusted to reduce the computed gradient.
- repeat these steps of forward pass, error calculation, back propagation and parameter update iteratively until the desired objective function is achieved.
+%a a feed-forward based network, i.e., it has no feedback loops, The MLP architecture 
+
+Figure \ref{fig:SimplNN} shows the structure of a typical classification MLP with $m$ input nodes and $j$ outputs nodes. The neural network
+has $N$ hidden layers and each layer has $I$ neurons. Intuitively, this MLP takes a data sample represented as a vector of length
+$m$ on its input layer, and outputs the probability that it belongs to the $j$th category on the $j$th output neuron.
+
+Formally, the output of the $i$th neuron at layer $k$ is defined as follows:
+$$a^i_k=f(W_k a_{k-1}),$$
+where $f$ is the activation function, $W_k$ is the weight matrix of layer $k$,
+%which controls how input signal from previous layer,
+and $a_{k-1}$ is the vector of neuron outputs from the the $k-1$th layer. 
+%affects the output of the current neuron. 
+
+There are several non-linear activation functions that can be used for function $f$, including sigmoid,
+hyperbolic tangent, and rectified linear unite (ReLU) \cite{} \hl{Add a reference. The Deep learning Book should be fine}. In this
+work, we will focus on the... function, which is give by\hl{[add the description and the mathematical formula for the most relevant
+one]}
+
+%function which outputs
+%values between 0 and 1, normalizing the output of each neuron. Hyperbolic tangent activation function 
+%is zero centered and makes it easier to model inputs that have strongly negative, neutral or positive values. 
+%Rectified Linear Unit (ReLU) is an increasing popular activation function that aids in the quick convergence of the network. 
+
+%In a network that is tasked to classify inputs to one of the $j$ fixed number of outputs, 
+The output layer is usually implemented with the SoftMax activation function. The output of this function is between zero and
+one, and it is used to represent the probability that the data sample observed at the input layer belongs to each of the $j$
+categories. Formally, the SoftMax activation functions is defined by
+%divides it by their sum, resulting in a probability
+%score that
+%the given input belongs to class $j$. which is given by
+$$f(z_j) = \frac{e^{z_j}} {(\sum_ke^{z_k})}, \forall j$$.
+where $z_j$ is ...\hl{Add description of} $z_j$, and $z_k$ is \hl{add description of} $z_k$. 
 
 
+%---------------------------------------------------------------------
+\subsection{Training}
+%---------------------------------------------------------------------
+Before a neural network can be used to perform inference, e.g., classify images, it needs to be trained to learn the highly non-linear
+relationships between the inputs and the correct outputs. Training finds the 
+parameters of the deep neural network, i.e., its the weights and biases, that result in the inferences with the highest accuracy.  
 
-%---------------------------------------------------------------------------------
-\section{Background on Stochastic Gradient Descent}
-%--------------------------------------------------------------------------------- 
-Gradient Descent (GD) is an iterative algorithm that is often used to calculate the parameters of neural
-networks, i.e., their weights and biases. At each iteration, the  algorithm updates the parameters based on the gradient of the 
-an error function evaluated with the current parameters. The iterations continue until a minimum of  is reached. Since the objective
-function is non-linear, the algorithm can only guarantee that it converges to a local minimum.
+Although there are many training algorithms, their general workflow is the same. 
+First, we randomly initialize the deep neural network parameters.
+Then, we take a data sample from the training data set, e.g., an image, and feed it as input to the deep neural network. Based on the
+inference error, e.g., the difference between the probability given by the neural network that the image belongs to certain category
+and the correct probability, we adjust the value of the parameters in such a way that the inference error is reduced. This iteration is
+repeated until the inference error converges or a maximum number of iterations is reached. 
 
-The GD algorithm works to minimize the error function by taking 'steps' towards the desired minimum. A learning rate, $\alpha$ is chosen which dictates the size of each step at every iteration.
-Selecting an optimal learning rate is crucial since a smaller learning rate results in many steps to reach the minima. This causes longer and computationally expensive convergence time.
-On the other hand, if the chosen learning rate is too large the algorithm can fail to converge and overshoot the desired minimum. 
-Optimal learning rates are generally chosen through trial and error . Some of the most commonly used learning rates are 0.001, 0.003 and 0.01
-We then pass all of our data through the network and calculate the error function. Typically, the error function is the average of the sums of the difference between the predicted value and the given label. Fornally we can define the mean squared error function, E as follows:
-$$ E= \frac{1}{n} \sum_{n=1}^{n}(y_i -\hat{y_i}),$$
-where $n$ is the the size of the dataset, $y_i$ is the output calculated by the neural network and $\hat{y_i}$ is the actual label for the sample $i$.
 
-In the next part of GD algorithm we back-propagate this error. This is done by computing the partial derivative of the error function with respect to each parameter in the current configuration of the network. This value is referred to as the gradient. We obtain the new value of parameters by subtracting the product of learning rate and gradient of each parameter from each original parameter. 
-Consider E to be the error function over the entire dataset, then the new value of parameter $w_i$ is given by:
+%There are several algorithms that can tackle this non-linear optimization problem. A training dataset is a dataset of sample
+%inputs which has  known outputs or labels. In supervised learning,  we feed the inputs from a training dataset to the neural network
+%during its training phase and compare computed output with the corresponding labels.
 
+The main challenge in training is finding a parameter update at each iteration that drives the deep neural network to the optimal
+classification accuracy. The most common way of finding these updates is by using the gradient descent (GD) algorithm, or one of its
+variants. In the rest of this subsection, we provide a brief overview of these algorithms. 
+
+%---------------------------------------------------------------------
+\subsubsection{Gradient Descent Algorithm}
+%---------------------------------------------------------------------
+The GD algorithm finds the parameter updates in two steps: error  forward propagation, and back propagation. 
+ %calculates the parameter update at each iteration by performing forward
+%propagation, and then updates the parameters through
+%backward propagation. 
+
+In the forward propagation step, the GD algorithm passes the samples in its training data set through the
+deep neural network and obtains the output for each sample based on the current value of its parameters. Then, the GD computes the
+error function, which measures the difference between the outputs of the neural network and the correct classification solutions,
+which we call labels. There are multiple ways of calculating the error. In this work, we focus on the mean squared error function,
+which is defined as follows:
+\begin{align}\label{eq:errorFunction}
+ E= \frac{1}{n} \sum_{n=1}^{n}(y_i -\hat{y_i}),
+\end{align}
+where $n$ is the the number of sample in the training dataset, $y_i$ is the output calculated by the neural network and 
+$\hat{y_i}$ is the correct label for the $i$th sample.
+
+
+%The error is given by the difference between the label of the training set and the computed output by the neural network. 
+Next, in the back propagation step, the GD algorithm 
+computes the partial derivative of the error function with respect to the
+parameters of each neuron in the deep neural network, which indicate how much each parameter contributed to
+the error. Based on the partial derivatives, the GD algorithm computes an update for each parameter. 
+%computes the partial derivative of the error function
+%with respect to each parameter using their current values. These values are called the gradients. 
+The GD  obtains the new value of parameters by subtracting an scaled value of the partial derivatives, i.e.,  
+%Consider E to be the error function over the entire dataset, then the new value of parameter $w_i$ is given by:
 %\begin{equation*}
- $$w_j = w_j -\alpha \frac{\partial E}{\partial w_j} $$
+$$w_j = w_j -\alpha \frac{\partial E}{\partial w_j} $$
+where  $\alpha$ is the learning rate. 
+
+%The parameters in the network are then adjusted to reduce the computed gradient.
+The GD algorithms continues with the forward pass, error calculation, back propagation and parameter update iteration until a minimum
+error is achieved or a maximum number of iterations is reached \cite{} \hl{[Please provide a citation. Preferable NOT The deep
+learning book.]}.
+
+A key parameter in the GD algorithm is learning rate $\alpha$.   Selecting an optimal learning
+rate is crucial since a smaller learning rate results in a large number of iterations needed to reach the minimum error value. This
+causes longer and computationally expensive convergence time. On the other hand, if the chosen learning rate is too large the algorithm
+can fail to converge and overshoot the desired minimum, leading to oscillations.  Optimal learning rates are generally chosen through
+trial and error. In this work, we use the most commonly used values in the literature to implement the deep neural networks. 
+
+%We then pass all of our data through the network and calculate the error function. Typically, the error function is the
+%average of the sums of the difference between the predicted value and the given label. Formally we can define the 
+
+
+%In the next part of GD algorithm we back-propagate this error. 
+
 %\end{equation*}
 
-This process is iteratively repeated until the cost function converges and we minimize the error.
-
-Although GD is effective at finding the parameters of DNNs, all  training samples in the dataset need to be processed before a single updates is made ot the parameters. That is,  to take a single step towards minimizing the error function, the algorithm processes all the input samples. This is computationally intensive and time consuming. To overcome this challenge, Stochastic Gradient Descent(SGD) has been
-proposed. Unlike GD where all samples in the data set are used in a single iteration, SGD only selects a random subset
-of samples for calculating the gradient and updating the parameters at each iteration. SGD then uses this fraction of dataset do a forward pass, calculate error and back propagate the to find the gradients of each parameter. This process is identical to the one outlined for GS. 
-However, Since SGD only uses a fraction of the training
-data set during each iteration, its computing time is significantly smaller compared to GD. If the fraction of dataset is a single sample, then the algorithm is said to maximum stochasticity. If the fraction is significantly smaller than the size of the total dataset available and greater than one, then SGD is also referred to as Mini-batch Gradient Descent.
-
-Since SGD explores different parts of the solution space by randomly selecting samples at each iteration, it has a higher probability of escaping local minima. However, the randomized selection of data samples can also cause updates made to the parameters to be less accurate. This results in an overall meandering path to the local minima. 
-
-To choose the right algorithm for optimization, one can choose between speed (provided by SGD) and accuracy of each step (provided by GD). For larger datasets SGD and Mini-Batch GD is preferred since the taking multiple slightly inaccurate updates is preferable over a single slower update in one epoch.
-The size of the subset of samples, called mini-batch, used at each iteration has to be chosen carefully. A small batch can reduce the
-computing time at each iteration, but may increase the number of iterations needed to converge. 
+%This process is iteratively repeated until the cost function converges and we minimize the error.
 
 
-Formally, the SGD can is defined as follows. 
-Let $w$ denote the flattened
-vector of all weights and biases of a deep neural
-network. Let $E$ be an error function which is defined as the difference between the actual output of the objective function and the
-predicted output of the network. 
+%we first need to set an objective function that measures the classification
+%error of the neural network based on its output. 
+%iteratively solves an optimization problem as follows. 
+%first calculates the derivative of the objective function with respect to
+% each of the current parameters. Based
+%on these partial derivatives, it
+%calculates a gradient that is added to the current value of the parameters. 
+%updates the parameters and repeats the process iteratively to achieve more accuracy.  
+
+
+
+%Gradient Descent (GD) is an iterative algorithm that is often used to calculate the parameters of neural
+%networks, i.e., their weights and biases. At each iteration, the  algorithm updates the parameters based on the gradient of the 
+%an error function evaluated with the current parameters. The iterations continue until a minimum is reached. 
+%Since the objective function is non-linear, the algorithm can only guarantee that it converges to a local minimum.
+
+
+% Some of the most commonly used learning rates are 0.001, 0.00  and 0.01.
+
+%The GD algorithm works to minimize the error function by
+%taking 'steps'towards the desired minimum. A learning rate, $\alpha$ is
+%chosen which dictates the size of each step at every iteration. 
+
+%---------------------------------------------------------------------------------
+\subsubsection{Stochastic Gradient Descent}
+%--------------------------------------------------------------------------------- 
+Although the GD algorithm is effective at finding the parameters of DNNs, all  training samples in the dataset need to be processed
+before a single update is made to the parameters. That is, the algorithm processes the complete training data at each iteration. 
+This is computationally intensive and time consuming. 
+
+
+To overcome this challenge, we can use Stochastic Gradient Descent(SGD) \cite{} \hl{[Add citation. Preferably NOT the deep learning
+book]}. Unlike the GD algorithm where all samples in the training data set are used in a single iteration, SGD only uses a random 
+selected subset of samples for calculating the parameter updates at each iteration. 
+%SGD then uses this fraction of dataset do a forward pass, calculate error and back propagate the to find the gradients of each
+% parameter. 
+%This process is identical to the one outlined for GS. 
+If multiple samples are chosen but the total size remains significantly smaller than the size of the complete
+training dataset, then SGD algorithm is called Mini-batch Gradient Descent.
+
+
+Since SGD only uses a subset of the sample in the training data set at each iteration, its computing time is
+significantly smaller compared to GD.  Moreover, since SGD explores different parts of the solution space by randomly selecting samples
+at each iteration, it has a higher probability of escaping local minima, and finding better solutions than the GD algorithm. 
+If only one sample is chosen per iteration, then the SGD algorithm is said to achieve maximum
+stochasticity. However,
+the randomized selection of data samples can also cause updates made to the parameters to be less accurate. This results in an overall
+meandering path to the local minima. Consequently, one can choose between speed (provided by SGD) and accuracy of each step (provided by
+GD). For larger datasets SGD and Mini-Batch GD is preferred since taking more slightly inaccurate updates is preferred over a
+single slower update in one epoch. For smaller, datasets GD can be sued to obtain more accurate results in fewer iterations and within
+a feasible amount of time. 
+
+%The size of the subset of samples, called mini-batch, used at each iteration has to be chosen
+%carefully. A small batch can reduce the computing time at each iteration, but may increase the number of iterations needed to converge.
+
+Formally, the SGD can is defined as follows.  Let $w$ denote the flattened vector of all weights and biases of a deep neural
+network. 
+%which is defined as the difference between the actual output of the objective
+%function and the
+%predicted output of the network. 
 %Our aim is to compute the slope of the cost function and the direction we should move to update our
 %parameters. 
-Then the $j$th parameter of $w$ is give by:
+Then the $j$th parameter of $w$ is given by:
 %\begin{equation*}
 \begin{align}\label{eq:SGD}
 w_j = w_j -\alpha \frac{\partial E_i}{\partial w_j}, 
 \end{align}
-where $\alpha$ is the learning rate,  $E_i$ is the value of the error function computed over minibatch $i$, and  
-$\frac{\partial E_i}{\partial w_j}$ denotes the partial derivative of $E_i$ and $w_j$. 
+where $\alpha$ is the learning rate,  $E_i$ is the value of the error function defined in \ref{eq:errorFunction} computed over
+minibatch $i$, and  $\frac{\partial E_i}{\partial w_j}$ denotes the partial derivative of $E_i$ with respect to parameter $w_j$. 
  
 
 %---------------------------------------------------------------------------------

@@ -8,6 +8,7 @@
 \usepackage{textcomp}
 \usepackage{xcolor}
 \usepackage{array}
+\usepackage{soul}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
@@ -159,76 +160,104 @@ trade-off by tuning the selection probability of the other users.
 \section{Related Work}
 %---------------------------------------------------------------------------------
 
-Deep learning has outperformed dogmatic techniques in facial detection and image
-classification\cite{krizhevsky2012imagenet,simard2003best}. Research in speech recognition \cite{hinton2012deep, graves2013speech }
-indicates that deep learning is on track to even outperform humans.
+Deep neural networks have outperformed traditional machine learning approaches for many tasks, and are the tool of choice in many
+fields. Specifically, Deep learning has been successfully used for facial recognition \cite{krizhevsky2012imagenet}, image classification, 
+\cite{simard2003best}, and speech recognition \cite{hinton2012deep, graves2013speech }, where it is expected to achieve better
+performance than humans in the near future. However, directly applying these techniques to fields that deal with private data is
+challenging. The reason is that they need to centrally collect data at a third-party that organizations may not trust
+\cite{chicurel2000databasing}. This is particularly challenging in medical and financial applications where the privacy of the users is
+governed by federal legislation and needs to be kept private. 
 
-However areas such as the medical and financial fields that stand to benefit from deep networks also rely heavily on availability of
-large datasets for training \cite{chicurel2000databasing}. This has however raised some privacy issues.
+% This has however raised some privacy issues.
 
-To combat data privacy concerns some research have explored secure multiparty computations (SMC) as a solution.
+To protect users' data privacy, some researchers have proposed to use secure multiparty computations (SMC) 
+\cite{vaidya2003leveraging,7040943} SMC is ... \hl{[Provide one or two sentences about what is SMC]} 
+%In , the authors survey multi party computation as well as other techniques. They also evaluate SMC's effectiveness and
+%cost in context of secure data processing.
+Sheikh et al. \cite{sheikh2010distributed} propose a SMC that divides and distributes private data blocks among participants and can
+prevent the participants from learning the data from  each other. This approach assumes a semi-honest threat model,
+where a malicious  participant attempts to learn the private from other users but does not deviate from the proposed
+protocol. 
+%datahonest parties are incapable of discovering private data of other parties. This technique is however contingent
+%on the malicious
+%parties being semi-honest parties.
+Miyajima et al. \cite{miyajima2016new} propose a back propagation learning method for secure data computation and learning on a cloud
+based system using SMC. %solve security risks associated with cloud computing using SMC. 
+Bonawitz et al. \cite{bonawitz2017practical}  proposed an SMC protocol to aggregate mobile user data that maintains its efficacy 
+even if there are some users who dropout of the system. 
+Unfortunately, SMC is computationally expensive for the users participating in the system, which can be impractical for mobile users
+an IoT devices. Moreover, SMC reveals the result of the computation to all parties, which may be a privacy risk for certain
+applications. 
 
-In \cite{vaidya2003leveraging}, the researchers survey secure multi-party computation and provide a method to an efficient protocol
-where a three party system can be used to construct an efficient peer-to-peer secure multi-party protocol.
+%d
+%To overcome constraints in a mobile user setting, some researchers haveby leveraging SMC
+%. They focus their work on creating a robust protocol 
 
-In \cite{7040943}, the authors survey multi party computation as well as other techniques. They also evaluate SMC's effectiveness and
-cost in context of secure data processing.
+Some researchers have proposed differential privacy to guarantee data privacy protection in distributed deep learning. In 
+Abadi et al. \cite{abadi2016deep} propose a novel differential privacy algorithm to training deep neural networks with a modest
+accuracy cost and a feasible computational complexity. They provide theoretical analysis of the the privacy cost, complexity and
+training efficiency of their proposed approach. 
+%neural networks where users employ
+%differential privacy to hide their information. They Their work however does not account for distributive collaborative deep learning.
+%jthe added noise will scale with size
+%of the participants. Ultimately, the amount of noise added will render the shared data to have no
+%practical use.
+Song et al. \cite{song2013stochastic} investigate effects of differential privacy on mini batch SGD. They observe that increased batch
+size ameliorates the impact of differential privacy on the variability of SGD. 
+%The authors, however, also observe an upper limit to the
+%batch that can be utilized to control the variability produced by the privacy preserving noise.
+Chase et al. \cite{chase2017private} propose an algorithm that combines  SMC and differential privacy. 
+Unfortunately, since differential privacy adds noise to the private data, the accuracy degradation increases with the number of users
+in the system. Hence, differential privacy approaches suffer from poor scalability. 
 
-SMC's application in secure computation of private data is explored in \cite{sheikh2010distributed}. The authors propose a novel
-protocol that divides and distributes private data blocks among participants. This facilitates a scenario in which semi honest parties
-are incapable of discovering private data of other parties. This technique is however contingent on the malicious parties being
-semi-honest parties.
+To protect the privacy of the users while allowing a large amount of users to participate in training of deep learning
+models, researchers have recently proposed distributed learning. Specifically, Shokri et al. \cite{shokri2015privacy} propose 
+%a  system that enables collaborative training for deep neural networks in a privacy
+%preserving manner. In the paper the authors design and test 
+a protocol where the users locally train a deep neural network and then share a small subset of its parameters
+with a server. The server aggregates the parameters, and then the users choose which parameters to download. 
+Using the downloaded the parameters, the users can improve their deep learning models without having to observe the data sets from the
+other users, which preserves privacy. Under this approach, the users are able to train their models to a high accuracy. 
+%uploads  enables %the participants to preserve the privacy of %their dataset while drawing benefits from other participants' trained model.
 
-In \cite{miyajima2016new}, the authors propose to solve security risks associated with cloud computing using SMC. They propose a back
-propagation learning method for secure data computation and learning on cloud based system. The authors acknowledge that this technique
-can be computationally expensive for the clients participating in the system.
-
-To overcome constraints in a mobile user setting, some researchers have proposed a protocol to aggregate user data by leveraging SMC
-\cite{bonawitz2017practical}. They focus their work on creating a robust protocol that maintains its efficacy even if there are client
-dropouts. 
-
-Some research has also been done in the field of differential privacy to guarantee data privacy protection. In \cite{abadi2016deep},
-the authors analyze the privacy cost, complexity and training efficiency of neural networks with differential privacy. They propose a
-novel algorithmic technique for training neural network with a modest privacy costs with a viable software complexity. Their work
-however does not account for distributive collaborative deep learning. Since differential privacy is hinged on adding nose to the data,
-the added noise will scale with size of the participants. Ultimately, the amount of noise added will render the shared data to have no
-practical use.
-
-In \cite {song2013stochastic}, the authors investigate effects of differential privacy on mini batch SGD. They document their
-observation that increased batch size improves can help ameliorate the impact of differential privacy on the variability of SGD. The
-authors, however, also observe an upper limit to the batch that can be utilized to control the variability produced by the privacy
-preserving noise.
-   
-The authors in \cite{chase2017private} propose a protocol that merges SMC as well differential privacy for learning neural networks in
-a collaborative way. Since differential privacy is does not scale and SMC does not guarantee the privacy of the end result, the authors
-attempt the bridge the two to architect a stronger protocol. However, their solution also rests on the assumption of semi honest
-parties and does not account of malicious participants at all. The authors also observe that accuracies generated by their protocol
-drop with increasing parameters in the network. This prevents the propose protocol from being scalable.
-
-In \cite{shokri2015privacy} the authors propose a system that enables collaborative training for neural networks in a privacy
-preserving manner. In the paper the authors design and test a protocol in which the participants share a small subset of parameters
-from their trained neural networks. These parameters are then aggregated on an independent server. The participants can then choose to
-download the parameters from the server and use it to train their own model. This enables the participants to preserve the privacy of
-their dataset while drawing benefits from other participants' trained model.
-
-In \cite{hitaj2017deep}, the authors outline a possible attack that exploits the architectural weaknesses in the collaborative learning
-system proposed in \cite{abadi2016deep}. The attack proposed in \cite{hitaj2017deep} leverages Generative adversarial networks (GAN) as
-a malicious participant. Thsi renders their attack model immune to majority of obfuscation techniques. The authors claim that the 
-deceptive adversarial influence exerted by their attack model is a more potent threat than the ones posed by techniques involving Model
-Inversion attacks in \cite{deng2012mnist}.
+Unfortunately, the privacy-preserving distributed learning proposed by Shikri et al. \cite{shokri2015privacy} is vulnerable to an
+attack where users upload maliciously crafted parameters. Specifically, Hitaj  et al. \cite{hitaj2017deep} design
+an attack where a malicious user 
+%exploits the architectural weaknesses in distributed learning. 
+%system proposed in \cite{abadi2016deep}. 
+%The attack proposed in \cite{hitaj2017deep} 
+leverages Generative Adversarial Networks (GAN) to replicate samples of the data sets from other users in the system, which compromises
+their privacy. 
+%their attack model immune to majority of obfuscation techniques. 
+\hl{The authors claim that the  deceptive adversarial influence exerted by their attack model is a more potent threat than the ones
+posed by techniques involving Model Inversion attacks in} \cite{deng2012mnist}.\hl{ [Is the approach by Shokri et al vulnerable to
+this attack? If not, delete]. }
 
 %---------------------------------------------------------------------------------
 \section{Background on Deep Neural Networks}
 %---------------------------------------------------------------------------------
-Deep Learning  is a subset of machine learning that excels at extracting complex information from high dimensional data. Unlike traditional machine learning deep learning workflow does not involve manual feature extraction. It is essentially an end-to-end process where the network can be trained on raw data without the burden of preprocessing it.
-Deep Learning also scales with the data size, producing more accurate results with larger datasets.
-These advantages make Deep learning a very effective technique to perform classification tasks.
 
-Deep learning architectures are comprised of several neural networks organized in layers. Neural networks consist of 3 types of layers. Input layers are first layers that receive input, ouput layer is the last layer in the network. All layer between input and output layer are hidden layers. Traditionally, Deep networks contain 2 or more hidden layers. These multiple layers enable Deep networks to compute nonlinear functions of abstract data features.
-One of the basic Deep learning neural network architecture is the multilayer perception (MLP). It is a feed-forward based network implying it has no feedback loops and instead directly maps inputs onto a set of outputs. 
+Deep Learning  is a subset of machine learning that excels at extracting complex information from high dimensional data. Unlike
+traditional machine learning deep learning workflow does not involve manual feature extraction. It is essentially an end-to-end process
+where the network can be trained on raw data without the burden of preprocessing it. Deep Learning also scales with the data size,
+producing more accurate results with larger datasets. These advantages make Deep learning a very effective technique to perform
+classification tasks.
 
-MLP architecture is composed of multiple layers where each layer consists of many inter-connected nodes. The layers are fully connected to the previous as well as the next layer in the architecture. The output of a single node within the layer is a function of the weighted average of the inputs connected to the node from the previous layers. In a typical network, each neuron also receives an additional input from a special neuron called the bias.  Together, the weights and biases of neural network are called its parameters. The weighted average of inputs plus the bias is referred to as the total input for the neuron. The final output of the neuron is computed by applying a activation function to the computed total input. This activation function is crucial in introducing non-linearity in neural networks. The non-linearity allows the modelling of complex data that linear regression models lack the dimensionality to do.
-Formally, the output of neuron at layer $k$ is defined as follows:
+Deep learning architectures are comprised of several neural networks organized in layers. Neural networks consist of 3 types of layers.
+Input layers are first layers that receive input, ouput layer is the last layer in the network. All layer between input and output
+layer are hidden layers. Traditionally, Deep networks contain 2 or more hidden layers. These multiple layers enable Deep networks to
+compute nonlinear functions of abstract data features. One of the basic Deep learning neural network architecture is the multilayer
+perception (MLP). It is a feed-forward based network implying it has no feedback loops and instead directly maps inputs onto a set of
+outputs. 
+
+MLP architecture is composed of multiple layers where each layer consists of many inter-connected nodes. The layers are fully connected
+to the previous as well as the next layer in the architecture. The output of a single node within the layer is a function of the
+weighted average of the inputs connected to the node from the previous layers. In a typical network, each neuron also receives an
+additional input from a special neuron called the bias.  Together, the weights and biases of neural network are called its parameters.
+The weighted average of inputs plus the bias is referred to as the total input for the neuron. The final output of the neuron is
+computed by applying a activation function to the computed total input. This activation function is crucial in introducing
+non-linearity in neural networks. The non-linearity allows the modelling of complex data that linear regression models lack the
+dimensionality to do. Formally, the output of neuron at layer $k$ is defined as follows:
 $$a_k=f(W_k a_{k-1})$$
 Where $f$ is the activation function.  $W_k$ is the weight matrix of at layer $k$ which controls how input signal from previous layer, $a_{k-1}$ affects the output of the current neuron. 
 There are several non-linear activation functions that can be used such as sigmoid function which outputs values between 0 and 1, normalizing the output of each neuron. Hyperbolic tangent activation function is zero centered and makes it easier to model inputs that have strongly negative, neutral or positive values. Rectified Linear Unit (ReLU) is an increasing popular activation function that aids in the quick convergence of the network. In a network that is tasked to classify inputs to one of the $j$ fixed number of outputs, the output layer typically deploys SoftMax activation function, given by 
@@ -242,11 +271,13 @@ Figure Figure \ref{fig:SimplNN} shows the structure of a typical classification 
 
 \end{figure}
 
-
-
 %For professor: Should i insert activation function formula for each of the mentioned functions?
 
-Before a neural network can be deployed, it needs to be trained to model non-linear high dimensional functions. The training of a neural network involves selecting the exact set of parameters, weights, biases and activation function that meet its specified objective. There are several algorithms that can tackle this non-linear optimization problem. A training dataset is a dataset of sample inputs which has  known outputs or labels. In supervised learning,  we feed the inputs from a training dataset to the neural network during its training phase and compare computed output with the corresponding labels.
+Before a neural network can be deployed, it needs to be trained to model non-linear high dimensional functions. The training of a
+neural network involves selecting the exact set of parameters, weights, biases and activation function that meet its specified
+objective. There are several algorithms that can tackle this non-linear optimization problem. A training dataset is a dataset of sample
+inputs which has  known outputs or labels. In supervised learning,  we feed the inputs from a training dataset to the neural network
+during its training phase and compare computed output with the corresponding labels.
 
 Some of the most popular algorithms deployed in the training phase are variants of gradient descent (GD)  algorithm. In simple terms, the GD algorithm calculates the derivative of the function being optimized with respect to each of the current parameters. It then updates the parameters and repeats the process iteratively to achieve more accuracy. 
 Gradients in Deep network are computed after both the feed forward and back propagation steps. In forward propagation, the inputs from a training set are passed to the network and its output is recorded. We then compare the computed output and provided labels to calculate the error or loss function. The error function is given by the difference between the label of the training set and the computed output by the neural network. The backpropagation algorithm then finds the partial derivative of the error function with respect to each neuron. This highlights how each neuron has contributed to the total error. We then use each neuron's computed error contribution and its corresponding activation value to calculate gradient. The parameters in the network are then adjusted to reduce the computed gradient.

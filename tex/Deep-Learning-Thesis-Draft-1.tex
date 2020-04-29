@@ -247,7 +247,7 @@ tasks. In this section, we describe the architecture of deep neural networks and
 %The layers of deep neural networks can be of three types: input, hidden or output. 
 
 %------------------------------------------------------------------------------
-\subsection{Architecture}
+\subsection{Architecture}\label{sec:MLP}
 %------------------------------------------------------------------------------
 %the network, process it, and provides an input to the first hidden later. Hidden layers continue the data flow until they reach
 %the output layer, which provides the results of the classification task to the user. 
@@ -470,69 +470,133 @@ In this section, we describe our considered collaborative deep learning model, a
 \subsection{System Model} \label{sec:systemModel}
 %---------------------------------------------------------------------------------
 
-In this section, we describe a deep learning system with a set of users $\mathcal{U}= \{u_0, \dots,u_N\}$, where $N$ is the total
-number of
-users. Each user has a collection of
-private dataset  $\mathcal{D}= \{d_0, \dots,d_N\}$. 
-%We assume a reference  participant, $u_0$ whose dataset $d_0$ is significantly smaller
-%than datasets $d_1$ to $d_N$ belonging to users $u_o$ to $u_N$. 
-Let $w_i$ be the flattened vector of parameters for the $i$th user. The
-deep learning system aims to share parameters of each user $u_0$ to $u_N$  trained privately on datasets $d_0$ to $d_N$ in a privacy
-preserving manner.
+We consider a distributed deep learning system formed by a set of $N$ users $\mathcal{U}= \{u_0, \dots,u_N\}$ and
+a parameter server (PS). User $u_0$ aims to train a local deep neural network using its own training data set
+$d_{u_0}$ as well as the data sets of the other users $d_{u_i}$. % for all $u_i\in\mathcal{U}\setminus 0$. 
+The training data sets $d_{u_i}$'s of all users contain private information that cannot be shared with each other or with the PS.  
 
-To do this, all participants in this system agree in advance on a
-common network architecture and common learning objective. The system also includes a secure parameter server (PS), which maintains the
-latest values of parameters uploaded given by $w^{(global)}$. Each user, $u_i$ in the system selects a $\theta_d^{i}$, which is the fraction of  $w^{(global)}$ parameters that the user will download from the PS. 
-The user $u_i$ also choses a value $\theta_u^{i}$ which is the fraction of $w_i$ that user chooses to upload to the PS.
-
-Each participant, $u_i$ randomly initializes its parameters $w_i$ and selects a learning rate, $\alpha$.
-The participant then downloads $|\theta_d^{i} \times w_i|$ parameters from PS and overwrites its corresponding local parameters.
-$u_i$ then runs the stochastic gradient descent algorithm for one epoch on its local dataset and trains its model. The local parameter vector, $w_i$ is updated according to \eqref{eq:SGD}. The SGD yields a new set of parameters, $w_i^{(new)}$.
-In the next step, $u_i$ computes the parameter gradient $\Delta w_i$ which is vector of changes in all local parameters due to the SGD. This is computed by
-$$\Delta w_i =  w_i^{(new)} -  w_i$$ 
-The gradient  $\Delta w_i$ is indicative of how much each parameter has to change to more accurately perform regression on the local dataset $d_i$.
-Consider $S$ to be a set of indices with the top  $|\theta_u^{i} \times \Delta w_i|$ values in $\Delta w_i$ 
-The participant then uploads  $\Delta w_S$ values to the PS.
-These uploaded values represent the parameters in the local model that have undergone the largest changes due to the SGD. 
-
-When a participants makes a valid attempt to upload $\Delta w_S$ parameters to the PS, parameter vector of PS,  $w^{(global)}$, is updated as follows:
-$$w^{(global)} =  w^{(global)} +  \Delta w_S$$
-
-In this scenario we assume all participants, $u_0$ to $u_N$, interact with the server atomically.
-That is, at any given time, only one participant can upload or download parameters from the server. This prevents over writing of parameters or race conditions from occurring within the server.
-
-%--------------------------------------------------------------------------------------------
-\section{Neural Network Architecture}
-%--------------------------------------------------------------------------------------------
-
-In this paper we use a multilayer perceptron (MLP) in a classic feed forward arrangement. Each layer in the network is fully connected to the next layer. The networks takes images as its input to its first layer. It then funnels this input through multiple hidden layers. An activation function is then applied to the output of each hidden layer. For this network we choose the Rectified Linear Unit or ReLU as the activation function. Since this network serves as a classification network, the log soft max activation function is applied to the last layer. This results in outputs that are squashed into probabilities that sum to one. 
-Figure \ref{fig:ClassNN} shows the structure of a typical feed forward MLP deep neural network. The network is fed a raw image of  $m \times m$ pixels. Each pixel is an individual input which is funneled through $N$ hidden layers and ReLU activation function with $I$ neurons in each layer. The neural network produces $j$ outpputs with each putput mapping to a single class. In a classification network such as this, each output $a_1$ through $a_j$ reflects the probability of the image belonging to that class. All ouputs pass throught the softmax layer and therefore sum to 1. 
-
+User $u_0$'s deep neural network is a multilayer perceptron (MLP) as described in Section \ref{sec:MLP} for image classification.
+Although we focus on images, our results can be easily generalizable to other types of data. 
+%in a classic feed forward arrangement.
+%Each layer in the network is fully connected to the next layer. 
+%The networks takes images as its input to its first layer. It then funnels this input through multiple hidden
+%layers. An activation function is then applied to the output of each hidden layer. For this network we choose the Rectified Linear Unit
+%or ReLU as the activation function. Since this network serves as a classification network, the log soft max activation function is
+%applied to the last layer. This results in outputs that are squashed into probabilities that sum to one.  
+Figure \ref{fig:ClassNN} shows the structure of user $u_0$'s MLP for image classification. The network is fed a raw image of  $m
+\times m$ pixels. Each pixel is an individual input which is funneled through $N$ hidden layers and ReLU activation function with $I$
+neurons in each layer. The neural network produces $j$ outputs where each output represents the probability of the image belonging to
+the $a_j$th category. 
+%In a classification network such as this, each output $a_1$ through $a_j$ reflects the probability of the image belonging to that
+% class. 
+%All outputs pass throughout the softmax layer and therefore sum to 1. 
 \begin{figure}[!h]
 \includegraphics[width=8cm, keepaspectratio]{ClassificationNN}
 \caption{Neural network depicting an image with $m \times m$ pixels fed as input, $j$ outputs  $N$  hidden layers and with $I$ neurons in layer.}
 \label{fig:ClassNN}
 \end{figure}
-The parameter server is responsible for maintaining the current values of all parameters. Since it should be accessible to all
-participants , the server can be implemented as any form of updatable cloud storage. However, for the purpose of this experiment we
-chose to implement it as another neural network. 
+
+%-------------------------------------------------------------------------
+\subsection{Privacy-preserving Distributed Learning under the Semi-honest Threat Model}
+%-------------------------------------------------------------------------
+To allow user $u_0$ to train its deep learning network while preserving the privacy of all users, we could use the distributed
+learning approach proposed by Shokri et al. \cite{shokri2015privacy}. This approach allows user $u_0$, as well as the rest of the users, 
+to use the private data from each other to train a deep learning model. By only sharing certain parameters of their local models
+with a parameter server, it allows them to update their local models without having to transmit any of their samples to each other
+or to the their private sets. We assume that th architecture and training parameters of  deep neural network that user $u_0$ aims to
+train are known  to all other users and the PS.
+
+In the approach proposed by \cite{shokri2015privacy}, each users in $u_i\in\mathcal{U}$ trains local deep learning
+network, and uploads certain parameters to the parameter server. The parameter server aggregates the parameters and transmits some of
+them back to the users. This iteration can be repeated until the accuracy of the users' deep learning model achieves a minimum value. 
+
+Specifically, let  $w^{(global)}$ and $w_i$ be the parameters at the parameter server and at user $u_i$, respectively. 
+To initialize the system,  each user $u_i$ randomly sets its parameters $w_i$ to a randomly chosen value and selects a learning rate,
+$\alpha_i$. Then, at each iteration,  user $u_i$  downloads $\theta_d^{i} \times |w_i|$ parameters from the parameter server and
+overwrites the corresponding parameters on its parameter vector $w_i$. User $u_i$ then runs the stochastic gradient descent algorithm
+with the updated parameter vector as starting point. Based on the new parameters found by the SGD, i.e., $w_i^{(new)}$, user
+$u_i$ uses \eqref{eq:SGD} to update its local parameter vector $w_i$. 
+
+Next, user $u_i$ computes the parameter gradient that captures the changes between the old and new local parameters, i.e., 
+$$\Delta w_i =  w_i^{(new)} -  w_i$$. 
+Let $\mathcal{S}_i$ be the set of indexes of elements in parameter vector $w_i^{(new)}$ with 
+with the largest  $\theta_u^{i} \times \Delta w_i$ gradient difference values in $\Delta w_i$. 
+Then, the participant uploads a vector with the parameters in $w_i^{(new)}$ whose indexes are in set $\mathcal{S}_i$ to the parameter
+server.  After receiving the parameters from user $u_i$, the parameter server updates its own vector as follows:
+$$w^{(global)} =  w^{(global)} +  \Delta w_S,$$
+where $\Delta w_S$ is the vector of the largest parameters from user $u_i$. Note that $\Delta w_S$  is set to zero in the remaining
+positions. Intuitively, the  values $\Delta w_S$ represent the parameters in the local model that have undergone the largest
+changes due to the local stochastic gradient descent training and contain the most information for other users to improve their models.
+
+
+Although this approach can train local models with high classification accuracy,  it assumes a semi-honest threat model for the users,
+which us not realistic. That is, it assumes that the users will attempt to find private information about other users based on the parameters that they
+download from the server. As we will see in the next section, users can launch active attacks where they maliciously modify the
+parameters that they upload to recreate samples from other users. 
+%Intuitively,  $\Delta w_i$ measures how much each parameter has to change to more accurately perform classification on the local
+%dataset $d_i$.
+
+%trains its local deep neural network using only its local training data set and
+%uploads $\theta_u^{i}$
+%parameters from its parameter vector $w_i$ to the parameter server. After all users have uploaded their parameters to the server, user
+%$u_i$ downloads $\theta_d^{i}$ parameters from the global parameter vector $w^{(global)}$
+
+%The user $u_i$ also choses a value 
+
+
+%The system also includes a secure parameter server (PS), which
+%maintains the latest values of parameters uploaded given by $w^{(global)}$. Each user, $u_i$ in the system selects a 
+
+%Each participant, 
+%The participant then 
+
+
+%In this scenario we assume all participants, $u_0$ to $u_N$, interact with the server atomically.
+%That is, at any given time, only one participant can upload or download parameters from the server. This prevents over writing of
+%parameters or race conditions from occurring within the server.
+
+%Let $w_i$ be the flattened vector of deep neural
+%network parameters for the $i$th user. The deep learning system aims to share parameters of each user $u_0$ to $u_N$  trained privately
+%on datasets $d_0$ to $d_N$ in a privacy preserving manner.
+
+%The parameter server is responsible for maintaining the current values of all parameters. Since it should be accessible to all
+%participants , the server can be implemented as any form of updatable cloud storage. However, for the purpose of this experiment we
+%chose to implement it as another neural network. 
 
 
 
+
+%To train user $u_0$'s model in a privacy 
+
+%However, 
+
+%We assume a reference  participant, $u_0$ whose dataset $d_0$ is significantly smaller
+%than datasets $d_1$ to $d_N$ belonging to users $u_o$ to $u_N$. 
+
+
+%To do this, all participants in this system agree in advance on a common network architecture and common learning objective. 
 
 %---------------------------------------------------------------------------------
-\subsection{Threat Model}
+\subsection{A Malicious Threat Model for Distributed Deep Learning}
 %---------------------------------------------------------------------------------
-The core prinicple motivating distributed learning is the idea that users do not wish to share their private training data. This data can be sensitive and an unverified user might attempt to maliciously violate the sharer's privacy on the pretext of model training.
 
-We consider a malicious threat model for the parameter server and the collaborators. Specifically, the collaborators will attempt to learn private information about the reference user's dataset based on the parameters that the reference user uploads. 
-In addition, one or multiple  collaborators will attempt to actively trick the reference user to reveal its private information by uploading malicious parameters. 
+%The main reason to design distributed learning algorithms is to protect the privacy of the users training data sets. 
+%This data can be sensitive and an unverified user might attempt to maliciously violate the sharer's privacy on the pretext of model
+%training.
 
-Instead of sharing the parameters of its deep neural, the malicious party will collect the parameters from its victim user. The malicious party will then replicate the victim's data, ultimately violating the the victim's privacy.
+We consider a malicious threat model for both the parameter server and the users. Specifically, malicious users will
+attempt to learn private information about other users' dataset based on the parameters that they uploads.  In
+addition, one or multiple  users will upload malicious parameters that can trick a victim user into reveal its private information. 
+
+%Instead of sharing the parameters of its deep neural, the malicious party will collect the parameters from its victim user. The
+%malicious party will then replicate the victim's data, ultimately violating the the victim's privacy.
   
-Since the threat is not dependent on the adversary compromising the
-central Parameter Server, it remains viable. In effect, the adversary does not have to control the PS or the service
-provider to execute his attack. The attack is more effective when adversarial influence is exercised \cite{hitaj2017deep}. This would imply that the adversary is an active participant that is adapting his gradients in real time during the current learning process.
+%Such an attack has been  In this attack, 
+%Since the threat is not dependent on the
+%adversary compromising the
+%central Parameter Server, it remains viable. In effect, the adversary does not have to control the PS or the service provider to
+%execute his attack. The attack is more effective when adversarial influence is exercised \cite{hitaj2017deep}. This would imply that
+%the adversary is an active participant that is adapting his gradients in real time during the current learning process.
 
 %describe an attack that results in privacy leakage in
 %collaborative deep learning system proposed in
@@ -548,37 +612,53 @@ provider to execute his attack. The attack is more effective when adversarial in
 
 %\subsection{Attack Posed}
 
-In particular the attack operates as follows. Suppose all participants including the adversary agree on general specifications such as
-the type of neural network and labels on which training would take place as described in Section \ref{sec:systemModel}. Let another
-participant in the collaborative deep learning
-model be the victim $u_V\in\mathcal{U}$ that declares the labels $[a,b]$. The adversary $u_A\in\mathcal{U}$ declares labels $[b,c]$ implying that the
-adversary has no data on class $a$. By deploying the attack, the adversary stands to gain useful information about class $a$.
+Such an attack has been described by Hitaj et al. \cite{hitaj2017deep}. In particular, the attack operates as follows. 
+Suppose user $u_A\in\mathcal{U}$ is malicious and targets another user $u_V\in\mathcal{U}$. Further assume that all users, including
+the malicious one, agree on the hyper parameters of a neural network architecture such as the number, size and type of layers,  and the
+classification labels as described in Section \ref{sec:systemModel}.
 
-The adversary then uses the private GAN to generate models that look like class $a$, which the adversary deceivingly mislabels as $c$.
-This prompts the victim  $u_V$ to release more information about the class $a$ in order to distinguish between classes 
-$a$ and $c$. Therefore the victim releases more data on class a now than he initially intended to.
+The victim user $u_V$ declares that its private training data set contains samples for the  labels $[a,b]$. The adversary
+$u_A$ declares to have the classification labels $[b,c]$ in its training data set, which means it has no data on for label $a$. By
+deploying the attack, the adversary aims to replicate samples with the same probability distributions as the private samples with label
+$a$ at user $u_V$.
 
-This can be further summarized as follows:
+The adversary user $u_A$ then locally uses a generative adversarial network to generate samples that have the same distribution as
+sample with label $a$ at $u_V$. The adversary label these malicious samples as belonging to category $c$. This prompts the victim 
+user $u_V$ to adjust \hl{[Does the victim adjust the fraction of parameters that it shares?]}, which results in more information about
+its samples in class $a$ revealed to the parameter server, and ultimately to the adversary $u_A$. 
+%classes
+%$a$ and $c$. Therefore the victim releases more data on class a now than he initially intended to.
+
+We summarize the attack proposed by \cite{hitaj2017deep} as follows:
 \begin {enumerate}
-\item Assuming victim $u_V$ declares labels $[a,b]$ and adversary $u_A$ declares labels $[b,c]$
-\item We then run the collaborative learning protocol for several epoch and stop when we reach a specified accuracy.
-\item During this process, the $u_V$ downloads a percentage of parameters from parameter Server and updates his local model.
+\item Assume victim $u_V$ declares labels $[a,b]$ and adversary $u_A$ declares labels $[b,c]$
+\item Run the distributed deep learning protocol proposed by \cite{shokri2015privacy} for several epochs and stop when we reach a
+specified accuracy.
+\item During this process, the $u_V$ downloads a percentage \hl{[Add the notation for this value]} of parameters from the parameter
+server and updates his local model.
 \item $u_V$'s local model is trained on classes $a$ and $b$
 \item $u_V$ uploads a section of his model to Parameter Server
-\item The adversary trains is slotted to engage with the Parameter Server
-\item $u_A$ downloads the percentage of parameters from the PS and updates his model
-\item $u_A$ then trains his local GAN to mimic class $a$.
-\item $u_A$ generates class a samples from the GAN and mislabels them intentionally as class c.
-\item $u_A$ uploads a percentage of his parameters to the PS
+\item The adversary training is slotted to engage with the Parameter Server
+\item $u_A$ downloads the percentage \hl{include notation for this percentage} of parameters from the PS and updates its model
+\item $u_A$ then trains its local GAN to generate samples with the same distribution as class $a$ at $u_V$.
+\item $u_A$  mislabels calss $a$ samples as class $c$ samples.
+\item $u_A$ uploads a percentage \hl{include notation} of its parameters to the PS
 \end {enumerate}
-During the process of convergence, $u_A$ will be able to covertly exert influence on the learning process via the mislabeling of class
-$a$.
 
-In this paper, we present a collaborative learning scenario that prevents the reference user from releasing more
-information about a class, and ultimately it protects the reference user's privacy. We design the interaction of the reference user
-with Parameter Server such that $u_V$ is not RefU
+%During the process of convergence, $u_A$ will be able to covertly exert influence on the learning process via the mislabeling of class
+%$a$.
 
+In this work, we present a collaborative learning scenario that prevents the malicious user from recreating private sample
+from other users. 
+
+%releasing more
+%information about a class, and ultimately it protects the reference user's privacy. We design the interaction of the reference user
+%with Parameter Server such that $u_V$ is not RefU
+
+
+%---------------------------------------------------------------------------------------
 \section{A Privacy-preserving Collaborative Learning Algorithm}
+%---------------------------------------------------------------------------------------
 
 \begin{figure*}[!h]
 \includegraphics[width=\textwidth, keepaspectratio]{HighLevelArch}
@@ -586,15 +666,21 @@ with Parameter Server such that $u_V$ is not RefU
 \label{fig:HighLevel}
 \end{figure*}
 
-This architecture works by ensuring privacy to the reference user by limiting its exposure to other collaborators. We structure this algorithm such that a primary participant, the reference user, $r_0$ benefits the most and is afforded the highest level of protection against GAN-based attacks. We envision this architecture materializing in a manner that involves the reference user compensating other collaborators for the parameters and abstract data to train its model. Since the architecture inherently obscures the absolute data, we are also able to preserves privacy for paid collaborators involved.
+This architecture works by ensuring privacy to the reference user by limiting its exposure to other collaborators. We structure this
+algorithm such that a primary participant, the reference user, $r_0$ benefits the most and is afforded the highest level of protection
+against GAN-based attacks. We envision this architecture materializing in a manner that involves the reference user compensating other
+collaborators for the parameters and abstract data to train its model. Since the architecture inherently obscures the absolute data, we
+are also able to preserves privacy for paid collaborators involved.
 
 
-Specifically, we propose a system that considers a reference participant with a much smaller data set as the most significant benefactor of this architecture. We consider $u_0\in\mathcal{U}$ to be our reference user with reference dataset $d_0\in\mathcal{D}$ such that $d_0$ is much smaller than all other $d \in\mathcal{D}$
+Specifically, we propose a system that considers a reference participant with a much smaller data set as the most significant
+benefactor of this architecture. We consider $u_0\in\mathcal{U}$ to be our reference user with reference dataset $d_0\in\mathcal{D}$
+such that $d_0$ is much smaller than all other $d \in\mathcal{D}$
 
 
 We structure the system to ensure that the privacy of the reference
-user, $u_0$ is not affected by the inventive GAN based attack proposed in \cite{hitaj2017deep}. Table \ref{table:1} summarises the notations used in this
-paper.
+user, $u_0$ is not affected by the inventive GAN based attack proposed in \cite{hitaj2017deep}. Table \ref{table:1} summarises the
+notations used in this paper.
 
 \begin{table}[!h]
 \centering

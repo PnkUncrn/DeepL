@@ -61,27 +61,16 @@ Neural Network, Deep learning, GANs
 %---------------------------------------------------------------------------------
 In the past few decades, deep learning has generated a lot of interest in the research and academic community due to its great ability
 to automatically classify large amounts of data. This has led to breakthroughs in many fields ranging
-from autonomous driving, and natural language processing to genetic research \cite{}.
+from autonomous driving, and natural language processing to genetic research \cite{young2018recent, al2017deep, huval2015empirical, danaee2017deep}.
 %It is no surprise that deep learning has seen a significant investment by technology giants such as Google, IBM and Facebook. 
 This revolutionary technology is especially fruitful for large corporations that need to automatically process very large data sets
-to provide deep learning inference services to their users. For example, Facebook collects data from their users to train deep learning
-models that help them to \hl{[Add what services facebook offers with these data]} \cite{}.
-% This can simultaneously yield effective models with wide applications as well as raise pertinent privacy concerns.
-
-%Please add a few citations about how deep neural networks are being used in those areas. You can add news articles with the 
-% following bibtex sytax:
-%@misc{label, 
-%author= {},
-%title={},
-%year={},
-%howpublished={url to news article}
-%}
+to provide deep learning inference services to their users. For example, data collection at Facebook enabled them to create DeepText, a text understanding engine that is able to extract meaningful context from text \cite{abdulkader2016introducing}.
 
 Although it is possible to collect large-scale data to train deep learning models in some application domains, e.g., online social
 networks, there are other fields where such centralized data collection is currently infeasible due to privacy
 concerns.
-In particular, users' data can contain various types of private information that needs to be kept secret from third-parties such as the
-companies that centrally collect data to provide deep learning services. These data
+In particular, users' data can contain instances of private information that needs to be kept a secret from third-parties such as the
+companies that centrally collect data to provide deep learning services. Such data
 can include
 %It is only inevitable that a
 %subset of the sample space contains sensitive information that was accidentally captured without user consent.  Other privacy concerns
@@ -94,7 +83,7 @@ Educational Rights and Privacy Act (FERPA) \cite{act1996health,blechner2002healt
 % community
 %By sharing their data, organization can receive improved deep learning inference. However, 
 %stands to benefit from deep learning, 
-%the privacy concerns around these type of data male it impossible to share with an untrusted third-party such as a deep learning
+%the privacy concerns around these type of data make it impossible to share with an untrusted third-party such as a deep learning
 %service provider. 
 %medical history of patients makes collecting of data samples a challenging task. 
 
@@ -102,10 +91,10 @@ Instead of sharing private data with a third-party, users could locally train th
 data. However, since a single user only has access to a small data set compared to the data set that could be centrally
 collected by the third-party, its locally trained deep learning model can suffer from over generalization, which significantly
 degrades its ability to provide correct inferences. 
-%Moreover, over generalization of models trained on single source of training dataset can have significant
-%effect on the model's usability. 
-For instance, a hospital trained a deep neural network using to recognize patients with pneumonia based on their
-chest X-ray images using its own records. Although this neural network was successful classifying records from patients that were
+Over generalization of models trained on single source of training dataset can have significant
+effect on the model's usability. 
+For instance, a hospital trained a deep neural network to recognize patients with pneumonia based on their
+chest X-ray images using its own records. Although this neural network was successful in classifying records from patients that were
 treated in the hospital, its performance significantly dropped when tested with images from other patient treated at a different
 hospital \cite{zech2018variable}. 
 %This indicates that models trained on single source datasets can produce confounding results. 
@@ -118,18 +107,18 @@ Researchers have made some headway in this direction by leveraging distributed l
 \cite{shokri2015privacy}.
 In this approach, a set of distributed users locally
 train a deep learning model only using their own data. To overcome the challenge of over generalization and small
-data sets, they send certain parameters of their model to a central server, who aggregates them. 
+data sets, they send certain parameters of their model to a central server, which aggregates them. 
 Then, the users can download the aggregated parameters to improve their local models. This approach achieves high accuracy.
-Although   users do not send their data to the central server, recent studies have shown that it is possible for users of the
+Although users do not send their raw data to the central server, recent studies have shown that it is possible for users of the
 distributed learning server to recreate samples of other users using a generative adversarial network (GAN) even when the victim users 
 obfuscated their private data before training \cite{hitaj2017deep}.
 
-In this paper we propose, implement, and analyze a distributed deep learning framework that enables a user to benefit from 
+In this paper we propose, implement, and analyse a distributed deep learning framework that enables a user to benefit from 
 high accuracy distributed learning while preserving its privacy and the privacy of all other users. 
 Specifically, our framework operates as follows. First, all users train a local deep learning model using only their local data.
-Second, the framework randomly selects a set of users to upload their parameters to the server, who aggregates them. The main user
+Second, the framework randomly selects a set of users to upload their parameters to be aggregated by the server. The main user
 never uploads its parameters. Third, the main user and the selected users download the aggregated parameters and update their local
-deep learning models. The iteration continues with until the main user's deep learning model achieves a minimum
+deep learning models. The iteration continues until the main user's deep learning model achieves a minimum
 accuracy, or a maximum number of iterations is reached.
 
 The main contribution of our approach is that it allows the main user to leverage the data sets form the other users to train a local
@@ -143,16 +132,16 @@ underlying neural network structure and is therefore, highly adaptable.
 % Second, we enable a user with insufficient but extremely sensitive sample set to benefit from the architecture, while completely
 % safeguarding itself from GAN based attacks. 
 
-To verify the efficacy of our approach, we implement it using a deep convolutional neural network (CNN), and the scripting language
-LUAJIT. We run our experimental simulation on an  M4 instance on the Amazon Web Service's Elastic Compute Cloud (AWS EC2).  The train
-the CNN to classify images from the MNIST dataset which is the standard for image classification.
+To verify the efficacy of our approach, we implement it using a multilayer perceptron (MLP), and the scripting language
+LUAJIT. We run our experimental simulation on an M4 instance on the Amazon Web Service's Elastic Compute Cloud (AWS EC2). The MLP is trained to 
+classify images from the MNIST dataset which is the standard for image classification.
 We observe that our approach can achieve up to 95.18\%  accuracy for the main user when there are 20 other users in the
 system with each one having 50\% probability of being selected to upload their parameters at each iteration. 
 %In comparison, the accuracy when all participants were selected, was 95.17\% with other comparable variables. 
-This is a comparable accuracy to the one that can be achieved by running a non-privacy-preserving centralized apporach, i.e.,  98.17\%.
+This is a comparable accuracy to the one that can be achieved by running a non-privacy-preserving centralized approach, i.e.,  98.17\%.
 %The privacy violating centralized architecture with comparable variables yields an accuracy of 98.17\%. 
 %We achieve these results without deploying any additional computationally intensive obfuscation or cryptographic techniques. 
-We also measure the tradeoff between privacy and accuracy, and show that the main user can easily choose the most appropriate
+We also measure the trade-off between privacy and accuracy, and show that the main user can easily choose the most appropriate
 trade-off by tuning the selection probability of the other users. 
 
 

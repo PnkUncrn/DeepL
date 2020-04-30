@@ -278,10 +278,11 @@ and $a_{k-1}$ is the vector of neuron outputs from the the $k-1$th layer.
 %affects the output of the current neuron. 
 
 There are several non-linear activation functions that can be used for function $f$, including sigmoid,
-hyperbolic tangent, and rectified linear unite (ReLU) \cite{} \hl{Add a reference. The Deep learning Book should be fine}. In this
-work, we will focus on the... function, which is give by\hl{[add the description and the mathematical formula for the most relevant
-one]}
+hyperbolic tangent, and rectified linear unite (ReLU) \cite{Goodfellow-et-al-2016}. In this
+work, we will focus on the ReLU activation function, which is give by
+$$f(z) = max{0, z}$$,
 
+where given an input $z$ the function returns $z$ for positive values and $0$ for negative values.
 %function which outputs
 %values between 0 and 1, normalizing the output of each neuron. Hyperbolic tangent activation function 
 %is zero centered and makes it easier to model inputs that have strongly negative, neutral or positive values. 
@@ -294,9 +295,8 @@ categories. Formally, the SoftMax activation functions is defined by
 %divides it by their sum, resulting in a probability
 %score that
 %the given input belongs to class $j$. which is given by
-$$f(z_j) = \frac{e^{z_j}} {(\sum_ke^{z_k})}, \forall j$$.
-where $z_j$ is ...\hl{Add description of} $z_j$, and $z_k$ is \hl{add description of} $z_k$. 
-
+$$f(z)_j = \frac{e^{z_j}} {(\sum_ke^{z_k})}, \forall j$$,
+where $z_j$ is each element of the input vector $z$ with $k$ elements and $\sum_ke^{z_k}$ is sum of exponents of all elements in $z$.
 
 %---------------------------------------------------------------------
 \subsection{Training}
@@ -324,7 +324,7 @@ variants. In the rest of this subsection, we provide a brief overview of these a
 %---------------------------------------------------------------------
 \subsubsection{Gradient Descent Algorithm}
 %---------------------------------------------------------------------
-The GD algorithm finds the parameter updates in two steps: error  forward propagation, and back propagation. 
+The GD algorithm finds the parameter updates in two steps: error forward propagation and back propagation. 
  %calculates the parameter update at each iteration by performing forward
 %propagation, and then updates the parameters through
 %backward propagation. 
@@ -356,8 +356,7 @@ where  $\alpha$ is the learning rate.
 
 %The parameters in the network are then adjusted to reduce the computed gradient.
 The GD algorithms continues with the forward pass, error calculation, back propagation and parameter update iteration until a minimum
-error is achieved or a maximum number of iterations is reached \cite{} \hl{[Please provide a citation. Preferable NOT The deep
-learning book.]}.
+error is achieved or a maximum number of iterations is reached \cite{ruder2016overview}. 
 
 A key parameter in the GD algorithm is learning rate $\alpha$.   Selecting an optimal learning
 rate is crucial since a smaller learning rate results in a large number of iterations needed to reach the minimum error value. This

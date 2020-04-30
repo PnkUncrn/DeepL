@@ -152,15 +152,15 @@ trade-off by tuning the selection probability of the other users.
 Deep neural networks have outperformed traditional machine learning approaches for many tasks, and are the tool of choice in many
 fields. Specifically, Deep learning has been successfully used for facial recognition \cite{krizhevsky2012imagenet}, image classification, 
 \cite{simard2003best}, and speech recognition \cite{hinton2012deep, graves2013speech }, where it is expected to achieve better
-performance than humans in the near future. However, directly applying these techniques to fields that deal with private data is
-challenging. The reason is that they need to centrally collect data at a third-party that organizations may not trust
+performance than humans in the near future. However, directly applying these techniques in fields that deal with private data is
+challenging. The reason is that they need to centrally collect data at a third-party which organizations may not trust
 \cite{chicurel2000databasing}. This is particularly challenging in medical and financial applications where the privacy of the users is
-governed by federal legislation and needs to be kept private. 
+governed by federal legislation and is protected by law. 
 
 % This has however raised some privacy issues.
 
 To protect users' data privacy, some researchers have proposed to use secure multiparty computations (SMC) 
-\cite{vaidya2003leveraging,7040943} SMC is ... \hl{[Provide one or two sentences about what is SMC]} 
+\cite{vaidya2003leveraging,7040943}. SMC is a technique used to distribute computation over many parties while preserving each party's privacy. It can securely and privately process and compute data distributed across users without compromising the data's privacy.
 %In , the authors survey multi party computation as well as other techniques. They also evaluate SMC's effectiveness and
 %cost in context of secure data processing.
 Sheikh et al. \cite{sheikh2010distributed} propose a SMC that divides and distributes private data blocks among participants and can
@@ -172,10 +172,8 @@ protocol.
 %parties being semi-honest parties.
 Miyajima et al. \cite{miyajima2016new} propose a back propagation learning method for secure data computation and learning on a cloud
 based system using SMC. %solve security risks associated with cloud computing using SMC. 
-Bonawitz et al. \cite{bonawitz2017practical}  proposed an SMC protocol to aggregate mobile user data that maintains its efficacy 
-even if there are some users who dropout of the system. 
-Unfortunately, SMC is computationally expensive for the users participating in the system, which can be impractical for mobile users
-an IoT devices. Moreover, SMC reveals the result of the computation to all parties, which may be a privacy risk for certain
+Bonawitz et al. \cite{bonawitz2017practical}  proposed an SMC protocol to aggregate mobile user data that maintains its efficacy even if there are some users who dropout of the system. 
+Unfortunately, SMC is computationally expensive for the users participating in the system, which can be impractical for mobile users or IoT devices. Moreover, SMC reveals the result of the computation to all parties, which may be a privacy risk for certain
 applications. 
 
 %d
@@ -209,7 +207,7 @@ Using the downloaded the parameters, the users can improve their deep learning m
 other users, which preserves privacy. Under this approach, the users are able to train their models to a high accuracy. 
 %uploads  enables %the participants to preserve the privacy of %their dataset while drawing benefits from other participants' trained model.
 
-Unfortunately, the privacy-preserving distributed learning proposed by Shikri et al. \cite{shokri2015privacy} is vulnerable to an
+Unfortunately, the privacy-preserving distributed learning proposed by Shokri et al. \cite{shokri2015privacy} is vulnerable to an
 attack where users upload maliciously crafted parameters. Specifically, Hitaj  et al. \cite{hitaj2017deep} design
 an attack where a malicious user 
 %exploits the architectural weaknesses in distributed learning. 
@@ -218,9 +216,7 @@ an attack where a malicious user
 leverages Generative Adversarial Networks (GAN) to replicate samples of the data sets from other users in the system, which compromises
 their privacy. 
 %their attack model immune to majority of obfuscation techniques. 
-\hl{The authors claim that the  deceptive adversarial influence exerted by their attack model is a more potent threat than the ones
-posed by techniques involving Model Inversion attacks in} \cite{deng2012mnist}.\hl{ [Is the approach by Shokri et al vulnerable to
-this attack? If not, delete]. }
+
 
 %---------------------------------------------------------------------------------
 \section{Deep Neural Networks}

@@ -348,11 +348,17 @@ parameters of each neuron in the deep neural network, which indicate how much ea
 the error. Based on the partial derivatives, the GD algorithm computes an update for each parameter. 
 %computes the partial derivative of the error function
 %with respect to each parameter using their current values. These values are called the gradients. 
-The GD  obtains the new value of parameters by subtracting an scaled value of the partial derivatives, i.e.,  
+The GD  obtains the new value of parameters by subtracting a scaled value of the partial derivatives. Formally, the GD is defined as follows.  Let $w$ denote the flattened vector of all weights and biases of a deep neural
+network. Then the $j$th parameter of $w$ is given by:
+%\begin{equation*}
+
+\begin{align}\label{eq:GD}
+w_j = w_j -\alpha \frac{\partial E_i}{\partial w_j}, 
+\end{align}
+
+where $\alpha$ is the learning rate,  $E$ is the value of the error function defined in \ref{eq:errorFunction}. $\frac{\partial E}{\partial w_j}$ denotes the partial derivative of $E$ with respect to parameter $w_j$.   
 %Consider E to be the error function over the entire dataset, then the new value of parameter $w_i$ is given by:
 %\begin{equation*}
-$$w_j = w_j -\alpha \frac{\partial E}{\partial w_j} $$
-where  $\alpha$ is the learning rate. 
 
 %The parameters in the network are then adjusted to reduce the computed gradient.
 The GD algorithms continues with the forward pass, error calculation, back propagation and parameter update iteration until a minimum
@@ -406,8 +412,7 @@ before a single update is made to the parameters. That is, the algorithm process
 This is computationally intensive and time consuming. 
 
 
-To overcome this challenge, we can use Stochastic Gradient Descent(SGD) \cite{} \hl{[Add citation. Preferably NOT the deep learning
-book]}. Unlike the GD algorithm where all samples in the training data set are used in a single iteration, SGD only uses a random 
+To overcome this challenge, we can use Stochastic Gradient Descent(SGD) \cite{bottou2010large}. Unlike the GD algorithm where all samples in the training data set are used in a single iteration, SGD only uses a random 
 selected subset of samples for calculating the parameter updates at each iteration. 
 %SGD then uses this fraction of dataset do a forward pass, calculate error and back propagate the to find the gradients of each
 % parameter. 
@@ -424,25 +429,17 @@ stochasticity. However,
 the randomized selection of data samples can also cause updates made to the parameters to be less accurate. This results in an overall
 meandering path to the local minima. Consequently, one can choose between speed (provided by SGD) and accuracy of each step (provided by
 GD). For larger datasets SGD and Mini-Batch GD is preferred since taking more slightly inaccurate updates is preferred over a
-single slower update in one epoch. For smaller, datasets GD can be sued to obtain more accurate results in fewer iterations and within
+single slower update in one epoch. For smaller datasets, GD can be used to obtain more accurate results in fewer iterations and within
 a feasible amount of time. 
 
 %The size of the subset of samples, called mini-batch, used at each iteration has to be chosen
 %carefully. A small batch can reduce the computing time at each iteration, but may increase the number of iterations needed to converge.
 
-Formally, the SGD can is defined as follows.  Let $w$ denote the flattened vector of all weights and biases of a deep neural
-network. 
-%which is defined as the difference between the actual output of the objective
-%function and the
-%predicted output of the network. 
-%Our aim is to compute the slope of the cost function and the direction we should move to update our
-%parameters. 
-Then the $j$th parameter of $w$ is given by:
-%\begin{equation*}
-\begin{align}\label{eq:SGD}
+Formally, the SGD is defined as follows.
+\begin{align}\label{eq:GD}
 w_j = w_j -\alpha \frac{\partial E_i}{\partial w_j}, 
 \end{align}
-where $\alpha$ is the learning rate,  $E_i$ is the value of the error function defined in \ref{eq:errorFunction} computed over
+where $E_i$ is the value of the error function defined in \ref{eq:errorFunction} computed over
 minibatch $i$, and  $\frac{\partial E_i}{\partial w_j}$ denotes the partial derivative of $E_i$ with respect to parameter $w_j$. 
  
 
@@ -481,6 +478,40 @@ the $a_j$th category.
 \label{fig:ClassNN}
 \end{figure*}
 
+Table \ref{table:1} summarizes the notations used in this work.
+\begin{table}[!h]
+\centering
+\caption{Table1: Summary of notations used in the paper}
+\label{table:1}
+\begin{tabular}{ | m{0.12\columnwidth} | m{0.8\columnwidth}| } 
+\hline
+\textbf{Notation} & \textbf{Description} \\
+ \hline\hline
+
+$N$ & Number of participants excpet the system\\
+\hline
+$u_0$ & Reference User and the  main benefactor of the architecture \\
+\hline
+$M$ & Mini batch size used for stochastic gradient descent\\
+\hline
+$\theta_d$, $\theta_u$ & Fraction of parameters selected for download and upload from total available parameters \\
+\hline
+$W_k$ & Weight matrix for layer K in the neural network\\
+\hline
+$w$ & Flattened vector of all parameters in the neural network. \\
+\hline
+$\Delta w$ & Vector of changes in all local parameters due to SGD\\
+\hline
+$w^{(global)}$ & Flattened parameter vector for server\\
+\hline
+$E$ & Error Function defining the difference btween the computed value and expected value of the objective function \\
+\hline
+$\alpha$ & Learning rate of the stochastic gradient descent algorithm\\
+\hline
+$S$ & Set of $\theta_u$ largest indices selected from $w$ \\
+\hline
+\end{tabular}
+\end{table}
 %-------------------------------------------------------------------------
 \subsection{Privacy-preserving Distributed Learning under the Semi-honest Threat Model}
 %-------------------------------------------------------------------------
@@ -488,17 +519,17 @@ To allow user $u_0$ to train its deep learning network while preserving the priv
 learning approach proposed by Shokri et al. \cite{shokri2015privacy}. This approach allows user $u_0$, as well as the rest of the users, 
 to use the private data from each other to train a deep learning model. By only sharing certain parameters of their local models
 with a parameter server, it allows them to update their local models without having to transmit any of their samples to each other
-or to the their private sets. We assume that th architecture and training parameters of  deep neural network that user $u_0$ aims to
+or to the their private sets. We assume that the architecture and training parameters of  deep neural network that user $u_0$ aims to
 train are known  to all other users and the PS.
 
-In the approach proposed by \cite{shokri2015privacy}, each users in $u_i\in\mathcal{U}$ trains local deep learning
+In the approach proposed in \cite{shokri2015privacy}, each user $u_i\in\mathcal{U}$ trains local deep learning
 network, and uploads certain parameters to the parameter server. The parameter server aggregates the parameters and transmits some of
 them back to the users. This iteration can be repeated until the accuracy of the users' deep learning model achieves a minimum value. 
 
 Specifically, let  $w^{(global)}$ and $w_i$ be the parameters at the parameter server and at user $u_i$, respectively. 
 To initialize the system,  each user $u_i$ randomly sets its parameters $w_i$ to a randomly chosen value and selects a learning rate,
 $\alpha_i$. Then, at each iteration,  user $u_i$  downloads $\theta_d^{i} \times |w_i|$ parameters from the parameter server and
-overwrites the corresponding parameters on its parameter vector $w_i$. User $u_i$ then runs the stochastic gradient descent algorithm
+overwrites its corresponding parameters, $w_i$. User $u_i$ then runs the stochastic gradient descent algorithm
 with the updated parameter vector as starting point. Based on the new parameters found by the SGD, i.e., $w_i^{(new)}$, user
 $u_i$ uses \eqref{eq:SGD} to update its local parameter vector $w_i$. 
 
@@ -510,12 +541,12 @@ Then, the participant uploads a vector with the parameters in $w_i^{(new)}$ whos
 server.  After receiving the parameters from user $u_i$, the parameter server updates its own vector as follows:
 $$w^{(global)} =  w^{(global)} +  \Delta w_S,$$
 where $\Delta w_S$ is the vector of the largest parameters from user $u_i$. Note that $\Delta w_S$  is set to zero in the remaining
-positions. Intuitively, the  values $\Delta w_S$ represent the parameters in the local model that have undergone the largest
+positions. Intuitively, the  values in $\Delta w_S$ represent the parameters in the local model that have undergone the largest
 changes due to the local stochastic gradient descent training and contain the most information for other users to improve their models.
 
 
 Although this approach can train local models with high classification accuracy,  it assumes a semi-honest threat model for the users,
-which us not realistic. That is, it assumes that the users will attempt to find private information about other users based on the parameters that they
+which is not realistic. That is, it assumes that the users will attempt to find private information about other users based on the parameters that they
 download from the server. As we will see in the next section, users can launch active attacks where they maliciously modify the
 parameters that they upload to recreate samples from other users. 
 %Intuitively,  $\Delta w_i$ measures how much each parameter has to change to more accurately perform classification on the local
@@ -603,13 +634,13 @@ the malicious one, agree on the hyper parameters of a neural network architectur
 classification labels as described in Section \ref{sec:systemModel}.
 
 The victim user $u_V$ declares that its private training data set contains samples for the  labels $[a,b]$. The adversary
-$u_A$ declares to have the classification labels $[b,c]$ in its training data set, which means it has no data on for label $a$. By
+$u_A$ declares to have the classification labels $[b,c]$ in its training data set, which means it has no data for label $a$. By
 deploying the attack, the adversary aims to replicate samples with the same probability distributions as the private samples with label
 $a$ at user $u_V$.
 
 The adversary user $u_A$ then locally uses a generative adversarial network to generate samples that have the same distribution as
-sample with label $a$ at $u_V$. The adversary label these malicious samples as belonging to category $c$. This prompts the victim 
-user $u_V$ to adjust \hl{[Does the victim adjust the fraction of parameters that it shares?]}, which results in more information about
+sample with label $a$ at $u_V$. The adversary labels these malicious samples as belonging to category $c$. This prompts the victim 
+user $u_V$ to share more revealing parameters which results in more information about
 its samples in class $a$ revealed to the parameter server, and ultimately to the adversary $u_A$. 
 %classes
 %$a$ and $c$. Therefore the victim releases more data on class a now than he initially intended to.
@@ -619,15 +650,16 @@ We summarize the attack proposed by \cite{hitaj2017deep} as follows:
 \item Assume victim $u_V$ declares labels $[a,b]$ and adversary $u_A$ declares labels $[b,c]$
 \item Run the distributed deep learning protocol proposed by \cite{shokri2015privacy} for several epochs and stop when we reach a
 specified accuracy.
-\item During this process, the $u_V$ downloads a percentage \hl{[Add the notation for this value]} of parameters from the parameter
+\item During this process, the $u_V$ downloads a percentage 
+of parameters, $\theta_d$,  from the parameter
 server and updates his local model.
 \item $u_V$'s local model is trained on classes $a$ and $b$
 \item $u_V$ uploads a section of his model to Parameter Server
 \item The adversary training is slotted to engage with the Parameter Server
-\item $u_A$ downloads the percentage \hl{include notation for this percentage} of parameters from the PS and updates its model
+\item $u_A$ downloads the percentage of parameters, $\theta_d$ , from the PS and updates its model
 \item $u_A$ then trains its local GAN to generate samples with the same distribution as class $a$ at $u_V$.
 \item $u_A$  mislabels calss $a$ samples as class $c$ samples.
-\item $u_A$ uploads a percentage \hl{include notation} of its parameters to the PS
+\item $u_A$ uploads a percentage of its parameters, $\theta_u$, to the PS
 \end {enumerate}
 
 %During the process of convergence, $u_A$ will be able to covertly exert influence on the learning process via the mislabeling of class
@@ -651,81 +683,32 @@ from other users.
 \label{fig:HighLevel}
 \end{figure*}
 
-In this section we describe our proposed privacy-preserving distributed learning algorithm. Our approach prevents attacks as the ones
-described in Section \ref{sec:threatModel} by limiting the amount of times users can upload parameters to the servers. 
+In this section we describe our proposed privacy-preserving distributed learning algorithm. Our approach prevents attacks such as the ones described in Section \ref{sec:threatModel} by limiting the amount of times users can upload parameters to the servers. 
 
-%We structure this algorithm such that a primary participant, the reference user, $r_0$ benefits the most and is afforded the
-%highest level of protection against GAN-based attacks. We envision this architecture materializing in a manner that involves the
-%reference user compensating other collaborators for the parameters and abstract data to train its model. Since the architecture
-%inherently obscures the absolute data, we are also able to preserves privacy for paid collaborators involved.
+%Our proposed algorithm prevents attacks such as the one proposed in \cite{hitaj2017deep}. 
+In specific, we protect the participants from GAN based attacks by preventing an innocent user from parameter sharing in a predictable and repeated way which reduces the adversarial influence as described in \cite{hitaj2017deep}.  We randomly choose the set of participants that can interact with the server at one time period called the round, $r$. This randomized choosing of participants reduces the chances of selecting the malicious participant in every round. It impacts the adversary because it can no longer upload its malicious parameters to the server forcing innocent participants to reveal more of their private dataset. 
 
-%Specifically, we propose a system that considers a reference user with a much smaller data set as the most significant
-%benefactor of this architecture. We consider $u_0\in\mathcal{U}$ to be our reference user with reference dataset $d_0\in\mathcal{D}$
-%such that $d_0$ is much smaller than all other $d \in\mathcal{D}$
-
-
-Specifically, we consider a user $u_0$ who aims to train a local deep neural network using its local training data set as well as the
-training data sets from other users as described in Section \ref{sec:systemModel}. The data sets from all users contain private
-information that needs to be protected from other users and the parameter server. Our proposed algorithm prevents attacks such as the
-one proposed in \cite{hitaj2017deep}. 
-
-Table \ref{table:1} summarizes the notations used in this work. \hl{[Move this to the system model. INcluding the table.]}
-\begin{table}[!h]
-\centering
-\caption{Table1: Summary of notations used in the paper}
-\label{table:1}
-\begin{tabular}{ | m{0.12\columnwidth} | m{0.8\columnwidth}| } 
-\hline
-\textbf{Notation} & \textbf{Description} \\
- \hline\hline
-
-$N$ & Number of participants excpet the system\\
-\hline
-$u_0$ & Reference User and the  main benefactor of the architecture \\
-\hline
-$M$ & Mini batch size used for stochastic gradient descent\\
-\hline
-$\theta_d$, $\theta_u$ & Fraction of parameters selected for download and upload from total available parameters \\
-\hline
-$W_k$ & Weight matrix for layer K in the neural network\\
-\hline
-$w$ & Flattened vector of all parameters in the neural network. \\
-\hline
-$\Delta w$ & Vector of changes in all local parameters due to SGD\\
-\hline
-$w^{(global)}$ & Flattened parameter vector for server\\
-\hline
-$E$ & Error Function defining the difference btween the computed value and expected value of the objective function \\
-\hline
-$\alpha$ & Learning rate of the stochastic gradient descent algorithm\\
-\hline
-$S$ & Set of $\theta_u$ largest indices selected from $w$ \\
-\hline
-\end{tabular}
-\end{table}
+Specifically, our approach is as follows. We suppose all participants in the architecture agree on the hyper parameters such as classification labels, type and architecture of neural networks.
+All participants data sets from all users are considered private information that needs to be protected from other users and the parameter server. We also consider a user $u_0$ who aims to train a local deep neural network using its local training data set as well as the training data sets from other users as described in Section \ref{sec:systemModel}. 
+We then select a random subsection of the participants that can take turns to interact with the server such that only one participant interacts with the server at one time. The selected participants downloads some fraction of parameters, $\theta_d$, from the server. A selected pariticipant, $u_i$  overwrites their corresponding local parameters with downloaded parameters. It then trains their network privately on local datasets, $d_i$. $u_i$ then individually upload the their largest parameter gradients, $\theta_u$,  to the parameter server, which aggregates them.
+The selected participant uploads trains and downloads the parameters over a specific number of epoch, before the next selected participant can interact with the server.
+At the end, when all selected participants have completed their interaction, reference user $u_0$ can downloads the parameters from the server train further train its local network. In this way, $u_0$ never uploads its parameters to the server and does not reveal any private data. 
 
 
- 
-%We define the following terms, $\theta_u$ $R$
-\hl{[Describe the proposed algorithm. This is crucial!]}
-
-The Algorithm works as follows:
+Formally,the algorithm is as follows:
 \begin {enumerate}
-\item A pool of participants is created where each participant has a local training data set. 
-\item Out of the pool of participants, a random subsection of participants is selected to interact with the parameter server in this
-period. We call this period a round which is denoted by $r$. 
-\item In each round, $r_i$, the selected user $u_i$ is able to interact with the parameter server such that no other
-participant can interact with the parameter server at the same time.
-\item During its interaction with parameter server, the user $u_i$ will perform the following steps:
+\item Out of all available participants, a random subsection of participants is selected to interact with the parameter server in this
+period. We call this period a round which is denoted by $r$. In each round, $r_i$, the selected users are able to interact with the parameter exclusively such that no two
+participants can interact with the parameter server at the same time.
+\item During its interaction with parameter server, a selected user $u_i$ will perform the following steps:
 \begin {enumerate}
   \item Train independantly on its local dataset for one epoch, to calculate parameter gradient, $\Delta w_i$ 
-  \item  At the end of the epoch, $u_i$ will select the $\theta_u$ highest gradients in $\Delta w$. The $u_i$ uploads the corresponding
-values in its parameter vector $w_i^{(new)}$  to the parameter server.
+  \item  At the end of the epoch, $u_i$ will select the $\theta_u$ fraction of highest gradients in its local $\Delta w$. It will then upload that fraction of values in $\Delta w_i$ to the parameter server.
   \end {enumerate}
 \item For each subsequent epoch, the participant will first download $\theta_d$ percentage of parameters from the server. The
-user will then repeat the steps a and b. item We repeat these steps for every participant selected in the round. At the end of
-the round, the reference user downloads $\theta_d$ percentage of parameters from the PS.
-\item The reference user then trains its model locally on its small dataset. 
+user will then repeat the steps a and b. We repeat these steps for every participant selected in $r_i$.
+\item At the end of $r_i$, the reference user downloads $\theta_d$ percentage of parameters from the parameter server.
+\item The reference user, $u_0$, then trains its model locally on its dataset. 
 \end {enumerate}
 
 %As you can see the, the reference user does not share its parameters with other users. It benefits from random particpants from the
@@ -745,8 +728,8 @@ architecture, and to the distributed learning architecture proposed by Shokri et
 %We wrote the source code based on the pseudocode provided in paper \cite{Shokri}. 
 
 We implement all algorithms using Torch with the neural network packages in the scripting language LUAJIT, and run them on an M4
-instance on the Amazon Web Service's Elastic Compute Cloud (AWS EC2), which has \hl{XXX RAM, XXX VCPUs, and XXX GB disk}.
-\hl{[Change the MLP figure to be horizontal so that we can fit here more nicely]}
+instance on the Amazon Web Service's Elastic Compute Cloud (AWS EC2), which has
+2.4 GHz Intel Xeon E5-2676 v3** Processor, 4 VCPUS and 16	GiB RAM.
 
 \begin{figure*}[t]
 \centering

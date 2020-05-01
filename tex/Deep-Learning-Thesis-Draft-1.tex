@@ -720,7 +720,7 @@ user will then repeat the steps a and b. We repeat these steps for every partici
 \section{Experimental Setup}
 %-------------------------------------------------------------------------------
 
-To evaluate the performance of our proposed privacy-preserving, we implement it on a commercial cloud service provider, and measure the
+To evaluate the performance of our proposed privacy-preserving approach, we implement it on a commercial cloud service provider, and measure the
 learning performance of the user $u_0$, and compare it to the learning performance of a centralized deep neural network
 architecture, and to the distributed learning architecture proposed by Shokri et al. \cite{shokri2015privacy}. 
 %without collaborative
@@ -733,7 +733,7 @@ instance on the Amazon Web Service's Elastic Compute Cloud (AWS EC2), which has
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width = 0.3\columnwidth, keepaspectratio]{NNArchitecture}
+\includegraphics[width = 2 \columnwidth, keepaspectratio]{MLPArchitecture}
 \caption{MLP architecture displaying the tensor size at various stages in the neural network. }
 \label{fig:MLPArch}
 \end{figure*}
@@ -741,24 +741,21 @@ As described in Section \ref{sec:systemModel}, we use a
 % implement a similar neural network structure for the reference user as well as
 %other participants.
 %Although one can chose any neural network architecture, 
-we use a multilayer perceptron (MLP) in a feed forward arrangement. To train it, we use the MINST training data set \cite{deng2012mnist}, which contains 
+a multilayer perceptron (MLP) in a feed forward arrangement. To train it, we use the MINST training data set \cite{deng2012mnist}, which contains 
 $32\times 32$ pixel images of handwritten numbers. Accordingly, our MLP has 1024 input nodes
 corresponding to each pixel in the images, and the output layer is a tensor of size 10 where each output corresponds to the probability
 that a given input is a specific number
-between 0 and 9.  The model has 2 hidden layers where an \hl{
-[Add type of activation function]} activation function is applied to the
+between 0 and 9.  The model has 2 hidden layers where the non-linear ReLU activation function is applied to the
 output of each hidden layer.  The first hidden layers are constructed via \textit{nn.Linear()} which applies a linear transformation
 and produces a tensor of size 128 as its output. The second hidden layer accepts a tensor of size 128 as input, and outputs a tensor of
-size 64. We use a non-linear activation function called Rectified Linear Unit (ReLU) which is applied after each hidden
-layer. The last layer of the model is a log soft max layer implemented by the \textit{nn.LogSoftMax()} module.  This activation
+size 64.The last layer of the model is a log soft max layer implemented by the \textit{nn.LogSoftMax()} module.  This activation
 function is usually applied to the end of all classification models where it squashes the inputs into probabilities that sum to one.
-The architecture of the MLP used in out experiments is illustrated in Figure\ref{fig:MLPArch}.
+The architecture of the MLP used in our experiments is illustrated in Figure\ref{fig:MLPArch}.
 
 We set the size of the local dataset of each participant to 1 \% of the training dataset images. 
-The Reference User starts with a training set of 60 images. \hl{[Plese check that these two sentences are still accurate. ]}
+The Reference User starts with a training set of 60 images.
 
-We conduct our experiments with a varying number of users, upload and download parameter fractions \hl{[Add notation]}, and \hl{[add
-other things that you vary.]}
+We conduct our experiments with varying number of users, fraction of upload gradient $\theta_u$, probability of interaction with Parameter Server and number of rounds of training $r$.
 
 %We were able to replicate their original setup using
 %Torch and nn packages in LUAJIT scripting language.  
@@ -780,12 +777,13 @@ For this experiment, we center the images through a normalization operation.
 \subsection{Hyper-parameter Setup}
 
 %--------------------------------------------------------------------------------------------
-Hyper-parameters are parameters that control the collaborative learning process, e.g., \hl{[List a few of these parameters]}. Unlike
+
+Hyper-parameters are parameters that control the collaborative learning process, e.g., learning rate $\alpha$, fraction of upload and download gradients $\theta_u$ and $\theta_d$ respectively}. Unlike
 the deep neural network parameters that are obtained through training, hyperparameters are usually set beforehand and remain
 constant through out the training and inference phases. They are crucial since they directly influence the behavior of training
-algorithm and have a large impact on the performance and accuracy of the model. In our experiments, we set the learning for all
-users to $0.1$ and the weight decay to set to $1e-7$. 
-The batch size for the stochastic gradient descent is set to 10 samples.
+algorithm and have a large impact on the performance and accuracy of the model. In our experiments, we set the learning rate $\alpha$ for all
+users to $0.1$. 
+The mini-batch size $M$ for stochastic gradient descent trainig is set to 10 samples.
 
   
  %We vary the $\theta_u$ and epochs in differentcenarios. 
@@ -816,7 +814,7 @@ the centralized approach, i.e., a single entity who collects the data from all u
 Figure \ref{fig:SingleUser} shows the accuracy of the centralized approach for a varying number of epochs. As expected, we see that
 that the accuracy obtained by the centralized approach increases with the number of epochs. 
 Moreover, to assess the impact of users who only have access to their local data set and do not participate in distributed
-learning, we measure the accuracy for different sizes of the training data set. We see that as the accuracy decreases with the number
+learning, we measure the accuracy for different sizes of the training data set. We see that the accuracy decreases with the number
 of samples in the data set. This confirms that a small local data set can only provide a low accuracy to the reference user $u_0$.
 %We also observe that the accuracy can increase when we use a larger proportion of the data set during training. 
 %on a larger
@@ -828,11 +826,10 @@ of samples in the data set. This confirms that a small local data set can only p
 \caption{Comparison between randomized interaction and complete interaction with server. }
 \label{fig:RandVsAll}
 \end{figure}
-Next, we compare the accuracy of thee reference user under our proposed privacy-preserving algorithm and that of the algorithm proposed
+Next, we compare the accuracy of the reference user under our proposed privacy-preserving algorithm and that of the algorithm proposed
 by Shokri et al. \cite{shokri2015privacy}. Figure \ref{fig:RandVsAll} shows the accuracy of the reference user $u_0$'s deep learning
 neural network trained under our proposed deep learning algorithm, and under \cite{shokri2015privacy}. We set the number of
-users to \hl{[how many
-users?]} for both approaches. In our approach, each of the non-reference users $u_i$ is randomly
+users to 20 for both approaches. In our approach, each of the non-reference users $u_i$ is randomly
 selected to upload and download parameters from the parameter server with a probability of 0.5. 
 In the approach by \cite{shokri2015privacy}, all users upload and download with a probability of 1. 
 We see that the reference user $u_0$ is able to obtain a deep learning model with an accuracy that is comparable to the one
@@ -845,11 +842,9 @@ obtained by \cite{shokri2015privacy}, which is vulnerable to the attack in \cite
 \label{fig:VaryingPoolofParticipants}
 \end{figure}
 
-Figure \ref{fig:VaryingPoolofParticipants} shows the accuracy of the reference users $u_0$'s deep neural network under varying
-under a varying number of epochs for different numbers of total users in the system. We observe that 
+Figure \ref{fig:VaryingPoolofParticipants} shows the accuracy of the reference users $u_0$'s deep neural network under a varying number of epochs for different numbers of total users in the system. We observe that 
 the reference user $u_0$ achieves a higher accuracy as the total number of participants in the system increases. For example, the
-highest accuracy is achieved with 50 participants, while the lowest one is achieved with 10 participants. Intuitively, the reason for
-this is \hl{[Please give one sentence explaining why this is the case]}. 
+highest accuracy is achieved with 50 participants, while the lowest one is achieved with 10 participants. Intuitively, this is bebacuse the greater number of participants bring a larger size and variety of dataset. This means the parameters uploaded to the server increases with the number of users. improving the accuracy of the model.
 
 \begin{figure}[!h]
 \centering

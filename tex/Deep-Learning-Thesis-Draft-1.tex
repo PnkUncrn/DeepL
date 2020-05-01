@@ -73,7 +73,7 @@ can include
 intellectual property (IP), 
 %. Other %red flags are centered around 
 medical data protected by Health Insurance and Portability and Accountability Act (HIPA), and student records protected by the Family
-Educational Rights and Privacy Act (FERPA) \cite{act1996health,blechner2002health}. 
+Educational Rights and Privacy Act (FERPA) \cite{act1996health,blechner2002health,shultz2015your}. 
 %While medical
 % community
 %By sharing their data, organization can receive improved deep learning inference. However, 
@@ -91,7 +91,7 @@ effect on the model's usability.
 For instance, a hospital trained a deep neural network to recognize patients with pneumonia based on their
 chest X-ray images using its own records. Although this neural network was successful in classifying records from patients that were
 treated in the hospital, its performance significantly dropped when tested with images from other patient treated at a different
-hospital \cite{zech2018variable}. 
+hospital \cite{zech2018variable}. This was due to the fact the trained DNN was making false predictions based on the machine used to conduct the test rather than the content of the test result itself.
 %This indicates that models trained on single source datasets can produce confounding results. 
 Moreover, many organizations may not have large enough local data sets to train a deep learning model with satisfactory
 accuracy. 
@@ -145,8 +145,8 @@ trade-off by tuning the selection probability of the other users.
 %---------------------------------------------------------------------------------
 
 Deep neural networks have outperformed traditional machine learning approaches for many tasks, and are the tool of choice in many
-fields. Specifically, Deep learning has been successfully used for facial recognition \cite{krizhevsky2012imagenet}, image classification, 
-\cite{simard2003best}, and speech recognition \cite{hinton2012deep, graves2013speech }, where it is expected to achieve better
+fields. Specifically, Deep learning has been successfully used for facial recognition \cite{krizhevsky2012imagenet, sun2014deep, ding2015robust}, image classification, 
+\cite{simard2003best, ma2015hyperspectral, zhong2011bilinear}, and speech recognition \cite{hinton2012deep, graves2013speech, noda2015audio}, where it is expected to achieve better
 performance than humans in the near future. However, directly applying these techniques in fields that deal with private data is
 challenging. The reason is that they need to centrally collect data at a third-party which organizations may not trust
 \cite{chicurel2000databasing}. This is particularly challenging in medical and financial applications where the privacy of the users is
@@ -155,7 +155,7 @@ governed by federal legislation and is protected by law.
 % This has however raised some privacy issues.
 
 To protect users' data privacy, some researchers have proposed to use secure multiparty computations (SMC) 
-\cite{vaidya2003leveraging,7040943}. SMC is a technique used to distribute computation over many parties while preserving each party's privacy. It can securely and privately process and compute data distributed across users without compromising the data's privacy.
+\cite{vaidya2003leveraging,7040943, ma2018privacy}. SMC is a technique used to distribute computation over many parties while preserving each party's privacy. It can securely and privately process and compute data distributed across users without compromising the data's privacy.
 %In , the authors survey multi party computation as well as other techniques. They also evaluate SMC's effectiveness and
 %cost in context of secure data processing.
 Sheikh et al. \cite{sheikh2010distributed} propose a SMC that divides and distributes private data blocks among participants and can
@@ -175,7 +175,7 @@ applications.
 %To overcome constraints in a mobile user setting, some researchers haveby leveraging SMC
 %. They focus their work on creating a robust protocol 
 
-Some researchers have proposed differential privacy to guarantee data privacy protection in distributed deep learning. In 
+Some researchers have proposed differential privacy to guarantee data privacy protection in distributed deep learning \cite{vepakomma2018no}. In 
 Abadi et al. \cite{abadi2016deep} propose a novel differential privacy algorithm to training deep neural networks with a modest
 accuracy cost and a feasible computational complexity. They provide theoretical analysis of the the privacy cost, complexity and
 training efficiency of their proposed approach. 
@@ -773,14 +773,14 @@ For this experiment, we center the images through a normalization operation.
 
 %--------------------------------------------------------------------------------------------
 
-Hyper-parameters are parameters that control the collaborative learning process, e.g., learning rate $\alpha$, fraction of upload and download gradients $\theta_u$ and $\theta_d$ respectively}. Unlike
+Hyper-parameters are parameters that control the collaborative learning process, e.g., learning rate $\alpha$, fraction of upload and download gradients $\theta_u$ and $\theta_d$ respectively. Unlike
 the deep neural network parameters that are obtained through training, hyper parameters are usually set beforehand and remain
 constant through out the training and inference phases. They are crucial since they directly influence the behaviour of training
 algorithm and have a large impact on the performance and accuracy of the model. In our experiments, we set the learning rate $\alpha$ for all
 users to $0.1$. 
 The mini-batch size $M$ for stochastic gradient descent training is set to 10 samples.
 
-  
+ 
  %We vary the $\theta_u$ and epochs in differentcenarios. 
 
 

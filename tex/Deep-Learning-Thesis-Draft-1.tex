@@ -526,7 +526,7 @@ To initialize the system,  each user $u_i$ randomly sets its parameters $w_i$ to
 $\alpha_i$. Then, at each iteration,  user $u_i$  downloads $\theta_d^{i} \times |w_i|$ parameters from the parameter server and
 overwrites its corresponding parameters, $w_i$. User $u_i$ then runs the stochastic gradient descent algorithm
 with the updated parameter vector as starting point. Based on the new parameters found by the SGD, i.e., $w_i^{(new)}$, user
-$u_i$ uses \eqref{eq:SGD} to update its local parameter vector $w_i$. 
+$u_i$ uses \eqref{eq:GD} to update its local parameter vector $w_i$. 
 
 Next, user $u_i$ computes the parameter gradient that captures the changes between the old and new local parameters, i.e., 
 $$\Delta w_i =  w_i^{(new)} -  w_i$$. 
@@ -878,14 +878,13 @@ insignificant.
 %-------------------------------------------------------------
 \section{Conclusion}
 %------------------------------------------------------------
-In this work we propose implement and analyse a secure privacy preserving approach to distributed deep learning systems.  Our algorithm provides security against attacks that extract information from participants in a collaborative setting. 
+In this work we propose, implement and analyse a secure privacy preserving approach to distributed deep learning systems.  Our algorithm provides security against attacks that extract information from participants in a collaborative setting. 
 
-Our work can be extremely beneficial in providing a secure application of distributed and decentralized collaborative learning. This will make it more accessible to users concerned about their privacy but want to benefit from larger datasets for e.g., hospitals and financial institutions.
+Our work can be extremely beneficial in providing a secure application of distributed and decentralized collaborative learning. This will make it more accessible to users concerned about their privacy but want to benefit from larger datasets.
 
-Our methodology provides countermeasure to the category of attacks that use malicious parameters to influence victims to reveal more information as described  by Hitaj  et al. \cite{hitaj2017deep} . We do this by reducing the consistent and predictable exposure of each participant to the server and to other users.
-Our solution does not rely on computationally expensive cryptographic process and has a adaptable architecture that can be applied to any neural network architecture.
-
-However, for the scope of this work we assume that the multiple users and the parameters are non-colluding and only share information as per protocol. 
+Our methodology provides countermeasure to the category of attacks that use malicious parameters to influence victims to reveal more information as described  by Hitaj  et al. \cite{hitaj2017deep} . We do this by limiting the consistent exposure of each participant to the server and to other users.
+Our solution does not rely on computationally expensive cryptographic process and has a adaptable architecture that can be used with any underlying neural network structure.
+For the scope of this work we assume that the multiple users and the parameters are non-colluding and only share information outlined by our protocol. 
 
 
 

@@ -1,0 +1,26 @@
+\babel@toc {english}{}
+{\bfseries \normalfont Chapter\hfill \normalfont Page\vspace \bigskipamount \par }
+\edef \SavedTocDepth {\the \value {tocdepth}}
+\setcounter {tocdepth}{-10}
+\setcounter {tocdepth}{\SavedTocDepth }
+\contentsline {section}{\numberline {\Decide {1}}INTRODUCTION}{1}
+\contentsline {section}{\numberline {\Decide {2}}RELATED WORK}{2}
+\vspace {\normalbaselineskip }
+\contentsline {section}{\numberline {\Decide {3}}DEEP NEURAL NETWORK}{3}
+\vspace {\normalbaselineskip }
+\contentsline {subsection}{\numberline {3.1}Architecture}{3}
+\contentsline {subsection}{\numberline {3.2}Training}{4}
+\contentsline {subsubsection}{\numberline {3.2.1}Gradient Descent Algorithm}{4}
+\contentsline {subsubsection}{\numberline {3.2.2}Stochastic Gradient Descent}{4}
+\contentsline {section}{\numberline {\Decide {4}}PROBLEM FORMULATION}{5}
+\vspace {\normalbaselineskip }
+\contentsline {subsection}{\numberline {4.1}System Model}{5}
+\contentsline {section}{\numberline {\Decide {5}}CONCLUSION}{6}
+\contentsline {section}{BIBLIOGRAPHY}{7}
+\contentsline {section}{APPENDIXES}{9}
+\vspace {\normalbaselineskip }
+\contentsline {subsection}{A. Possible Alter Egos}{10}
+\vspace {\normalbaselineskip }
+\contentsline {subsection}{B. My Awesome Suit}{11}
+\vspace {\normalbaselineskip }
+\contentsfinish 

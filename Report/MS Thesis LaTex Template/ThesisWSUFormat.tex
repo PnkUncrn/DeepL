@@ -387,66 +387,225 @@ In this section, we describe our considered collaborative deep learning model, a
 \addtocontents{lof}{\vspace{\normalbaselineskip}}
 
 
-
-\begin{table}[ht]
-\centering % used for centering table
-\caption[Pym injection Trials]{Injection Trials} % title of Table
-\label{table:pym} % is used to refer this table in the text
-\begin{tabular}{*{15}{c}} % centered columns (4 columns)
-\hline\hline %inserts double horizontal lines
-Trial & Method & Result  \\ [0.5ex] % inserts table
-%heading
-\hline% inserts single horizontal line
-1 & Hypodermic Injection & Dizziness \\ % inserting body of the table
-2 & Oral Ingestion (2.46) & Vomiting \\
-3 & Bio-injection suit  & Full size control  \\
-\hline %inserts single line
-\hline
-
-\end{tabular}
-\end{table}
-\addtocontents{lot}{\vspace{\normalbaselineskip}}
-%%%%%%%%%%%%%
-
-\clearpage
+%-------------------------------------------------------------------------
+\subsection{Privacy-preserving Distributed Learning under the Semi-honest Threat Model}
+%-------------------------------------------------------------------------
+To allow user $u_0$ to train its deep learning network while preserving the privacy of all users, we could use the distributed
+learning approach proposed by Shokri et al. \cite{shokri2015privacy}. This approach allows user $u_0$, as well as the rest of the users, 
+to use the private data from each other to train a deep learning model. By only sharing certain parameters of their local models
+with a parameter server, it allows them to update their local models without having to transmit any of their samples to each other
+or to the their private sets. We assume that the architecture and training parameters of  deep neural network that user $u_0$ aims to
+train are known  to all other users and the PS.
 
 
+%---------------------------------------------------------------------------------
+\subsection{A Malicious Threat Model for Distributed Deep Learning}\label{sec:threatModel}
+%---------------------------------------------------------------------------------
+
+We consider a malicious threat model for both the parameter server and the users. Specifically, malicious users will
+attempt to learn private information about other users' dataset based on the parameters that they uploads.  In
+addition, one or multiple  users will upload malicious parameters that can trick a victim user into reveal its private information. 
+Such an attack has been described by Hitaj et al. \cite{hitaj2017deep}. In particular, the attack operates as follows. 
+Suppose user $u_A\in\mathcal{U}$ is malicious and targets another user $u_V\in\mathcal{U}$. Further assume that all users, including
+the malicious one, agree on the hyper parameters of a neural network architecture such as the number, size and type of layers,  and the
+classification labels as described in Section \ref{sec:systemModel}.
 
 
-
-
-
-
-
-
-
+\pagebreak
+%-----------------------------------------------------------------------------------
+\section*{CHAPTER V}
+%-----------------------------------------------------------------------------------
+\vspace{0.25in}
+\section{A PRIVACY-PRESERVING COLLABORATIVE LEARNING ALGORITHM}
+\addtocontents{toc}{\vspace{\normalbaselineskip}}
 
 
 
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=3in]{HighLevelArch.png}
+    \caption[A privacy preserving architecture.]{\label{fig:HighLevel} An architecture for privacy-preserving distributed learning.}
+  \end{figure}
+\addtocontents{lof}{\vspace{\normalbaselineskip}}
+
+
+
+In this section we describe our proposed privacy-preserving distributed learning algorithm. Our approach prevents attacks such as the ones described in Section \ref{sec:threatModel} by limiting the amount of times users can upload parameters to the servers. 
+
+%Our proposed algorithm prevents attacks such as the one proposed in \cite{hitaj2017deep}. 
+In specific, we protect the participants from GAN based attacks by preventing an innocent user from parameter sharing in a predictable and repeated way which reduces the adversarial influence as described in \cite{hitaj2017deep}.  We randomly choose the set of participants that can interact with the server at one time period called the round, $r$. This randomized choosing of participants reduces the chances of selecting the malicious participant in every round. It impacts the adversary because it can no longer upload its malicious parameters to the server forcing innocent participants to reveal more of their private dataset.
+
+Specifically, our approach is as follows. We suppose all participants in the architecture agree on the hyper parameters such as classification labels, type and architecture of neural networks.
+All participants data sets from all users are considered private information that needs to be protected from other users and the parameter server. We also consider a user $u_0$ who aims to train a local deep neural network using its local training data set as well as the training data sets from other users as described in Section \ref{sec:systemModel}. 
+We then select a random subsection of the participants that can take turns to interact with the server such that only one participant interacts with the server at one time. The selected participants downloads some fraction of parameters, $\theta_d$, from the server. A selected participant, $u_i$  overwrites their corresponding local parameters with downloaded parameters. It then trains their network privately on local datasets, $d_i$. $u_i$ then individually upload the their largest parameter gradients, $\theta_u$,  to the parameter server, which aggregates them.
+The selected participant uploads trains and downloads the parameters over a specific number of epoch, before the next selected participant can interact with the server.
+At the end, when all selected participants have completed their interaction, reference user $u_0$ can downloads the parameters from the server train further train its local network. In this way, $u_0$ never uploads its parameters to the server and does not reveal any private data. 
+
+
+Formally,the algorithm is as follows:
+\begin {enumerate}
+\item Out of all available participants, a random subsection of participants is selected to interact with the parameter server in this
+period. We call this period a round which is denoted by $r$. In each round, $r_i$, the selected users are able to interact with the parameter exclusively such that no two
+participants can interact with the parameter server at the same time.
+\item During its interaction with parameter server, a selected user $u_i$ will perform the following steps:
+\begin {enumerate}
+  \item Train independently on its local dataset for one epoch, to calculate parameter gradient, $\Delta w_i$ 
+  \item  At the end of the epoch, $u_i$ will select the $\theta_u$ fraction of highest gradients in its local $\Delta w$. It will then upload that fraction of values in $\Delta w_i$ to the parameter server.
+  \end {enumerate}
+\item For each subsequent epoch, the participant will first download $\theta_d$ percentage of parameters from the server. The
+user will then repeat the steps a and b. We repeat these steps for every participant selected in $r_i$.
+\item At the end of $r_i$, the reference user downloads $\theta_d$ percentage of parameters from the parameter server.
+\item The reference user, $u_0$, then trains its model locally on its dataset. 
+\end {enumerate}
+
+
+
+\pagebreak
+%-----------------------------------------------------------------------------------
+\section*{CHAPTER VI}
+%-----------------------------------------------------------------------------------
+\vspace{0.25in}
+\section{A PRIVACY-PRESERVING COLLABORATIVE LEARNING ALGORITHM}
+\addtocontents{toc}{\vspace{\normalbaselineskip}}
+%-------------------------------------------------------------------------------
+\section{EXPERIMENTAL SETUP}
+%-------------------------------------------------------------------------------
+
+To evaluate the performance of our proposed privacy-preserving approach, we implement it on a commercial cloud service provider, and measure the
+learning performance of the user $u_0$, and compare it to the learning performance of a centralized deep neural network
+architecture, and to the distributed learning architecture proposed by Shokri et al. \cite{shokri2015privacy}.
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=3in]{MLPArchitecture.png}
+    \caption[Tensor sizes in a MLP architecture.]{\label{fig:MLPArch} MLP architecture displaying the tensor size at various stages in the neural network..}
+  \end{figure}
+\addtocontents{lof}{\vspace{\normalbaselineskip}}
+
+
+%-------------------------------------------------------------------------------
+\subsection{Datasets}
+%-------------------------------------------------------------------------------
+We conducted our experiments using the MNIST dataset \cite{deng2012mnist}. The MNIST dataset is a standard dataset used in image
+recognition. It contains images of hand-written gray scale digits ranging from 0 to 9. The dimension of each image is 32 X 32 pixels.
+The MINST dataset contains 60,000 images in its training dataset and 10,000 images in its test dataset.
+For this experiment, we center the images through a normalization operation.  
+
+%--------------------------------------------------------------------------------------------
+\subsection{Hyper-parameter Setup}
+
+%--------------------------------------------------------------------------------------------
+
+Hyper-parameters are parameters that control the collaborative learning process, e.g., learning rate $\alpha$, fraction of upload and download gradients $\theta_u$ and $\theta_d$ respectively. Unlike
+the deep neural network parameters that are obtained through training, hyper parameters are usually set beforehand and remain
+constant through out the training and inference phases. They are crucial since they directly influence the behaviour of training
+algorithm and have a large impact on the performance and accuracy of the model. In our experiments, we set the learning rate $\alpha$ for all
+users to $0.1$. 
+The mini-batch size $M$ for stochastic gradient descent training is set to 10 samples.
+
+
+\pagebreak
+%-----------------------------------------------------------------------------------
+\section*{CHAPTER VI}
+%-----------------------------------------------------------------------------------
+\vspace{0.25in}
+\section{EXPERIMENT RESULTS}
+\addtocontents{toc}{\vspace{\normalbaselineskip}}
+
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=3in]{SingleUserBaselines.png}
+    \caption[Single User with varying sample size.]{\label{fig:SingleUser} Single User with varying sample size}
+  \end{figure}
+\addtocontents{lof}{\vspace{\normalbaselineskip}}
+
+To fairly assess the performance improvements offered by our proposed privacy-preserving algorithm, we first measure the accuracy of
+the centralized approach, i.e., a single entity who collects the data from all users but does not provide privacy. 
+Figure \ref{fig:SingleUser} shows the accuracy of the centralized approach for a varying number of epochs. As expected, we see that
+that the accuracy obtained by the centralized approach increases with the number of epochs. 
+Moreover, to assess the impact of users who only have access to their local data set and do not participate in distributed
+learning, we measure the accuracy for different sizes of the training data set. We see that the accuracy decreases with the number
+of samples in the data set. This confirms that a small local data set can only provide a low accuracy to the reference user $u_0$.
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=3in]{RandomVsAll.png}
+    \caption[Comparison between randomized interaction and complete interaction with server.]{\label{fig:RandVsAll} Comparison between randomized interaction and complete interaction with server}
+  \end{figure}
+\addtocontents{lof}{\vspace{\normalbaselineskip}}
+
+
+
+Next, we compare the accuracy of the reference user under our proposed privacy-preserving algorithm and that of the algorithm proposed
+by Shokri et al. \cite{shokri2015privacy}. Figure \ref{fig:RandVsAll} shows the accuracy of the reference user $u_0$'s deep learning
+neural network trained under our proposed deep learning algorithm, and under \cite{shokri2015privacy}. We set the number of
+users to 20 for both approaches. In our approach, each of the non-reference users $u_i$ is randomly
+selected to upload and download parameters from the parameter server with a probability of 0.5. 
+
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=3in]{VaryingPoolofParticipants.png}
+    \caption[Distributed SGD for varying participant.]{\label{fig:VaryingPoolofParticipants} Accuracy of Distributed SGD for varying participants available for interaction with the PS.}
+  \end{figure}
+\addtocontents{lof}{\vspace{\normalbaselineskip}}
+
+
+
+Figure \ref{fig:VaryingPoolofParticipants} shows the accuracy of the reference users $u_0$'s deep neural network under a varying number of epochs for different numbers of total users in the system. We observe that 
+the reference user $u_0$ achieves a higher accuracy as the total number of participants in the system increases. For example, the
+highest accuracy is achieved with 50 participants, while the lowest one is achieved with 10 participants. Intuitively, this is bebacuse the greater number of participants bring a larger size and variety of dataset. This means the parameters uploaded to the server increases with the number of users. improving the accuracy of the model.
+
+
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=3in]{VaryingProbabilityInteraction.png}
+    \caption[SGD for varying probability of interaction.]{\label{fig:VaryingProbabilityInteraction} Accuracy of Distributed SGD for varying probability of interaction with the PS.}
+  \end{figure}
+\addtocontents{lof}{\vspace{\normalbaselineskip}}
+
+
+Figure \ref{fig:VaryingProbabilityInteraction} shows the accuracy of reference user $u_0$ for a varying number of epochs under
+different probabilities for the users to interact with the parameter server. 
+We see that a greater probability of interaction with the server results in a higher model accuracy for the reference user $u_0$.
+The highest accuracy is obtained when all participants interact with the parameter server. However, this is equivalent to the
+approach proposed by \cite{shokri2015privacy} and thus it is vulnerable to the attacks described in \cite{hitaj2017deep}. 
+
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=3in]{VaryingThetaU.png}
+    \caption[Different upload gradient selection rate]{\label{fig:VaryingThetaU}Accuracy of Distributed SGD for different upload gradient selection rate, unevenly.}
+  \end{figure}
+\addtocontents{lof}{\vspace{\normalbaselineskip}}
+
+
+
+Figure \ref{fig:VaryingThetaU} we plot the accuracy of the reference user $u_0$ for different upload gradient selection rate over. 
+The plot shows that the percentage of uploaded parameters, $\theta_u$, is directly proportional to the resulting accuracy of
+the model at $u_0$. However, the accuracy difference between the sharing all parameters and only $ 10\% $ percent of parameters is
+insignificant.
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
+\pagebreak
 %-----------------------------------------------------------------------------------
 \section*{CHAPTER III}
 %-----------------------------------------------------------------------------------
-
 \vspace{0.25in}
 \section{CONCLUSION}
-With the injection of pym particles I am able to enter the quantum realm and speak with insects. Future work will include exploration of of enlarging myself and developing crime fighting alter egos (see Appendix \ref{App:A}).
+In this work we propose, implement and analyse a secure privacy preserving approach to distributed deep learning systems.  Our algorithm provides security against attacks that extract information from participants in a collaborative setting. 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%Bibliography%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Our work can be extremely beneficial in providing a secure application of distributed and decentralized collaborative learning. This will make it more accessible to users concerned about their privacy but want to benefit from larger datasets.
+
+Our methodology provides countermeasure to the category of attacks that use malicious parameters to influence victims to reveal more information as described  by Hitaj  et al. \cite{hitaj2017deep} . We do this by limiting the consistent exposure of each participant to the server and to other users.
+Our solution does not rely on computationally expensive cryptographic process and has a adaptable architecture that can be used with any underlying neural network structure.
+For the scope of this work we assume that the multiple users and the parameters are non-colluding and only share information outlined by our protocol. 
+
 \newpage
 
 \begin{center}

@@ -21,7 +21,7 @@
 \usepackage[titles]{tocloft}
 \usepackage{tikz-feynman}
 \tikzfeynmanset{compat=1.1.0}
-
+\usepackage{etoolbox}
 %%Quote configuration%%
 \AtBeginEnvironment{quote}{\singlespacing\small}
 
@@ -43,6 +43,7 @@
     \protect\setcounter{tocdepth}{\protect\SavedTocDepth}%
   }%
 }
+
 
 \addto\captionsenglish{
 	\renewcommand{\contentsname}{\hfill \normalfont TABLE OF CONTENTS\hfill\vspace{1.5\baselineskip}}}
@@ -218,15 +219,14 @@ users.
 
 \tableofcontents
 \addtocontents{toc}{{\bfseries \normalfont Chapter\hfill \normalfont Page\bigskip\par}}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
 %\addtocontents{toc}{\contheading} %%% INCLUDE FOR MULTIPE TOC PAGES %%%%%
 \pagebreak
 
 %%%%%%%%%%%%%%%%% List of tables %%%%%%%%%%%%%%%%%%
 
 \BeginNoToc
-\listoftables
-\addtocontents{lot}{{\bfseries \normalfont Table\hfill \normalfont Page\bigskip\par}}
-\pagebreak
+
 
 %%%%%%%%%%%%%%%%% List of Figures %%%%%%%%%%%%%%%%%%
 
@@ -258,9 +258,18 @@ users.
 \begin{center}
 \doublespacing{
 \begin{align*}
-&\nu &&\text{Neutrino}\\
-&\gamma  &&\text{Photon/Gamma}\\
-&\text{c}  &&\text{Speed of Light}
+&N &&\text{Number of participants}\\
+&M &&\text{ Mini batch size used for stochastic gradient descent}\\
+&\theta_u^{i} &&\text{ Fraction of parameters selected for upload for $i$th user}\\
+&\theta_d^{i} &&\text{ Fraction of parameters selected for download for $i$th user}\\
+&W_k &&\text{ Weight matrix for layer K in neural network}\\
+&w_i &&\text{ Flattened vector of all parameters in neural network for $i$th user} \\
+&\Delta w_i &&\text{ Vector of changes in all local parameters due to gradient descent}\\
+&w^{(global)}&&\text{Flattened parameter vector for server}\\
+&E &&\text{ Error function computed over expected value of the objective function} \\
+&\alpha &&\text{ Learning rate of the stochastic gradient descent algorithm}\\
+&S_i &&\text{ Set of indices selected from flattened vector of parameters for $i$th user}\\
+&u_0 &&\text{Reference user}
 %make sure to have no space on your last line
 \end{align*}
 }
@@ -278,6 +287,7 @@ users.
 \pagenumbering{arabic}
 \setlength{\parindent}{0.50in}
 \doublespacing{
+\addtocontents{toc}{\vspace{\normalbaselineskip}}
 
 In the past few decades, deep learning has generated a lot of interest in the research and academic community due to its great ability
 to automatically classify large amounts of data. This has led to breakthroughs in many fields ranging
@@ -489,7 +499,7 @@ tasks. In this section, we describe the architecture of deep neural networks and
 \begin{figure}[H]
   \centering
     \includegraphics[width=4in]{SimpleNN.png}
-    \caption[A simple neural network.]{\label{fig:SimplNN} A neural network with $m$ inputs, $j$ outputs,  $N$  hidden layers, and $I$ neurons per layer.}
+    \caption[A simple neural network.]{\label{fig:SimplNN} A neural network with $m$ inputs, $j$ outputs, $N$  hidden layers, and $I$ neurons per layer.}
   \end{figure}
 \addtocontents{lof}{\vspace{\normalbaselineskip}}
 
@@ -519,8 +529,12 @@ architecture.
 Figure \ref{fig:SimplNN} shows the structure of a typical classification MLP with $m$ input nodes and $j$ outputs nodes. The neural network
 has $N$ hidden layers and each layer has $I$ neurons. Intuitively, this MLP takes a data sample represented as a vector of length
 $m$ on its input layer, and outputs the probability that it belongs to the $j$th category on the $j$th output neuron.
-Formally, the output of the $i$th neuron at layer $k$ is defined as follows:
-$$a^i_k=f(W_k a_{k-1}),$$
+Formally, the output of the $i$th neuron at layer $k$ is defined as
+
+\begin{align}\label{eq:neuronOutput}
+a^i_k=f(W_k a_{k-1})
+\end{align}
+
 where $f$ is the activation function, $W_k$ is the weight matrix of layer $k$,
 %which controls how input signal from previous layer,
 and $a_{k-1}$ is the vector of neuron outputs from the the $k-1$th layer. 
@@ -528,8 +542,12 @@ and $a_{k-1}$ is the vector of neuron outputs from the the $k-1$th layer.
 
 There are several non-linear activation functions that can be used for function $f$, including sigmoid,
 hyperbolic tangent, and rectified linear unite (ReLU) \cite{Goodfellow-et-al-2016}. In this
-work, we will focus on the ReLU activation function:
-$$f(z) = \max\{0, z\},$$
+work, we will focus on the ReLU activation function. Formally, ReLU is defined as 
+
+\begin{align}\label{eq:ReLU}
+f(z) = \max\{0, z\}
+\end{align}
+
 where given an input $z$ the function returns $z$ for positive values and $0$ for negative values.
 %function which outputs
 %values between 0 and 1, normalizing the output of each neuron. Hyperbolic tangent activation function 
@@ -539,11 +557,13 @@ where given an input $z$ the function returns $z$ for positive values and $0$ fo
 %In a network that is tasked to classify inputs to one of the $j$ fixed number of outputs, 
 The output layer is usually implemented with the SoftMax activation function. The output of this function is between zero and
 one, and it is used to the output of the last hidden layer to a scalar that represents the probability that the data sample observed at
-the input layer belongs to each of the $j$ categories. Formally, the SoftMax activation functions is
+the input layer belongs to each of the $j$ categories. Formally, the SoftMax activation functions is defined as
 %divides it by their sum, resulting in a probability
 %score that
 %the given input belongs to class $j$. which is given by
-$$f(z)_j = \frac{e^{z_j}} {(\sum_ke^{z_k})} \ \  \forall j,$$
+\begin{align}\label{eq:SoftMax}
+f(z)_j = \frac{e^{z_j}} {(\sum_ke^{z_k})} \ \  \forall j
+\end{align}
 where $z_j$ is the $j$th element of the input vector $z$ with $k$ elements (e.g., the output of all the neurons in the last hidden
 layer).
 % and  and $\sum_k e^{z_k}$ is sum of exponents of all elements in
@@ -680,8 +700,8 @@ In this section, we describe our considered collaborative deep learning model, a
 
 \begin{figure}[H]
   \centering
-    \includegraphics[width=3in]{HighLevelArch.png}
-    \caption[A privacy preserving architecture.]{\label{fig:HighLevel} An architecture for privacy-preserving distributed learning.}
+    \includegraphics[width=7in]{HighLevelArch.png}
+    \caption[Privacy preserving architecture]{\label{fig:HighLevel} An architecture for privacy-preserving distributed learning.}
   \end{figure}
 \addtocontents{lof}{\vspace{\normalbaselineskip}}
 
@@ -709,7 +729,7 @@ architectures and types of data.
 \begin{figure}[H]
   \centering
     \includegraphics[width=5in]{ClassificationNN.png}
-    \caption[A simple neural network.]{\label{fig:ClassNN} Neural network depicting an image with $m \times m$ pixels fed as input, $j$ outputs  $N$  hidden layers and with $I$ neurons in layer.}
+    \caption[Classification neural network with input image.]{\label{fig:ClassNN} Neural network depicting an image with $m \times m$ pixels fed as input, $j$ outputs  $N$  hidden layers and with $I$ neurons in layer.}
   \end{figure}
 \addtocontents{lof}{\vspace{\normalbaselineskip}}
 
@@ -758,10 +778,12 @@ positions.
 
 %To determine which parameters to upload, user $u_i$ computes the parameter
 
-After receiving the parameters from user $u_i$, the parameter server updates its own vector as follows:
-$$w^{(global)} =  w^{(global)} +  w_{\mathcal{S}_i}$$
+After receiving the parameters from user $u_i$, the parameter server updates its own vector as shown in equation \eqref{eq:globalUpdate}.
+\begin{align}\label{eq:globalUpdate}
+w^{(global)} =  w^{(global)} +  w_{\mathcal{S}_i}
+\end{align}
 %where $\Delta w_S$ is the vector of the largest parameters from user $u_i$. 
-Intuitively, by using $w_{\mathcal{S}_i}$, which contains information about the parameters in the local model of $u_i$i that have
+Intuitively by using $w_{\mathcal{S}_i}$, which contains information about the parameters in the local model of $u_i$i that have
 undergone the largest changes due to the local SGD training, the parameter server can improve its own parameters that are then
 downloaded by other users to further improve their own models.  
 
@@ -799,7 +821,7 @@ parameters from $u_V$ by downloading parameters from the server.
 %classes
 %$a$ and $c$. Therefore the victim releases more data on class a now than he initially intended to.
 
-We summarize the attack proposed by \cite{hitaj2017deep} as follows:
+We summarize the attack proposed in \cite{hitaj2017deep} as follows:
 \begin {enumerate}
 \item Assume victim $u_V$ declares labels $[a,b]$ and adversary $u_A$ declares labels $[b,c]$
 \item Run the distributed deep learning protocol proposed by \cite{shokri2015privacy} for several epochs and stop when we reach a
@@ -834,7 +856,7 @@ from other users.
 \begin{figure}[H]
   \centering
     \includegraphics[width=7in]{OurHighLevelApproach.png}
-    \caption[A Distritbuted Learning Architecture.]{\label{fig:HighLevel} One iteration of our proposed algorithm for privacy-preserving distributed learning.}
+    \caption[Privacy-preserving Distritbuted Learning.]{\label{fig:HighLevel} One iteration of our proposed algorithm for privacy-preserving distributed learning.}
   \end{figure}
 \addtocontents{lof}{\vspace{\normalbaselineskip}}
 
@@ -981,7 +1003,7 @@ descent training is set to 10 samples.
 
 \pagebreak
 %-----------------------------------------------------------------------------------
-\section*{CHAPTER II}
+\section*{CHAPTER VII}
 %-----------------------------------------------------------------------------------
 \vspace{0.25in}
 \section{RESULTS}
@@ -999,7 +1021,7 @@ of samples in the data set. This confirms that a small local data set can only p
 \begin{figure}[H]
   \centering
     \includegraphics[width=5in]{SingleUserBaselinesGrid.png}
-    \caption[Single User with varying sample size.]{\label{fig:SingleUser} Single User with varying sample size}
+    \caption[Accuracy of single user with varying sample size.]{\label{fig:SingleUser} Single User with varying sample size}
   \end{figure}
 \addtocontents{lof}{\vspace{\normalbaselineskip}}
 
@@ -1012,7 +1034,7 @@ We also tested with a scenario in which all participants simply uploaded their l
 \begin{figure}[H]
   \centering
     \includegraphics[width=5in]{AllUploadNoDownloadGrid.png}
-    \caption[Comparison between randomized interaction and complete interaction with server.]{\label{fig:AllUploadNoDownloadGrid} Accuracy of reference user when all participants simply upload parameters to server.}
+    \caption[Accuracy graph where all participants upload.]{\label{fig:AllUploadNoDownloadGrid} Accuracy of reference user when all participants simply upload parameters to server.}
   \end{figure}
 \addtocontents{lof}{\vspace{\normalbaselineskip}}
 
@@ -1022,12 +1044,6 @@ This approach did not show great results. Figure \ref{fig:AllUploadNoDownloadGri
 Next, we compare the accuracy of the reference user under our proposed privacy-preserving algorithm and that of the algorithm proposed
 by Shokri et al. \cite{shokri2015privacy}. 
 
-\begin{figure}[H]
-  \centering
-    \includegraphics[width=5in]{RandomVsAllGrid.png}
-    \caption[Comparison between randomized interaction and complete interaction with server.]{\label{fig:RandVsAll} Comparison between randomized interaction and complete interaction with server}
-  \end{figure}
-\addtocontents{lof}{\vspace{\normalbaselineskip}}
 
 Figure \ref{fig:RandVsAll} shows the accuracy of the reference user $u_0$'s deep learning
 neural network trained under our proposed deep learning algorithm, and under \cite{shokri2015privacy}. We set the number of
@@ -1037,7 +1053,22 @@ In the approach by \cite{shokri2015privacy}, all users upload and download with 
 We see that the reference user $u_0$ is able to obtain a deep learning model with an accuracy that is comparable to the one
 obtained by \cite{shokri2015privacy}, which is vulnerable to the attack in \cite{hitaj2017deep}. 
 
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=5in]{RandomVsAllGrid.png}
+    \caption[Comparison between randomized complete interaction with server.]{\label{fig:RandVsAll} Comparison between randomized interaction and complete interaction with server}
+  \end{figure}
+\addtocontents{lof}{\vspace{\normalbaselineskip}}
 
+
+
+
+
+Figure \ref{fig:VaryingPoolofParticipants} shows the accuracy of the reference users $u_0$'s deep neural network under a varying number
+of epochs for different numbers of total users in the system. We observe that  the reference user $u_0$ achieves a higher accuracy as
+the total number of participants in the system increases. For example, the highest accuracy is achieved with 50 participants, while the
+lowest one is achieved with 10 participants. This means the parameters uploaded to the server increases with the number of users, improving the accuracy of the
+model. The reason is that a larger  number of participants brings a larger and more diverse dataset. 
 \begin{figure}[H]
   \centering
     \includegraphics[width=5in]{VaryingPoolofParticipantsGrid.png}
@@ -1047,12 +1078,13 @@ obtained by \cite{shokri2015privacy}, which is vulnerable to the attack in \cite
 
 
 
-Figure \ref{fig:VaryingPoolofParticipants} shows the accuracy of the reference users $u_0$'s deep neural network under a varying number
-of epochs for different numbers of total users in the system. We observe that  the reference user $u_0$ achieves a higher accuracy as
-the total number of participants in the system increases. For example, the highest accuracy is achieved with 50 participants, while the
-lowest one is achieved with 10 participants. This means the parameters uploaded to the server increases with the number of users, improving the accuracy of the
-model. The reason is that a larger  number of participants brings a larger and more diverse dataset. 
 
+
+Figure \ref{fig:VaryingProbabilityInteraction} shows the accuracy of reference user $u_0$ for a varying number of epochs under
+different probabilities for the users to interact with the parameter server. 
+We see that a greater probability of interaction with the server results in a higher model accuracy for the reference user $u_0$.
+The highest accuracy is obtained when all participants interact with the parameter server. However, this is equivalent to the
+approach proposed by \cite{shokri2015privacy} and thus it is vulnerable to the attacks described in \cite{hitaj2017deep}. 
 
 \begin{figure}[H]
   \centering
@@ -1062,20 +1094,6 @@ model. The reason is that a larger  number of participants brings a larger and m
 \addtocontents{lof}{\vspace{\normalbaselineskip}}
 
 
-Figure \ref{fig:VaryingProbabilityInteraction} shows the accuracy of reference user $u_0$ for a varying number of epochs under
-different probabilities for the users to interact with the parameter server. 
-We see that a greater probability of interaction with the server results in a higher model accuracy for the reference user $u_0$.
-The highest accuracy is obtained when all participants interact with the parameter server. However, this is equivalent to the
-approach proposed by \cite{shokri2015privacy} and thus it is vulnerable to the attacks described in \cite{hitaj2017deep}. 
-
-
-
-\begin{figure}[H]
-  \centering
-    \includegraphics[width=5in]{VaryingThetaUGrid.png}
-    \caption[Different upload gradient selection rate]{\label{fig:VaryingThetaU}Accuracy of Distributed SGD for different upload gradient selection rate, unevenly.}
-  \end{figure}
-\addtocontents{lof}{\vspace{\normalbaselineskip}}
 
 
 Figure \ref{fig:VaryingThetaU} we plot the accuracy of the reference user $u_0$ for different upload gradient selection rate over. 
@@ -1083,12 +1101,17 @@ The plot shows that the percentage of uploaded parameters, $\theta_u$, is direct
 the model at $u_0$. However, the accuracy difference between the sharing all parameters and only $ 10\% $ percent of parameters is
 insignificant.
 
-
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=5in]{VaryingThetaUGrid.png}
+    \caption[Varying upload gradient selection rate]{\label{fig:VaryingThetaU}Accuracy of Distributed SGD for different upload gradient selection rate, unevenly.}
+  \end{figure}
+\addtocontents{lof}{\vspace{\normalbaselineskip}}
 
 
 \pagebreak
 %-----------------------------------------------------------------------------------
-\section*{CHAPTER III}
+\section*{CHAPTER VIII}
 %-----------------------------------------------------------------------------------
 \vspace{0.25in}
 \section{CONCLUSION}
@@ -1109,47 +1132,15 @@ users and the parameters are non-colluding and only share information outlined b
 
 \begin{center}
 \vspace*{\fill}
-\addcontentsline{toc}{section}{BIBLIOGRAPHY}
-\section*{\normalfont BIBLIOGRAPHY}
+\addcontentsline{toc}{section}{REFERENCES}
+\section*{\normalfont REFERENCES}
 \vspace*{\fill}
 \end{center}
 \newpage
-\let\oldaddcontentsline\addcontentsline% Store \addcontentsline
-\renewcommand{\addcontentsline}[3]{}% Remove functionality of \addcontentsline
-\renewcommand\bibname{\normalfont BIBLIOGRAPHY}
+\section*{\normalfont REFERENCES} 
+
 \bibliography{sample}
-\let\addcontentsline\oldaddcontentsline% Restore \addcontentsline
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%Appendix%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage
-\appendix
-\addcontentsline{toc}{section}{APPENDIXES}
-\addtocontents{toc}{\vspace{\normalbaselineskip}}
-\renewcommand\thesubsection{\Alph{subsection}}
-\newpage
-
-\begin{center}
-\vspace*{\fill}
-\section*{\normalfont APPENDIXES}
-\vspace*{\fill}
-\end{center}
-
-%%%%%%%%%%%%%%%%% Appendix A %%%%%%%%%%%%%%%%%%%%%%%
-\newpage
-\section*{\normalfont APPENDIX A} \label{App:A}
-\section*{Possible Alter Egos} 
-\addcontentsline{toc}{subsection}{A. Possible Alter Egos}
-\addtocontents{toc}{\vspace{\normalbaselineskip}}
-Possible alter egos to facilitate crime fighting: Ant-Man, Giant Man, Quantum-Man, The Wasp, The Whisper. 
-
-%%%%%%%%%%%%%%%%% Appendix B %%%%%%%%%%%%%%%%%%%%%%%
-\newpage
-\section*{\normalfont APPENDIX B} \label{App:B}
-\section*{My Awesome Suit} 
-\addcontentsline{toc}{subsection}{B. My Awesome Suit}
-\addtocontents{toc}{\vspace{\normalbaselineskip}}
-
-Here's a look at my awesome suit. 
 
 }
 

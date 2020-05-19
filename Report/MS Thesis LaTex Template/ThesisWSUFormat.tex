@@ -258,15 +258,13 @@ users.
 \begin{flushleft}
 \doublespacing{
 \begin{align*}
-&IoT &&\text{Internet of Things}\\
-&IT &&\text{Information Technology}\\
-&DI &&\text{Defect Injection}\\
-&AM &&\text{Additive Manufacturing}\\
-&AC &&\text{Alternating Current}\\
-&DC &&\text{Direct Current}\\
-&MSE &&\text{Mean Squared Error}\\
-&FNN &&\text{Feed-forward Neural Network}\\
-&CNC &&\text{Computer Numerical Control}
+&GAN &&\text{Generative Adversarial Network}\\
+&SMC &&\text{Secure Multi-party Computation}\\
+&MLP &&\text{Multilayer Perceptron}\\
+&GD &&\text{Gradient Descent}\\
+&DNN &&\text{Deep Neural Network}\\
+&SGD &&\text{Stochastic Gradient Descent}\\
+&PS &&\text{Parameter Server}
 %make sure to have no space on your last line
 \end{align*}
 }
@@ -645,7 +643,7 @@ error function, which measures the difference between the outputs of the neural 
 which we call labels. There are multiple ways of calculating the error. In this work, we focus on the mean squared error function,
 which is defined as follows:
 \begin{align}\label{eq:errorFunction}
- E= \frac{1}{n} \sum_{n=1}^{n}(y_i -\hat{y_i}),
+ E= \frac{1}{n} \sum_{n=1}^{n}(y_i -\hat{y_i})
 \end{align}
 where $n$ is the the number of samples in the training dataset, $y_i$ is the output calculated by the neural network and 
 $\hat{y_i}$ is the correct label for the $i$th sample.
@@ -662,7 +660,7 @@ The GD  obtains the new value of parameters by subtracting a scaled value of the
 defined as follows.  Let $w$ denote the flattened vector of all weights and biases of a deep neural
 network. Then the $j$th parameter of $w$ is given by:
 \begin{align}\label{eq:GD}
-w_j = w_j -\alpha \frac{\partial E}{\partial w_j}, 
+w_j = w_j -\alpha \frac{\partial E}{\partial w_j}
 \end{align}
 where $\alpha$ is the learning rate,  $E$ is the value of the error function defined in equation \eqref{eq:errorFunction} and calculated over the entire dataset and $\frac{\partial E}{\partial w_j}$ denotes the partial derivative of $E$ with respect to
 parameter $w_j$.
@@ -715,7 +713,7 @@ within a feasible amount of time.
 Formally, the SGD forward propagation and error calculation is identical to that of GD. However, the parameter update in the 
 back propagation step is defined as follows.
 \begin{align}\label{eq:SGD}
-w_j = w_j -\alpha \frac{\partial E_i}{\partial w_j}, 
+w_j = w_j -\alpha \frac{\partial E_i}{\partial w_j}
 \end{align}
 where $E_i$ is the value of the error function defined in equation \eqref{eq:errorFunction} computed over
 minibatch $i$, and  $\frac{\partial E_i}{\partial w_j}$ denotes the partial derivative of $E_i$ with respect to parameter $w_j$. 
@@ -1139,7 +1137,7 @@ the model at $u_0$.
 \begin{figure}[H]
   \centering
     \includegraphics[width=5in]{VaryingThetaUGrid.png}
-    \caption[Varying upload gradient selection rate]{\label{fig:VaryingThetaU}Accuracy of Distributed SGD for different upload gradient selection rate, unevenly.}
+    \caption[Varying upload gradient selection rate]{\label{fig:VaryingThetaU}Accuracy of Distributed SGD for different upload gradient selecti.}
   \end{figure}
 \addtocontents{lof}{\vspace{\normalbaselineskip}}
 However, the accuracy difference between the sharing all parameters and only $ 10\% $ percent of parameters is
@@ -1156,7 +1154,7 @@ In this work we design, implement and analyze a secure privacy preserving approa
 algorithm provides security against attacks that extract information from participants in a collaborative setting. 
 
 Our work can be extremely beneficial in providing a secure application of distributed and decentralized collaborative learning. This
-will make it more accessible to users concerned about their privacy but want to benefit from larger datasets. The users can be incentivized to participate in our proposed system through compensation to benefit the reference user.
+will make it more accessible to users concerned about their privacy but want to benefit from larger datasets. Other users can be incentivized to participate in our proposed system through compensation.
 
 Our methodology provides countermeasure to the category of attacks that use malicious parameters to influence victims to reveal more
 information as described  by Hitaj  et al. \cite{hitaj2017deep} . We do this by limiting the consistent exposure of each participant to

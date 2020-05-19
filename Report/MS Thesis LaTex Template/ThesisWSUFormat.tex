@@ -5,7 +5,7 @@
 
 %\usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-%\usepackage{indentfirst}
+\usepackage{indentfirst}
 
 %% Sets page size and margins
 \usepackage[letterpaper,top=1in,bottom=1in,left=1in,right=1in,margin=1in]{geometry}
@@ -88,7 +88,6 @@
 \doublespace{
 A Thesis by\\
 Aseem Prashar\\
-Master of Science, Wichita State University, 2020\\
 Bachelor of Engineering, BITS-Pilani, 2013}\\
 [6\baselineskip]
 \singlespacing{
@@ -167,8 +166,8 @@ ACKNOWLEDGEMENTS\\
 \setlength{\parindent}{0.50in}
 \doublespacing{
 
-I would like to thank my adviser, Sergio Salinas, for his thoughtful input, guidance and support in all stages of this project. I also extend my gratitude to members
-of my committee, Ajita Rattani, Remi Chou and Akmal Mirsadikov for their valuable time and consideration. 
+I would like to thank my adviser, Dr. Sergio A. Salinas Monroy, for his thoughtful input, guidance and support in all stages of this project. I also extend my gratitude to members
+of my committee, Dr. Ajita Rattani, Dr. Remi Chou and Dr. Akmal Mirsadikov for their valuable time and consideration. 
 
 }
 }
@@ -230,16 +229,51 @@ users.
 
 %%%%%%%%%%%%%%%%% List of Figures %%%%%%%%%%%%%%%%%%
 
+
 \listoffigures
 \addtocontents{lof}{{\bfseries \normalfont Figure\hfill \normalfont Page\bigskip\par}}
 %\addtocontents{lof}{\contfigures} %%% INCLUDE FOR MULTIPE PAGES %%%%%
 \pagebreak 
-\EndNoToc
+\EndNoToc 
 
 \begin{flushleft}
 %%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%% List of Symbols %%%%%%%%%%%%%%%%%%
+\makeatletter
+\def\sectionsuffic{}
+\def\subsectionsuffix{\quad}
+\def\subsubsectionsuffix{\quad}
+\def\paragraphsuffix{\quad}
+\renewcommand\@seccntformat[1]{\csname the#1\endcsname\csname#1suffix\endcsname}
+\renewcommand\thesection{\protect\Decide{\@arabic\c@section}}
+\renewcommand\thesubsection{\@arabic\c@section.\@arabic\c@subsection}
+\renewcommand\Decide[1]{}
+\makeatother
+
+\allowdisplaybreaks
+\begin{center}
+\Large\bf \normalfont LIST OF ABBREVIATIONS\\
+\end{center}
+\begin{flushleft}
+\doublespacing{
+\begin{align*}
+&IoT &&\text{Internet of Things}\\
+&IT &&\text{Information Technology}\\
+&DI &&\text{Defect Injection}\\
+&AM &&\text{Additive Manufacturing}\\
+&AC &&\text{Alternating Current}\\
+&DC &&\text{Direct Current}\\
+&MSE &&\text{Mean Squared Error}\\
+&FNN &&\text{Feed-forward Neural Network}\\
+&CNC &&\text{Computer Numerical Control}
+%make sure to have no space on your last line
+\end{align*}
+}
+\end{flushleft}
+
+%%%%%%%%%%%%%%% List of Symbols %%%%%%%%%%%%%%%%%%
+\newpage
 \makeatletter
 \def\sectionsuffic{}
 \def\subsectionsuffix{\quad}
@@ -289,9 +323,9 @@ users.
 \doublespacing{
 \addtocontents{toc}{\vspace{\normalbaselineskip}}
 
-In the past few decades, deep learning has generated a lot of interest in the research and academic community due to its great ability
+In the past few decades, deep learning has generated a lot of interest in the research and academic community due to its ability
 to automatically classify large amounts of data. This has led to breakthroughs in many fields ranging
-from autonomous driving, and natural language processing to genetic research 
+from autonomous driving and natural language processing to genetic research 
 \cite{young2018recent, al2017deep, huval2015empirical, danaee2017deep}.
 %It is no surprise that deep learning has seen a significant investment by technology giants such as Google, IBM and Facebook. 
 This revolutionary technology is especially fruitful for large corporations that need to automatically process very large data sets to
@@ -322,7 +356,7 @@ Instead of sharing private data with a third-party, users could locally train th
 data. However, since a single user only has access to a small data set compared to the data set that could be centrally
 collected by the third-party, its locally trained deep learning model have low accuracy, which
 significantly degrades its ability to provide correct inferences. 
-Moreover, locally trained models can suffer from over generalization can prevent them from being used in practical scenarios.
+Moreover, locally trained models can suffer from over generalization which can prevent them from being used in practical scenarios.
 For instance, a hospital trained a deep neural network to recognize patients with pneumonia based on their
 chest X-ray images using its own records. Although this neural network was successful in classifying records from patients that were
 treated in this hospital, its performance significantly dropped when tested with images from other patient treated at a different
@@ -362,8 +396,11 @@ accuracy, or a maximum number of iterations is reached.
 The main contribution of our approach is that it allows the main user to leverage the data sets form the other users to train a local
 deep learning model with high accuracy while protecting its private data from the parameter server, and other users who
 may launch sophisticated GAN based attacks as described in \cite{hitaj2017deep}. The proposed architecture is independent of the
-neural network architecture of the system, and is therefore, adaptable to any deep neural network. Our proposed privacy-preserving
-distributed learning approach can potentially be used in a scenario where the privacy of one of the participant in distributed learning is valued over other participants. For instance, a medical facility that has classified medical data can still benefit from distributed deep learning using our approach. 
+neural network architecture of the system, and is therefore, adaptable to any deep neural network. 
+
+Our proposed privacy-preserving
+distributed learning approach can potentially be used in a scenario where the privacy of one of the participant in distributed learning is valued over other participants. For instance, a medical facility that has classified medical data can still benefit from distributed deep learning using our approach.
+This approach can also be applied in a scenario where participants are compensated for their parameters due to the privacy risks they incur. 
 
 % We accomplish this by a two pronged approach.
 % First, we randomly select users that can upload and download parameters from the server at each iteration. This prevents the
@@ -505,7 +542,7 @@ tasks. In this section, we describe the architecture of deep neural networks and
 
 One of the most common deep learning architectures is the multilayer perception (MLP). 
 An MLP is formed by input, hidden, and output layers where each layer consists of many nodes. Each node takes 
-as input a weighted average of the previous layer's node outputs, and the output of an special node called the bias.  
+as input a weighted average of the previous layer's node outputs, and the output of a special node called the bias.  
 The nodes use a non-linear activation function to the compute their output. Together, the weights used in the weighted average and
 the biases from the special neurons are called the parameters of the deep neural network. 
 For ease of exposition, we focus on MLP. However, our results and formulations are generalizable to any deep neural network
@@ -555,8 +592,7 @@ where given an input $z$ the function returns $z$ for positive values and $0$ fo
 %Rectified Linear Unit (ReLU) is an increasing popular activation function that aids in the quick convergence of the network. 
 
 %In a network that is tasked to classify inputs to one of the $j$ fixed number of outputs, 
-The output layer is usually implemented with the SoftMax activation function. The output of this function is between zero and
-one, and it is used to the output of the last hidden layer to a scalar that represents the probability that the data sample observed at
+The output layer is usually implemented with the SoftMax activation function. The output of this function is between zero and one. It is used to convert the output of the last hidden layer to a scalar that represents the probability that the data sample observed at
 the input layer belongs to each of the $j$ categories. Formally, the SoftMax activation functions is defined as
 %divides it by their sum, resulting in a probability
 %score that
@@ -564,7 +600,7 @@ the input layer belongs to each of the $j$ categories. Formally, the SoftMax act
 \begin{align}\label{eq:SoftMax}
 f(z)_j = \frac{e^{z_j}} {(\sum_ke^{z_k})} \ \  \forall j
 \end{align}
-where $z_j$ is the $j$th element of the input vector $z$ with $k$ elements (e.g., the output of all the neurons in the last hidden
+where $z_j$ is the $j$th element of the input vector $z$ with $k$ total elements (e.g., the output of all the neurons in the last hidden
 layer).
 % and  and $\sum_k e^{z_k}$ is sum of exponents of all elements in
 %$z$.
@@ -576,7 +612,7 @@ layer).
 \subsection{Training}
 %---------------------------------------------------------------------
 Before a neural network can be used to perform inference, e.g., classify images, it needs to be trained to learn the highly non-linear relationships between the inputs and the correct outputs. Training finds the
-parameters of the deep neural network, i.e., its the weights and biases, that result in the inferences with the highest accuracy.  
+parameters of the deep neural network, i.e., the weights and biases, that result in the inferences with the highest accuracy.  
 
 Although there are many training algorithms, their general workflow is the same. 
 First, we randomly initialize the deep neural network parameters.
@@ -628,7 +664,7 @@ network. Then the $j$th parameter of $w$ is given by:
 \begin{align}\label{eq:GD}
 w_j = w_j -\alpha \frac{\partial E}{\partial w_j}, 
 \end{align}
-where $\alpha$ is the learning rate,  $E$ is the value of the error function defined in \eqref{eq:errorFunction} and calculated over the entire dataset and $\frac{\partial E}{\partial w_j}$ denotes the partial derivative of $E$ with respect to
+where $\alpha$ is the learning rate,  $E$ is the value of the error function defined in equation \eqref{eq:errorFunction} and calculated over the entire dataset and $\frac{\partial E}{\partial w_j}$ denotes the partial derivative of $E$ with respect to
 parameter $w_j$.
 %Consider E to be the error function over the entire dataset, then the new value of parameter $w_i$ is given by:
 %\begin{equation*}
@@ -640,7 +676,7 @@ error is achieved or a maximum number of iterations is reached \cite{ruder2016ov
 A key parameter in the GD algorithm is the learning rate $\alpha$.   Selecting an optimal learning
 rate is crucial since a smaller learning rate results in a large number of iterations needed to reach a local minimum error value. This
 results in a longer convergence time, which can be computationally expensive. On the other hand, if the chosen learning rate is too
-large the algorithm can fail to converge and overshoot the desired minimum, leading to oscillations.  Optimal learning rates are
+large the algorithm can fail to converge and overshoot the desired minimum error, leading to oscillations.  Optimal learning rates are
 generally chosen through trial and error. In this work, we use the most commonly used values in the literature to implement our
 proposed privacy-preserving distributed learning algorithms. 
 
@@ -653,7 +689,7 @@ before a single update is made to the parameters. Since the algorithm processes 
 it is computationally intensive and time consuming when dealing with large-scale data sets. 
 
 
-To overcome this challenge, we can use Stochastic Gradient Descent(SGD) \cite{bottou2010large}. 
+To overcome this challenge, we can use Stochastic Gradient Descent (SGD) \cite{bottou2010large}. 
 Unlike the GD algorithm where all samples in the training data set are used in a single iteration, SGD only uses a randomly
 selected subset of samples for calculating the parameter updates at each iteration. 
 %SGD then uses this fraction of dataset do a forward pass, calculate error and back propagate the to find the gradients of each
@@ -669,7 +705,7 @@ at each iteration, it has a higher probability of escaping local minima, and fin
 %If only one sample is chosen per iteration, then the SGD algorithm is said to achieve maximum
 %stochasticity. 
 However, the randomized selection of data samples can also cause updates made to the parameters to be less accurate. This results in an
-overall meandering path to the local minima. Consequently, one can choose between speed (provided by SGD) and accuracy of each step 
+overall meandering path to the local minimum error. Consequently, one can choose between speed (provided by SGD) and accuracy of each step 
 (provided by GD). For larger datasets SGD and Mini-Batch GD is preferred since taking more slightly inaccurate updates is preferred
 over fewer slower updates. For smaller datasets, GD can be used to obtain more accurate results in fewer iterations and
 within a feasible amount of time. 
@@ -681,7 +717,7 @@ back propagation step is defined as follows.
 \begin{align}\label{eq:SGD}
 w_j = w_j -\alpha \frac{\partial E_i}{\partial w_j}, 
 \end{align}
-where $E_i$ is the value of the error function defined in \ref{eq:errorFunction} computed over
+where $E_i$ is the value of the error function defined in equation \eqref{eq:errorFunction} computed over
 minibatch $i$, and  $\frac{\partial E_i}{\partial w_j}$ denotes the partial derivative of $E_i$ with respect to parameter $w_j$. 
 
 \pagebreak
@@ -757,7 +793,7 @@ $\alpha_i$. Then, at each iteration,  user $u_i$  downloads $\theta_d^{i} \times
 overwrites its corresponding parameters, $w_i$, where $|w_i|$ denotes the total number of parameters in $w_i$. User $u_i$ then runs the
 stochastic gradient descent algorithm 
 with the updated parameter vector as the initial vector. 
-Based on the new parameters found by the SGD, i.e., $w_i^{(new)}$, user $u_i$ uses \eqref{eq:SGD} to update its local parameter vector $w_i$. 
+Based on the new parameters found by the SGD, i.e., $w_i^{(new)}$, user $u_i$ uses equation \eqref{eq:SGD} to update its local parameter vector $w_i$. 
 
 Next, user $u_i$ determines which parameters to upload to the server. 
 To this end the user first computes 
@@ -862,12 +898,12 @@ from other users.
 
 In this section we describe our proposed privacy-preserving distributed learning algorithm, which prevents attacks
 such as the ones described in Section \ref{sec:threatModel}. Instead of attempting to protect the privacy of all users as in 
-\cite{shokri2015privacy}, we instead focus on protecting the privacy of a single users, called the reference users as described in
+\cite{shokri2015privacy}, we instead focus on protecting the privacy of a single user, called the reference users as described in
 Section \ref{sec:systemModel}. Our main approach to protect the reference user's privacy is to prohibit the reference user
 from uploading its parameters to the  parameter server. 
 
 Although we focus on the privacy of the reference user, our approach also
-limits the amount of private data that other users expose to an attack. To protect the rest of the users, out algorithm only allows
+limits the amount of private data that other users expose to an attack. To protect the rest of the users, our algorithm only allows
 them to upload and download parameters from the server a limited number of times and in random order. 
 This randomized choosing of participants reduces the chances of selecting the malicious participant in every round, limiting
 the adversary's ability to upload malicious parameters that can force other users to reveal private data. 
@@ -890,7 +926,7 @@ users from set $\mathcal{U}$. The reference user is never chosen.
 User $u_i\in\hat{\mathcal{U}}$ downloads a fraction $\theta_d^i$ of the parameters
 in the server, and uses them to overwrite its  corresponding local parameters in $w_i$.
 User $u_i$ then trains its network privately using its local data set  $d_i$, and obtains the new parameters $w_i^{(new)}$.
-Then, as described in \eqref{eq:deltaParam}, user $u_i$ calculates the change in parameter values by computing $\Delta w_i$, groups the
+Then, as described in equation \eqref{eq:deltaParam}, user $u_i$ calculates the change in parameter values by computing $\Delta w_i$, groups the
 indexes of the elements in vector $\Delta w_i$ with the largest $\theta_u^i\times |\Delta w_i|$ values in set $\mathcal{S}_i$, and 
 forms a vector $w_{\mathcal{S}_i}$ with the elements in $w_i^{(new)}$ that correspond to indexes in $\mathcal{S}_i$. 
 User $u_i$ uploads $w_{\mathcal{S}_i}$ to the parameter server who aggregates them. 
@@ -951,7 +987,7 @@ instance on the Amazon Web Service's Elastic Compute Cloud (AWS EC2), which has
 \begin{figure}[H]
   \centering
     \includegraphics[width=6in]{MLPArchitecture.png}
-    \caption[Tensor sizes in a MLP architecture.]{\label{fig:MLPArch} MLP architecture displaying the tensor size at various stages in the neural network..}
+    \caption[Tensor sizes in a MLP architecture.]{\label{fig:MLPArch} MLP architecture displaying the tensor size at various stages in the neural network.}
   \end{figure}
 \addtocontents{lof}{\vspace{\normalbaselineskip}}
 
@@ -967,9 +1003,9 @@ that a given input is a specific number
 between 0 and 9.  The model has 2 hidden layers where the non-linear ReLU activation function is applied to the
 output of each hidden layer.  The first hidden layers are constructed via \textit{nn.Linear()} which applies a linear transformation
 and produces a tensor of size 128 as its output. The second hidden layer accepts a tensor of size 128 as input, and outputs a tensor of
-size 64.The last layer of the model is a log soft max layer implemented by the \textit{nn.LogSoftMax()} module.  This activation
+size 64. The last layer of the model is a log soft max layer implemented by the \textit{nn.LogSoftMax()} module.  This activation
 function is usually applied to the end of all classification models where it squashes the inputs into probabilities that sum to one.
-The architecture of the MLP used in our experiments is illustrated in Figure\ref{fig:MLPArch}
+The architecture of the MLP used in our experiments is illustrated in Figure  \ref{fig:MLPArch}.
 
 
 
@@ -977,11 +1013,11 @@ The architecture of the MLP used in our experiments is illustrated in Figure\ref
 \subsection{Datasets}
 %-------------------------------------------------------------------------------
 We conducted our experiments using the MNIST dataset \cite{deng2012mnist}. The MNIST dataset is a standard dataset used in image
-recognition. It contains images of hand-written gray scale digits ranging from 0 to 9. The dimension of each image is 32 X 32 pixels.
+recognition. It contains gray scale images of hand-written digits ranging from 0 to 9. The dimension of each image is 32 X 32 pixels.
 The MINST dataset contains 60,000 images in its training dataset and 10,000 images in its test dataset.
 For this experiment, we center the images through a normalization operation.  
 
-We set the size of the local dataset of each participant to 1 \% of the training dataset images.  The Reference User starts with a
+We set the size of the local dataset of each participant to 1 \% of the training dataset images.  The reference user starts with a
 training set of 60 images.
 
 
@@ -1021,14 +1057,14 @@ of samples in the data set. This confirms that a small local data set can only p
 \begin{figure}[H]
   \centering
     \includegraphics[width=5in]{SingleUserBaselinesGrid.png}
-    \caption[Accuracy of single user with varying sample size.]{\label{fig:SingleUser} Single User with varying sample size}
+    \caption[Accuracy of single user with varying sample size.]{\label{fig:SingleUser} Single User with varying sample size.}
   \end{figure}
 \addtocontents{lof}{\vspace{\normalbaselineskip}}
 
 
 
 
-We also tested with a scenario in which all participants simply uploaded their local parameters to the server without downloading any parameters. Only the reference user was able to download the parameters from the server. In this case, $\theta_d^i$ was $0$ for every participant except the reference user.
+We also tested with a scenario in which all participants simply uploaded their local parameters to the server without downloading any parameters. Only the reference user was able to download the parameters from the server. In this case, $\theta_d^i$ was set to zero for every participant except the reference user.
 
 
 \begin{figure}[H]
@@ -1056,7 +1092,7 @@ obtained by \cite{shokri2015privacy}, which is vulnerable to the attack in \cite
 \begin{figure}[H]
   \centering
     \includegraphics[width=5in]{RandomVsAllGrid.png}
-    \caption[Comparison between randomized complete interaction with server.]{\label{fig:RandVsAll} Comparison between randomized interaction and complete interaction with server}
+    \caption[Comparison between randomized complete interaction with server.]{\label{fig:RandVsAll} Comparison between randomized interaction and complete interaction with server.}
   \end{figure}
 \addtocontents{lof}{\vspace{\normalbaselineskip}}
 
@@ -1098,8 +1134,7 @@ approach proposed by \cite{shokri2015privacy} and thus it is vulnerable to the a
 
 Figure \ref{fig:VaryingThetaU} we plot the accuracy of the reference user $u_0$ for different upload gradient selection rate over. 
 The plot shows that the percentage of uploaded parameters, $\theta_u$, is directly proportional to the resulting accuracy of
-the model at $u_0$. However, the accuracy difference between the sharing all parameters and only $ 10\% $ percent of parameters is
-insignificant.
+the model at $u_0$. 
 
 \begin{figure}[H]
   \centering
@@ -1107,7 +1142,8 @@ insignificant.
     \caption[Varying upload gradient selection rate]{\label{fig:VaryingThetaU}Accuracy of Distributed SGD for different upload gradient selection rate, unevenly.}
   \end{figure}
 \addtocontents{lof}{\vspace{\normalbaselineskip}}
-
+However, the accuracy difference between the sharing all parameters and only $ 10\% $ percent of parameters is
+insignificant.
 
 \pagebreak
 %-----------------------------------------------------------------------------------
@@ -1120,7 +1156,7 @@ In this work we design, implement and analyze a secure privacy preserving approa
 algorithm provides security against attacks that extract information from participants in a collaborative setting. 
 
 Our work can be extremely beneficial in providing a secure application of distributed and decentralized collaborative learning. This
-will make it more accessible to users concerned about their privacy but want to benefit from larger datasets.
+will make it more accessible to users concerned about their privacy but want to benefit from larger datasets. The users can be incentivized to participate in our proposed system through compensation to benefit the reference user.
 
 Our methodology provides countermeasure to the category of attacks that use malicious parameters to influence victims to reveal more
 information as described  by Hitaj  et al. \cite{hitaj2017deep} . We do this by limiting the consistent exposure of each participant to
@@ -1136,9 +1172,8 @@ users and the parameters are non-colluding and only share information outlined b
 \section*{\normalfont REFERENCES}
 \vspace*{\fill}
 \end{center}
-\newpage
-\section*{\normalfont REFERENCES} 
 
+\newpage
 \bibliography{sample}
 
 

@@ -1,46 +1,48 @@
-This is BibTeX, Version 0.99d (TeX Live 2017/Debian)
+This is BibTeX, Version 0.99d (TeX Live 2019/dev/Debian)
 Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: ThesisWSUFormat.aux
 The style file: ieeetr.bst
 Database file #1: sample.bib
-You've used 5 entries,
+Warning--can't use both volume and number fields in simard2003best
+You've used 17 entries,
             1876 wiz_defined-function locations,
-            507 strings with 4506 characters,
-and the built_in function-call counts, 1439 in all, are:
-= -- 125
-> -- 78
+            577 strings with 6964 characters,
+and the built_in function-call counts, 5627 in all, are:
+= -- 546
+> -- 230
 < -- 0
-+ -- 28
-- -- 23
-* -- 110
-:= -- 221
-add.period$ -- 5
-call.type$ -- 5
-change.case$ -- 5
++ -- 83
+- -- 66
+* -- 403
+:= -- 764
+add.period$ -- 17
+call.type$ -- 17
+change.case$ -- 17
 chr.to.int$ -- 0
-cite$ -- 5
-duplicate$ -- 73
-empty$ -- 133
-format.name$ -- 23
-if$ -- 336
+cite$ -- 18
+duplicate$ -- 295
+empty$ -- 532
+format.name$ -- 66
+if$ -- 1370
 int.to.chr$ -- 0
-int.to.str$ -- 5
-missing$ -- 5
-newline$ -- 18
-num.names$ -- 5
-pop$ -- 21
+int.to.str$ -- 17
+missing$ -- 16
+newline$ -- 54
+num.names$ -- 17
+pop$ -- 77
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 0
-skip$ -- 40
+skip$ -- 212
 stack$ -- 0
-substring$ -- 80
-swap$ -- 25
+substring$ -- 436
+swap$ -- 129
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 0
-warning$ -- 0
-while$ -- 14
-width$ -- 6
-write$ -- 49
+warning$ -- 1
+while$ -- 57
+width$ -- 19
+write$ -- 167
+(There was 1 warning)

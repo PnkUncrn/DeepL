@@ -57,7 +57,7 @@ samples from the reference user while maintaining a highly accurate deep neural 
 %Our solution does not involve computationally expensive cryptographic processes and relies on limiting the exposure of private dataset
 %of participants. 
 Our approach is flexible and can be adapted to work with any deep neural network architectures. We conduct extensive experiments to
-verify the proposed approach. We observe that the trained neural network can achieve \hl{\% of accuracy}, while protecting the privacy
+verify the proposed approach. We observe that the trained neural network can achieve an accuracy of 95.18\%, while protecting the privacy
 of the reference user by preventing it from sharing both its private data and deep neural network parameters with the server or other
 users.
 \end{abstract}
@@ -143,7 +143,7 @@ The main contribution of our approach is that it allows the main user to leverag
 deep learning model with high accuracy while protecting its private data from the parameter server, and other users who
 may launch sophisticated GAN based attacks as described in \cite{hitaj2017deep}. The proposed architecture is independent of the
 neural network architecture of the system, and is therefore, adaptable to any deep neural network. Our proposed privacy-preserving
-distributed learning approach can potentially be used in ... \hl{[add example]}. 
+distributed learning approach can potentially be used in a scenario where the privacy of one of the participant in distributed learning is valued over other participants. For instance, a medical facility that has classified medical data can still benefit from distributed deep learning using our approach. 
 
 % We accomplish this by a two pronged approach.
 % First, we randomly select users that can upload and download parameters from the server at each iteration. This prevents the
@@ -378,10 +378,9 @@ defined as follows.  Let $w$ denote the flattened vector of all weights and bias
 network. Then the $j$th parameter of $w$ is given by:
 %\begin{equation*}
 \begin{align}\label{eq:GD}
-w_j = w_j -\alpha \frac{\partial E_i}{\partial w_j}, 
+w_j = w_j -\alpha \frac{\partial E}{\partial w_j}, 
 \end{align}
-where $\alpha$ is the learning rate,  $E_i$ is the value of the error function defined in \eqref{eq:errorFunction} for the $i$th \hl{
-[what is the meaning of i here?]}, $\frac{\partial E_i}{\partial w_j}$ denotes the partial derivative of $E_i$ with respect to
+where $\alpha$ is the learning rate,  $E$ is the value of the error function defined in \eqref{eq:errorFunction} and calculated over the entire dataset and $\frac{\partial E}{\partial w_j}$ denotes the partial derivative of $E$ with respect to
 parameter $w_j$.
 %Consider E to be the error function over the entire dataset, then the new value of parameter $w_i$ is given by:
 %\begin{equation*}
@@ -462,7 +461,7 @@ within a feasible amount of time.
 
 %The size of the subset of samples, called mini-batch, used at each iteration has to be chosen
 %carefully. A small batch can reduce the computing time at each iteration, but may increase the number of iterations needed to converge.
-Formally, the SGD forward propagation and error calculation is identical to that of GS. Hoever, the parameter update in the 
+Formally, the SGD forward propagation and error calculation is identical to that of GD. However, the parameter update in the 
 back propagation step is defined as follows.
 \begin{align}\label{eq:SGD}
 w_j = w_j -\alpha \frac{\partial E_i}{\partial w_j}, 
@@ -528,7 +527,9 @@ $u_0$ & Reference User and the  main benefactor of the architecture \\
 \hline
 $M$ & Mini batch size used for stochastic gradient descent\\
 \hline
-$\theta_d$, $\theta_u$ & \hl{Fraction of parameters selected for download and upload from total available parameters} \\
+$\theta_u^{i}$ & Fraction of parameters selected for upload from total available parameters for $i$th user \\
+\hline
+$\theta_d^{i}$ & Fraction of parameters selected for download from total available parameters for $i$th user\\
 \hline
 $W_k$ & Weight matrix for layer K in the neural network\\
 \hline
@@ -544,7 +545,7 @@ $E_i$ & Error function defining...\\% the difference between the computed value 
 \hline
 $\alpha$ & Learning rate of the stochastic gradient descent algorithm\\
 \hline
-$\mathcal{S}$ & Set of $\theta_u$ \hl{update theta} largest indices selected from $w$ \\
+$\mathcal{S}_i$ & Set of $\theta_u^{i}$ largest indices selected from $w_i$ \\
 \hline
 \end{tabular}
 \end{table}
@@ -737,7 +738,7 @@ from other users.
 \section{A Privacy-preserving Distributed Learning Algorithm}
 %---------------------------------------------------------------------------------------
 \begin{figure*}[t]
-\includegraphics[width=\textwidth, keepaspectratio]{HighLevelArch}
+\includegraphics[width=\textwidth, keepaspectratio]{OurHighLevelApproach}
 \caption{One iteration of our proposed algorithm for privacy-preserving distributed learning.}
 \label{fig:HighLevel}
 \end{figure*}
@@ -902,7 +903,7 @@ descent training is set to 10 samples.
 
 \begin{figure}[!h]
 \centering
-\includegraphics[width=\columnwidth, keepaspectratio]{SingleUserBaselines}
+\includegraphics[width=\columnwidth, keepaspectratio]{SingleUserBaselinesGrid}
 \caption{Single User with varying sample size.}
 \label{fig:SingleUser}
 \end{figure}
@@ -917,12 +918,25 @@ of samples in the data set. This confirms that a small local data set can only p
 %on a larger
 %dataset has a higher accuracy. The user with the highest accuracy has had access to the complete MNIST training dataset of 60,000 samples. 
 
+
 \begin{figure}[!h]
 \centering
-\includegraphics[width=\columnwidth, keepaspectratio]{RandomVsAll}
+\includegraphics[width=\columnwidth, keepaspectratio]{RandomVsAllGrid}
 \caption{Comparison between randomized interaction and complete interaction with server. }
 \label{fig:RandVsAll}
 \end{figure}
+
+We also tested with a scenario in which all participants simply uploaded their local parameters to the server without downloading any parameters. Only the reference user was able to download the parameters from the server. In this case, $\theta_d^i$ was 0 for every participant except the reference user.
+\begin{figure}[!h]
+\centering
+\includegraphics[width=\columnwidth, keepaspectratio]{AllUploadNoDownloadGrid}
+\caption{Accuracy of reference user when all participants simply upload parameters to server. }
+\label{fig:AllUploadNoDownloadGrid}
+\end{figure}
+
+
+This approach did not show great results. Figure \ref{fig:AllUploadNoDownloadGrid} shows the accuracy of the reference user is negatively impacted in this scenario with each epoch. This shows that downloading the parameters from the server and performing local training is a crucial aspect for the efficacy of this architecture.
+
 Next, we compare the accuracy of the reference user under our proposed privacy-preserving algorithm and that of the algorithm proposed
 by Shokri et al. \cite{shokri2015privacy}. Figure \ref{fig:RandVsAll} shows the accuracy of the reference user $u_0$'s deep learning
 neural network trained under our proposed deep learning algorithm, and under \cite{shokri2015privacy}. We set the number of
@@ -934,7 +948,7 @@ obtained by \cite{shokri2015privacy}, which is vulnerable to the attack in \cite
 
 \begin{figure}[!h]
 \centering
-\includegraphics[width=\columnwidth, keepaspectratio]{VaryingPoolofParticipants}
+\includegraphics[width=\columnwidth, keepaspectratio]{VaryingPoolofParticipantsGrid}
 \caption{Accuracy of Distributed SGD for varying participants available for interaction with the PS.}
 \label{fig:VaryingPoolofParticipants}
 \end{figure}
@@ -947,7 +961,7 @@ model. The reason is that a larger  number of participants brings a larger and m
 
 \begin{figure}[!h]
 \centering
-\includegraphics[width=\columnwidth, keepaspectratio]{VaryingProbabilityInteraction}
+\includegraphics[width=\columnwidth, keepaspectratio]{VaryingProbabilityInteractionGrid}
 \caption{Accuracy of Distributed SGD for varying probability of interaction with the PS. }
 \label{fig:VaryingProbabilityInteraction}
 \end{figure}
@@ -967,8 +981,8 @@ approach proposed by \cite{shokri2015privacy} and thus it is vulnerable to the a
 
 \begin{figure}[!h]
 \centering
-\includegraphics[width=\columnwidth, keepaspectratio]{VaryingThetaU}
-\caption{Accuracy of Distributed SGD for different upload gradient selection rate, unevenly. }
+\includegraphics[width=\columnwidth, keepaspectratio]{VaryingThetaUGrid}
+\caption{Accuracy of Distributed SGD for different upload gradient selection rate. }
 \label{fig:VaryingThetaU}
 \end{figure}
 

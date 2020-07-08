@@ -83,12 +83,12 @@
 
 %title page
 \centering
-\large{SECURE PRIVACY PRESERVING DEEP LEARNING AGAINST GAN ATTACKS}\\
+\large{PRIVACY-PRESERVING DISTRIBUTED DEEP LEARNING}\\
 [8\baselineskip]
 \doublespace{
 A Thesis by\\
 Aseem Prashar\\
-Bachelor of Engineering, BITS-Pilani, 2013}\\
+Bachelor of Engineering, 2013}\\
 [6\baselineskip]
 \singlespacing{
  Submitted to the Department of  Electrical Engineering and Computer Science\\
@@ -183,9 +183,7 @@ ABSTRACT\\
 \doublespacing{
 
 
-Deep neural networks are becoming popular in a variety of fields due to their ability to learn from large-scale data sets.
-
-Recently, researchers have proposed distributed learning architectures that allow multiple users to share their data to train deep learning models. Unfortunately, privacy and confidentiality concerns limit the application of
+Deep neural networks are becoming popular in a variety of fields due to their ability to learn from large-scale data sets. Recently, researchers have proposed distributed learning architectures that allow multiple users to share their data to train deep learning models. Unfortunately, privacy and confidentiality concerns limit the application of
 this approach, preventing certain organizations such as medical institutions to fully benefit from distributed deep learning.  To
 overcome this challenge, researches have proposed algorithms that only share neural network parameters. This approach allows 
 users to keep their private datasets secret while still having access to the improved deep neural networks trained with the data from
@@ -732,19 +730,21 @@ In this section, we describe our considered collaborative deep learning model, a
 \subsection{System Model} \label{sec:systemModel}
 %---------------------------------------------------------------------------------
 
+
+
+We consider a distributed deep learning system formed by a set of $N$ users $\mathcal{U}= \{u_0, \dots,u_N\}$ and
+a parameter server (PS), as shown in Figure \ref{fig:HighLevelOld}. User $u_0$ aims to train a local deep neural network using its own training data set
+$d_{u_0}$ as well as the data sets of the other users $d_{u_i}$. % for all $u_i\in\mathcal{U}\setminus 0$. 
+The training data sets $d_{u_i}$'s of all users contain private information that cannot be shared with each other or with the PS. We
+assume the training data set at the reference user is significantly smaller  than the total training data available in the system.
+Otherwise, the reference user could achieve a comparable accuracy without having to participate in the distributed learning. 
+
 \begin{figure}[H]
   \centering
     \includegraphics[width=7in]{HighLevelArch.png}
-    \caption[Privacy preserving architecture]{\label{fig:HighLevel} An architecture for privacy-preserving distributed learning.}
+    \caption[Privacy preserving architecture.]{\label{fig:HighLevelOld} An architecture for privacy-preserving distributed learning.}
   \end{figure}
 \addtocontents{lof}{\vspace{\normalbaselineskip}}
-
-We consider a distributed deep learning system formed by a set of $N$ users $\mathcal{U}= \{u_0, \dots,u_N\}$ and
-a parameter server (PS). User $u_0$ aims to train a local deep neural network using its own training data set
-$d_{u_0}$ as well as the data sets of the other users $d_{u_i}$. % for all $u_i\in\mathcal{U}\setminus 0$. 
-The training data sets $d_{u_i}$'s of all users contain private information that cannot be shared with each other or with the PS.  We
-assume the training data set at the reference user is significantly smaller  than the total training data available in the system.
-Otherwise, the reference user could achieve a comparable accuracy without having to participate in the distributed learning. 
 
 User $u_0$'s deep neural network is a multilayer perceptron (MLP) as described in Section \ref{sec:MLP} for image classification.
 %in a classic feed forward arrangement.
@@ -887,18 +887,20 @@ from other users.
 \addtocontents{toc}{\vspace{\normalbaselineskip}}
 
 
+
+
+In this section we describe our proposed privacy-preserving distributed learning algorithm, which prevents attacks
+such as the ones described in Section \ref{sec:threatModel}. Instead of attempting to protect the privacy of all users as in 
+\cite{shokri2015privacy}, we focus on protecting the privacy of a single user, called the reference users as described in
+Section \ref{sec:systemModel}. Our main approach to protect the reference user's privacy is to prohibit the reference user
+from uploading its parameters to the  parameter server, as shown in Figure \ref{fig:HighLevel}.
+
 \begin{figure}[H]
   \centering
     \includegraphics[width=7in]{OurHighLevelApproach.png}
     \caption[Privacy-preserving Distritbuted Learning.]{\label{fig:HighLevel} One iteration of our proposed algorithm for privacy-preserving distributed learning.}
   \end{figure}
 \addtocontents{lof}{\vspace{\normalbaselineskip}}
-
-In this section we describe our proposed privacy-preserving distributed learning algorithm, which prevents attacks
-such as the ones described in Section \ref{sec:threatModel}. Instead of attempting to protect the privacy of all users as in 
-\cite{shokri2015privacy}, we instead focus on protecting the privacy of a single user, called the reference users as described in
-Section \ref{sec:systemModel}. Our main approach to protect the reference user's privacy is to prohibit the reference user
-from uploading its parameters to the  parameter server. 
 
 Although we focus on the privacy of the reference user, our approach also
 limits the amount of private data that other users expose to an attack. To protect the rest of the users, our algorithm only allows
@@ -982,12 +984,7 @@ instance on the Amazon Web Service's Elastic Compute Cloud (AWS EC2), which has
 2.4 GHz Intel Xeon E5-2676 v3** Processor, 4 VCPUS and 16 GB RAM.
 
 
-\begin{figure}[H]
-  \centering
-    \includegraphics[width=6in]{MLPArchitecture.png}
-    \caption[Tensor sizes in a MLP architecture.]{\label{fig:MLPArch} MLP architecture displaying the tensor size at various stages in the neural network.}
-  \end{figure}
-\addtocontents{lof}{\vspace{\normalbaselineskip}}
+
 
 
 As described in Section \ref{sec:systemModel}, we use a 
@@ -1005,6 +1002,12 @@ size 64. The last layer of the model is a log soft max layer implemented by the 
 function is usually applied to the end of all classification models where it squashes the inputs into probabilities that sum to one.
 The architecture of the MLP used in our experiments is illustrated in Figure  \ref{fig:MLPArch}.
 
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=6in]{MLPArchitecture.png}
+    \caption[Tensor sizes in a MLP architecture.]{\label{fig:MLPArch} MLP architecture displaying the tensor size at various stages in the neural network.}
+  \end{figure}
+\addtocontents{lof}{\vspace{\normalbaselineskip}}
 
 
 %-------------------------------------------------------------------------------
@@ -1064,6 +1067,7 @@ of samples in the data set. This confirms that a small local data set can only p
 
 We also tested with a scenario in which all participants simply uploaded their local parameters to the server without downloading any parameters. Only the reference user was able to download the parameters from the server. In this case, $\theta_d^i$ was set to zero for every participant except the reference user.
 
+This approach did not show great results. Figure \ref{fig:AllUploadNoDownloadGrid} shows the accuracy of the reference user is negatively impacted in this scenario with each epoch. This shows that downloading the parameters from the server and performing local training is a crucial aspect for the efficacy of this architecture.
 
 \begin{figure}[H]
   \centering
@@ -1071,9 +1075,6 @@ We also tested with a scenario in which all participants simply uploaded their l
     \caption[Accuracy graph where all participants upload.]{\label{fig:AllUploadNoDownloadGrid} Accuracy of reference user when all participants simply upload parameters to server.}
   \end{figure}
 \addtocontents{lof}{\vspace{\normalbaselineskip}}
-
-
-This approach did not show great results. Figure \ref{fig:AllUploadNoDownloadGrid} shows the accuracy of the reference user is negatively impacted in this scenario with each epoch. This shows that downloading the parameters from the server and performing local training is a crucial aspect for the efficacy of this architecture.
 
 Next, we compare the accuracy of the reference user under our proposed privacy-preserving algorithm and that of the algorithm proposed
 by Shokri et al. \cite{shokri2015privacy}. 

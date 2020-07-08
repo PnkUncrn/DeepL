@@ -1,5 +1,24 @@
-**This file contains a short  description of all the files in the DeepL directory.
-This is a working copy**
+Summary
+
+existing distributed learning approaches are vulnerable to attacks where a malicious user can use the the shared neural
+network parameters to recreate the private data from other users.
+We propose a distributed deep learning algorithm that allows a user to improve its
+deep-learning model while preserving its privacy from such attacks. Specifically, our
+approach focuses on protecting the privacy of a single user by limiting the number of times
+other users can download and upload parameters from the main deep neural network. By
+doing so, our approach limits ability of the attackers to recreate private data samples from
+the reference user while maintaining a highly accurate deep neural network.
+Our approach is flexible and can be adapted to work with any deep neural network
+architectures. We conduct extensive experiments to verify the proposed approach. We
+observe that the trained neural network can achieve an accuracy of 95.18%, while
+protecting the privacy of the reference user by preventing it from sharing both its private
+data and deep neural network parameters with the server or other users.
+
+
+
+
+The following is a short description of all the files in the DeepL directory.
+This is a working copy
 
 1-Final.lua
 	Code generates MLP architecture used for MNIST in Torch 7. ITs written in LuaJIT and is WORKING code.

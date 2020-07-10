@@ -131,7 +131,11 @@ privacy.
 In this paper, we propose a novel privacy-preserving distributed deep learning framework that prevents the GAN attack described in 
 \cite{hitaj2017deep} while allowing the users to train their local models with high accuracy. 
 Specifically, instead of attempting to protect the privacy of all users as in \cite{shokri2015privacy}, we focus on protecting the
-privacy of a single user, called the reference user. The GAN attack in \cite{hitaj2017deep} exploits 1) the uploaded
+privacy of a single user, called the reference user. 
+Our approach can potentially be used in a scenario where the privacy of one of the participant in distributed learning is valued over other participants. For instance, a medical facility that has classified medical data can still benefit from distributed deep learning using our proposed system.
+Our approach is also can also be adopted in a scenario where participants are compensated for their parameters due to the privacy risks they incur.
+
+The GAN attack in \cite{hitaj2017deep} exploits 1) the uploaded
 model parameters from the victim, and 2) the fact that the  aggregation server unconditionally accepts model parameters from any user
 in the system, which could potentially be malicious. Therefore, in our algorithm, we prohibit the reference user from uploading its
 model's parameters to the server, and the server only accepts parameters from randomly selected users at each iteration. 
@@ -406,7 +410,7 @@ of label $a$ at $u_V$ to recreate their probability distribution.
 \end{figure}
 In this section we describe our proposed privacy-preserving distributed learning algorithm that prevents the malicious user from recreating
 private samples from other users as described in Section \ref{sec:threatModel}. 
-Our main idea is to focus on protecting the privacy of a single users instead of attempting to protect the privacy of all users as in 
+Our main idea is to focus on protecting the privacy of a single user instead of attempting to protect the privacy of all users as in 
 \cite{shokri2015privacy}. Our main approach to protect the reference user's privacy is to prohibit the reference user
 from uploading its parameters to the  parameter server and only allow the other users to upload their parameters a limited number of
 times at randomly chosen iterations.

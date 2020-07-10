@@ -125,7 +125,7 @@ the malicious user uploads specially crafted model parameters to the aggregation
 user to train its local model. The victim trains its local model using the compromised aggregated parameters, which results in
 update model parameters that contain private information about its data samples. Since the victim uploads its compromised model
 parameters to the server, the malicious user gains access to them. By iteratively feeding the aggregate parameters that contain private
-information about the victim's data sample to its GAN, the malicious can replicate the victim's data samples, and thus compromise its
+information about the victim's data sample to its GAN, the malicious user can replicate the victim's data samples, and thus compromise its
 privacy.
 
 In this paper, we propose a novel privacy-preserving distributed deep learning framework that prevents the GAN attack described in 
@@ -206,10 +206,10 @@ We note that our results and formulations are generalizable to other deep neural
 \subsubsection{Training}\label{sec:training}
 %---------------------------------------------------------------------
 Before a neural network can be used to perform inference, e.g., classify images, it needs to be trained to learn the highly non-linear
-relationships between the inputs and the correct outputs. The objective of the training is to find the value of 
+relationships between the inputs and the correct outputs. 
 
 To train the MLP in Section \ref{sec:MLP}, we use the stochastic gradient descent (SGD) algorithm, which aims to find the 
-the weights $W_k$ for all layers $k$ that result in the inferences with the highest accuracy.  SGD is an iterative algorithm. Each
+the weights $W_k$ for all layers $k$ that result in the inferences with the highest accuracy.  SGD is an iterative algorithm where each
 iteration has two steps: forward propagation and back propagation.
 
 In the forward propagation step, the SGD algorithm feeds a randomly
@@ -306,8 +306,8 @@ learning approach proposed by Shokri et al. \cite{shokri2015privacy}.
 % model. 
 In the approach proposed in \cite{shokri2015privacy}, each user $u_i\in\mathcal{U}$ trains a local deep learning
 network, and uploads certain parameters of its model to a server. The server aggregates the parameters from all users and
-then allows them to download some of them. This iteration can be repeated until the accuracy of the users' local deep learning models
-achieve a minimum value.
+then allows the users to download some of them. This iteration can be repeated until the accuracy of the users' local deep learning models
+achieves a minimum value.
 By only sharing certain parameters of their local models
 with a parameter server, users avoid having to transmit any of their private samples to each other or to the server.  
 %We assume that the architecture and training parameters of the deep neural network at user $u_0$ are known 
@@ -322,13 +322,13 @@ overwrites the corresponding parameters in $w_i$, where $|w_i|$ denotes the tota
 the stochastic gradient descent algorithm described in \ref{sec:training} with the updated parameter vector as the initial vector. 
 Based on the results of the SGD,  user $u_i$ uses \eqref{eq:SGD} to calculate $w_i^{(new)}$.
 
-Next, user $u_i$ determines which parameters to upload to the server based on how much changed compared to the previous iteration.  To
+Next, user $u_i$ determines which parameters to upload to the server based on how much each parameter changed compared to the previous iteration.  To
 this end the user first computes
 \begin{align}\label{eq:deltaParam}
 \Delta w_i =  w_i^{(new)} -  w_i
 \end{align}
 which measures the changes between the old and new
-local parameters. Then, the user forms set $\mathcal{S}_i$ with the indexes of the elements in vector $\Delta w_i$ that have the top 
+local parameters. Then, the user forms set $\mathcal{S}_i$ with the indices of the elements in vector $\Delta w_i$ that have the top 
 $\theta_u^{i} \times |\Delta w_i|$ values, where $|\Delta w_i|$ is the size of $\Delta w_i$. 
 The user $u_i$ forms vector $w_{\mathcal{S}_i}$, which contains the parameters in $w_i^{(new)}$ whose indexes are in
 set $\mathcal{S}_i$, and uploads it to the parameter server. Note that $w_{\mathcal{S}_i}$  is set to zero in the remaining
@@ -353,8 +353,7 @@ users.
 In this work, we consider a malicious threat model for both the parameter server and the users. Specifically, in addition to
 attempting to learn private information about other users' dataset based on the parameters at the server as in the semi-honest threat
 model, the attacker in the malicious threat model uploads
-specially crafted parameters that lead other users to upload their parameters in
-such a way that they disclose private information about their data sets. These information can the be downloaded and used by the
+specially crafted parameters. The malicious parameters lead other users to upload their parameters in such a way that they disclose private information about their data sets. This information can the be downloaded and used by the
 attackers to recreate private data samples from the victims. 
 
 Such an attack has been described by Hitaj et al. \cite{hitaj2017deep}. In particular, the attack operates as follows. 
@@ -494,7 +493,7 @@ that a given input is a specific number
 between 0 and 9.  The model has 2 hidden layers where the non-linear ReLU activation function is applied to the
 output of each hidden layer.  The first hidden applies a linear transformation
 and produces a tensor of size 128 as its output. The second hidden layer accepts a tensor of size 128 as input, and outputs a tensor of
-size 64.The last layer of the model is a log soft max layer. 
+size 64. The last layer of the model is a log soft max layer. 
 
 We trained the MLP using using the MNIST dataset of images of hand-written  numbers\cite{deng2012mnist}. 
 The MINST dataset contains 60,000 images in its training dataset and 10,000 images in its test dataset.
@@ -554,7 +553,7 @@ descent training is set to 10 samples.
 We first compare the accuracy of the reference user under our proposed privacy-preserving algorithm to that of the algorithm proposed
 by Shokri et al. \cite{shokri2015privacy}. 
 Figure \ref{fig:RandVsAll} shows the accuracy of the reference user $u_0$'s deep learning
-neural network trained under our propose algorithm, and under the algorithm in \cite{shokri2015privacy}. To make a fair comparison, 
+neural network trained under our proposed algorithm, and under the algorithm in \cite{shokri2015privacy}. To make a fair comparison, 
 we  set the number of users to 20 for both approaches. We set the probability of choosing a non-reference user from $\mathcal{U}$ to
 0.5.  In the approach by \cite{shokri2015privacy}, all users upload and download with a probability of 1. 
 We see that the reference user $u_0$ is able to obtain a deep learning model with an accuracy that is comparable to the one

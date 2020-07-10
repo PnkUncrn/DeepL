@@ -2,8 +2,9 @@
 \IEEEoverridecommandlockouts
 % The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
 \usepackage{cite}
+\usepackage{algorithm}
 \usepackage{amsmath,amssymb,amsfonts}
-\usepackage{algorithmic}
+\usepackage{algpseudocode}
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage{xcolor}
@@ -11,6 +12,7 @@
 \usepackage{soul}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
 \begin{document}
 
 \title{{Secure Privacy Preserving Deep Learning against GAN attacks}\\
@@ -706,23 +708,25 @@ parameters from $u_V$ by downloading parameters from the server.
 %classes
 %$a$ and $c$. Therefore the victim releases more data on class a now than he initially intended to.
 
-We summarize the attack proposed by \cite{hitaj2017deep} as follows \hl{[Usae algorithmic environment for this summary. Can be done
-later]}:
-\begin {enumerate}
-\item Assume victim $u_V$ declares labels $[a,b]$ and adversary $u_A$ declares labels $[b,c]$
-\item Run the distributed deep learning protocol proposed by \cite{shokri2015privacy} for several epochs and stop when we reach a
-specified accuracy.
-\item During this process, the $u_V$ downloads a percentage  of parameters, $\theta^V_d$ ,  from the
-parameter
-server and updates his local model.
-\item $u_V$'s local model is trained on classes $a$ and $b$
-\item $u_V$ uploads a section of his model to Parameter Server
-\item The adversary training is slotted to engage with the Parameter Server
-\item $u_A$ downloads the percentage of parameters, $\theta^A_d$ , from the PS and updates its model
-\item $u_A$ then trains its local GAN to generate samples with the same distribution as class $a$ at $u_V$.
-\item $u_A$  mislabels class $a$ samples as class $c$ samples.
-\item $u_A$ uploads a percentage of its parameters, $\theta^A_u$, to the PS
-\end {enumerate}
+We summarize the attack proposed by \cite{hitaj2017deep} as follows:
+
+\begin{algorithm}
+ \caption{Threat Model using GAN}
+  \begin{algorithmic}[1]
+    \State Assume victim $u_V$ declares labels $[a,b]$ and adversary $u_A$ declares labels $[b,c]$
+    \State Run the distributed deep learning protocol proposed by\cite{shokri2015privacy} for several epochs and stop when we reach a specified accuracy.
+   \State During this process, the $u_V$ downloads a percentage  of parameters, $\theta^V_d$ ,  from the parameter server and updates his local model.
+    \State $u_V$'s local model is trained on classes $a$ and $b$
+    \State $u_V$ uploads a section of his model to Parameter Server
+    \State The adversary training is slotted to engage with the Parameter Server
+    \item $u_A$ downloads the percentage of parameters, $\theta^A_d$ , from the PS and updates its model
+   \State $u_A$ then trains its local GAN to generate samples with the same
+    distribution as class $a$ at $u_V$.
+    \State $u_A$  mislabels class $a$ samples as class $c$ samples.
+    \State $u_A$ uploads a percentage of its parameters, $\theta^A_u$, to the PS
+  \end{algorithmic}
+\end{algorithm}
+
 
 %During the process of convergence, $u_A$ will be able to covertly exert influence on the learning process via the mislabeling of class
 %$a$.
@@ -789,20 +793,25 @@ parameter server and other users.
 %train their network, and upload their parameters only during one epoch. 
 
 We summarize our proposed algorithm as follows:
-\begin {enumerate}
-\item Out of all available participants, a random subsection of participants is selected to interact with the parameter server in this
+\begin{algorithm}
+  \caption{Privacy Preserving Collaborative Learning secure against GAN based Threat Model}
+  \begin{algorithmic}[1]
+    \State Out of all available participants, a random subsection of participants is selected to interact with the parameter server in this
 period. We call this period a round which is denoted by $r$. In each round, $r_i$, the selected users are able to interact with the parameter exclusively such that no two
 participants can interact with the parameter server at the same time.
-\item During its interaction with parameter server, a selected user $u_i$ will perform the following steps:
-\begin {enumerate}
+    \State During its interaction with parameter server, a selected user $u_i$ will perform the following steps:
+    \begin {enumerate}
   \item Train independently on its local dataset for one epoch, to calculate parameter gradient, $\Delta w_i$ 
   \item  At the end of the epoch, $u_i$ will select the $\theta_u$ fraction of highest gradients in its local $\Delta w$. It will then upload that fraction of values in $\Delta w_i$ to the parameter server.
   \end {enumerate}
-\item For each subsequent epoch, the participant will first download $\theta_d$ percentage of parameters from the server. The
+    \State  For each subsequent epoch, the participant will first download $\theta_d$ percentage of parameters from the server. The
 user will then repeat the steps a and b. We repeat these steps for every participant selected in $r_i$.
-\item At the end of $r_i$, the reference user downloads $\theta_d$ percentage of parameters from the parameter server.
-\item The reference user, $u_0$, then trains its model locally on its dataset. 
-\end {enumerate}
+    \State At the end of $r_i$, the reference user downloads $\theta_d$ percentage of parameters from the parameter server.
+	\State The reference user, $u_0$, then trains its model locally on its dataset. 
+  \end{algorithmic}
+\end{algorithm}
+
+
 
 %As you can see the, the reference user does not share its parameters with other users. It benefits from random particpants from the
 %architecture but does not expose itself to any attacks. Since the participants selected from the pool each round are randomized, we ..
